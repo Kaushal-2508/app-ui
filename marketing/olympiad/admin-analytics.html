@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  :root{--teal:#1f9499;--teal-deep:#14696d;--orange:#fa920e;--violet:#6f56a8;--ink:#16202b;--ink-soft:#4a5a6a;--ink-faint:#8a99a8;--line:#e7eef1;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;background:#eef3f5;padding:26px;}
+  .row{display:flex;gap:22px;align-items:stretch;width:1080px;}
+  .col{flex:1;display:flex;flex-direction:column;}
+  .cap{margin-top:11px;text-align:center;font-size:13px;font-weight:800;color:var(--teal-deep);letter-spacing:.01em;}
+  .cap span{display:block;font-size:10.5px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;}
+
+  .win{background:#fff;border-radius:13px;overflow:hidden;border:1px solid #e3eaee;box-shadow:0 22px 44px -22px rgba(20,60,70,.5),0 3px 8px -4px rgba(20,60,70,.12);flex:1;display:flex;flex-direction:column;}
+  .bar{height:30px;background:#eef2f4;display:flex;align-items:center;gap:7px;padding:0 12px;border-bottom:1px solid #e6edf1;}
+  .dots{display:flex;gap:5px;}
+  .dots i{width:8px;height:8px;border-radius:50%;display:block;}
+  .url{flex:1;height:17px;background:#fff;border:1px solid #e6edf1;border-radius:5px;font-size:8.5px;color:#9aa7b2;line-height:15px;padding:0 9px;font-weight:600;}
+  .screen{padding:14px 14px 16px;background:linear-gradient(160deg,#fbfaf8,#f5f7f9);flex:1;}
+
+  .head{font-size:14px;font-weight:800;color:var(--ink);}
+  .sub{font-size:9px;color:var(--ink-faint);font-weight:600;margin-bottom:11px;}
+
+  /* analytics stat strip */
+  .astrip{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:11px;}
+  .as{background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 9px;}
+  .as .l{font-size:6.6px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);}
+  .as .v{font-size:15px;font-weight:800;color:var(--ink);line-height:1.1;margin-top:2px;}
+  .as .v small{font-size:8.5px;color:var(--ink-faint);font-weight:700;}
+  .as.up .v{color:#2f8f57;}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px;}
+  .ctop{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+  .ct{font-size:9px;font-weight:800;color:var(--ink);}
+  .pill{font-size:7px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 7px;border-radius:999px;background:#e4f5ec;color:#2f8f57;}
+
+  .foot{display:flex;gap:8px;margin-top:9px;}
+  .chip{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 9px;background:#fff;}
+  .chip .l{font-size:6.6px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);}
+  .chip .v{font-size:10px;font-weight:800;color:var(--ink);margin-top:1px;}
+  .chip .v i{font-style:normal;display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:4px;vertical-align:middle;}
+
+  /* donut */
+  .donut-wrap{display:flex;align-items:center;gap:14px;}
+  .donut{position:relative;flex:0 0 auto;}
+  .donut .dc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .donut .dc b{font-size:17px;font-weight:800;color:var(--ink);line-height:1;}
+  .donut .dc span{font-size:6.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:2px;}
+  .legend{flex:1;display:flex;flex-direction:column;gap:6px;}
+  .lg{display:flex;align-items:center;gap:7px;font-size:9px;font-weight:700;color:var(--ink-soft);}
+  .lg i{width:9px;height:9px;border-radius:3px;display:block;flex:0 0 auto;}
+  .lg b{margin-left:auto;color:var(--ink);font-weight:800;}
+
+  /* subject bars */
+  .sbars{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+  .sb{display:flex;align-items:center;gap:8px;}
+  .sb .sn{width:54px;font-size:9px;font-weight:700;color:var(--ink-soft);}
+  .sb .tr{flex:1;height:10px;background:#eef2f4;border-radius:6px;overflow:hidden;}
+  .sb .fl{display:block;height:100%;border-radius:6px;}
+  .sb .sv{width:28px;text-align:right;font-size:9px;font-weight:800;color:var(--ink);}
+</style></head>
+<body>
+<div class="row">
+
+  <!-- SCREEN A: PERFORMANCE ANALYTICS -->
+  <div class="col">
+    <div class="win">
+      <div class="bar"><span class="dots"><i style="background:#f6695e"></i><i style="background:#f7bd4f"></i><i style="background:#62c462"></i></span><div class="url">salci.ai/school/olympiad/analytics</div></div>
+      <div class="screen">
+        <div class="head">Performance Analytics</div>
+        <div class="sub">School-wide · 287 appeared</div>
+        <div class="astrip">
+          <div class="as up"><div class="l">Participation</div><div class="v">92<small>%</small></div></div>
+          <div class="as"><div class="l">School avg</div><div class="v">76<small>%</small></div></div>
+          <div class="as"><div class="l">Pass rate</div><div class="v">88<small>%</small></div></div>
+          <div class="as"><div class="l">Distinctions</div><div class="v">64</div></div>
+        </div>
+        <div class="card">
+          <div class="ctop"><div class="ct">Average score by class</div><span class="pill">▲ trending up</span></div>
+          <svg viewBox="0 0 320 122" width="100%" style="display:block">
+            <defs>
+              <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#1f9499" stop-opacity=".30"/>
+                <stop offset="1" stop-color="#1f9499" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- gridlines -->
+            <g stroke="#eef2f4" stroke-width="1">
+              <line x1="14" y1="8" x2="306" y2="8"/>
+              <line x1="14" y1="30" x2="306" y2="30"/>
+              <line x1="14" y1="52" x2="306" y2="52"/>
+              <line x1="14" y1="74" x2="306" y2="74"/>
+              <line x1="14" y1="96" x2="306" y2="96"/>
+            </g>
+            <!-- area + line -->
+            <path d="M14,62.2 L72.4,48.6 L130.8,55.4 L189.2,35.1 L247.6,41.8 L306,24.9 L306,96 L14,96 Z" fill="url(#area)"/>
+            <path d="M14,62.2 L72.4,48.6 L130.8,55.4 L189.2,35.1 L247.6,41.8 L306,24.9" fill="none" stroke="#1f9499" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- dots -->
+            <g fill="#fff" stroke="#1f9499" stroke-width="2">
+              <circle cx="14" cy="62.2" r="2.6"/><circle cx="72.4" cy="48.6" r="2.6"/><circle cx="130.8" cy="55.4" r="2.6"/>
+              <circle cx="189.2" cy="35.1" r="2.6"/><circle cx="247.6" cy="41.8" r="2.6"/>
+              <circle cx="306" cy="24.9" r="3.4" fill="#1f9499" stroke="#fff"/>
+            </g>
+            <!-- x labels -->
+            <g fill="#8a99a8" font-family="Plus Jakarta Sans" font-size="9" font-weight="700" text-anchor="middle">
+              <text x="14" y="115">C5</text><text x="72.4" y="115">C6</text><text x="130.8" y="115">C7</text>
+              <text x="189.2" y="115">C8</text><text x="247.6" y="115">C9</text><text x="306" y="115">C10</text>
+            </g>
+          </svg>
+        </div>
+        <div class="foot">
+          <div class="chip"><div class="l">Top subject</div><div class="v"><i style="background:#2f8f57"></i>Science · 82%</div></div>
+          <div class="chip"><div class="l">Needs focus</div><div class="v"><i style="background:#fa920e"></i>English · 74%</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="cap"><span>Admin · Analytics</span>Performance trends across every class</div>
+  </div>
+
+  <!-- SCREEN B: SUBJECT & MEDAL INSIGHTS -->
+  <div class="col">
+    <div class="win">
+      <div class="bar"><span class="dots"><i style="background:#f6695e"></i><i style="background:#f7bd4f"></i><i style="background:#62c462"></i></span><div class="url">salci.ai/school/olympiad/insights</div></div>
+      <div class="screen">
+        <div class="head">Subject &amp; Medal Insights</div>
+        <div class="sub">Where your school shines</div>
+        <div class="card">
+          <div class="ctop"><div class="ct">Medal distribution</div><span class="pill">287 awarded</span></div>
+          <div class="donut-wrap">
+            <div class="donut" style="width:96px;height:96px;">
+              <svg viewBox="0 0 90 90" width="96" height="96">
+                <circle cx="45" cy="45" r="30" fill="none" stroke="#eef2f4" stroke-width="12"/>
+                <g transform="rotate(-90 45 45)" fill="none" stroke-width="12">
+                  <circle cx="45" cy="45" r="30" stroke="#f3c357" stroke-dasharray="41.5 147" stroke-dashoffset="0"/>
+                  <circle cx="45" cy="45" r="30" stroke="#cbd5e1" stroke-dasharray="52.8 135.7" stroke-dashoffset="-41.5"/>
+                  <circle cx="45" cy="45" r="30" stroke="#fdba74" stroke-dasharray="56.5 132" stroke-dashoffset="-94.3"/>
+                  <circle cx="45" cy="45" r="30" stroke="#8fb9e8" stroke-dasharray="37.7 150.8" stroke-dashoffset="-150.8"/>
+                </g>
+              </svg>
+              <div class="dc"><b>287</b><span>medals</span></div>
+            </div>
+            <div class="legend">
+              <div class="lg"><i style="background:#f3c357"></i>Gold<b>63</b></div>
+              <div class="lg"><i style="background:#cbd5e1"></i>Silver<b>80</b></div>
+              <div class="lg"><i style="background:#fdba74"></i>Bronze<b>86</b></div>
+              <div class="lg"><i style="background:#8fb9e8"></i>Participation<b>58</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="sbars">
+          <div class="sb"><span class="sn">Science</span><span class="tr"><span class="fl" style="width:82%;background:#2f8f57"></span></span><span class="sv">82%</span></div>
+          <div class="sb"><span class="sn">Maths</span><span class="tr"><span class="fl" style="width:78%;background:#1f9499"></span></span><span class="sv">78%</span></div>
+          <div class="sb"><span class="sn">English</span><span class="tr"><span class="fl" style="width:74%;background:#6f56a8"></span></span><span class="sv">74%</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="cap"><span>Admin · Insights</span>Subject strengths &amp; medal mix at a glance</div>
+  </div>
+
+</div>
+</body></html>

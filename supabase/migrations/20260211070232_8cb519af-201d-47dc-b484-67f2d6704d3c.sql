@@ -1,0 +1,1 @@
+ALTER TABLE public.question_bank ADD COLUMN source text NOT NULL DEFAULT 'manual';

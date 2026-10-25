@@ -1,0 +1,535 @@
+﻿{
+    "batch_id":  "1c8fc3ce-ac4b-443c-bb7d-362d8683c8a2",
+    "institution":  {
+                        "id":  "8af718c6-ca11-482b-9d6b-832f2b767928",
+                        "name":  "Alliance International School"
+                    },
+    "preview":  false,
+    "total":  87,
+    "sent":  87,
+    "failed":  0,
+    "results":  [
+                    {
+                        "email":  "bhawnasharma1046@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "a1d693ce-d9ae-41c4-8401-2fa36b51e740"
+                    },
+                    {
+                        "email":  "preetparam269@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "43f20320-08fa-4e24-9c78-285f10b287ec"
+                    },
+                    {
+                        "email":  "urvashi16dec1974@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "f47ffc2f-4d46-4e7d-8df1-8295b9a1a6e5"
+                    },
+                    {
+                        "email":  "natashakaur2208@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "5ff7877f-66eb-4279-9ff5-6f4666b24769"
+                    },
+                    {
+                        "email":  "rtiwana84@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "c63fc0aa-7b1c-4d27-94b8-90bdc9e2f647"
+                    },
+                    {
+                        "email":  "kmanjit505@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "b3d12868-028a-4306-8799-05e6b669294f"
+                    },
+                    {
+                        "email":  "ritukhore0@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "58a7f354-a925-4e8b-9200-d47aeb9bc947"
+                    },
+                    {
+                        "email":  "madaanrupinder79@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "848a2b37-c1f2-49bf-88f4-3c96be318898"
+                    },
+                    {
+                        "email":  "mofolacticranveer21@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "7e6e8dfc-6442-492e-beec-666f99b4b646"
+                    },
+                    {
+                        "email":  "md@ais.ac.in",
+                        "role":  "school_admin",
+                        "status":  "sent",
+                        "resend_id":  "ab30e0ef-f003-4e37-9f43-25066d6ee723"
+                    },
+                    {
+                        "email":  "priyankabhardwaj1412@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "c7dad1d6-c7d7-467e-8208-7811b60eefb0"
+                    },
+                    {
+                        "email":  "lkloveleen31@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "b46a0224-a7cc-406c-a037-d7312add11b7"
+                    },
+                    {
+                        "email":  "cschinkysethi89@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "b97f99b1-276a-405b-b6b2-1d5b71839310"
+                    },
+                    {
+                        "email":  "harnitbhogal1978@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "ab585e03-a3e7-4790-a0f8-1f048e2d4091"
+                    },
+                    {
+                        "email":  "shaveta.verma967@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "b7035f63-8114-4a7f-bc79-cd0c5f5ab729"
+                    },
+                    {
+                        "email":  "yogitakanavsharma09@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "5172bb75-e732-4084-8784-d78980991d8d"
+                    },
+                    {
+                        "email":  "vsvarinder1590@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "a581d51b-b4ed-4ed2-81be-af374f413319"
+                    },
+                    {
+                        "email":  "kansalmamta86@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "5c15bb7d-5cb3-4517-94a3-94585d7531c9"
+                    },
+                    {
+                        "email":  "tiwarisarita1984@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "9c5116d5-a6f6-4b17-8053-2576c70695f5"
+                    },
+                    {
+                        "email":  "veenukoshal@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "88fb5a27-1ff9-4095-be8a-d08980f74528"
+                    },
+                    {
+                        "email":  "mamtamadaan34@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "bae0265c-8cfe-4308-a003-7659019e7da4"
+                    },
+                    {
+                        "email":  "kulwantchandumazra@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "be593840-b9de-4641-8948-8086e39f8be3"
+                    },
+                    {
+                        "email":  "anjalimalikteacher@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "2d1eb048-8fc7-4bb0-a35b-a40505a9d549"
+                    },
+                    {
+                        "email":  "parmaramita1991@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "7668703b-fdaf-4fdd-a750-64ed40d70077"
+                    },
+                    {
+                        "email":  "harpreetka524@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "77ff0986-c3d2-4f4b-8565-8b051243be26"
+                    },
+                    {
+                        "email":  "pankajptl000@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "98c29634-c660-4986-810b-b3f2ab962863"
+                    },
+                    {
+                        "email":  "manpreetkaur9565.mk@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "8efb4845-1e6a-4f74-8ffc-c6a1e31d21a1"
+                    },
+                    {
+                        "email":  "gagan.kaur13@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "8db9fd60-d850-41fb-b0b1-ed33eacbbb6d"
+                    },
+                    {
+                        "email":  "kgurvinder289@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "4da13720-b88e-4f9e-a1e2-cd9e1c6ccab3"
+                    },
+                    {
+                        "email":  "principal@ais.ac.in",
+                        "role":  "school_admin",
+                        "status":  "sent",
+                        "resend_id":  "0d61be7d-709a-4a05-816d-c19d2dd5ad04"
+                    },
+                    {
+                        "email":  "komalrani8867689@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "6e0461d4-55aa-4bab-9635-f85029b77eb5"
+                    },
+                    {
+                        "email":  "tamanpreet7518@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "6e142fff-9188-40bb-abd6-6fa12c66012e"
+                    },
+                    {
+                        "email":  "kharleen591@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "8ee95e62-a82f-4b78-86a4-631e46e2bf0a"
+                    },
+                    {
+                        "email":  "urvashibatra13@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "08a8d854-2c6c-4903-bcf0-a4356cbcc47c"
+                    },
+                    {
+                        "email":  "sarbkalra15@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "28288d2d-1834-4117-9924-253ca53c9354"
+                    },
+                    {
+                        "email":  "18harjotkaur1998@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "ea74ae95-3b37-4f4d-b63c-64db3be0c2ba"
+                    },
+                    {
+                        "email":  "dakshsharma134@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "b184bb18-aa83-4baa-a8f7-6b6057f53eee"
+                    },
+                    {
+                        "email":  "ravibhangu7200@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "4dd32f08-369f-4820-8ca3-e5aa5511a1bb"
+                    },
+                    {
+                        "email":  "adminhead@ais.ac.in",
+                        "role":  "school_admin",
+                        "status":  "sent",
+                        "resend_id":  "a256a8ec-1eb1-4fe8-92f7-fea95874a7da"
+                    },
+                    {
+                        "email":  "preetkgurpreet@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "05f83dba-5934-4e95-bfb4-b3021a6862b8"
+                    },
+                    {
+                        "email":  "manrajkang563@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "e2a7ed10-ced7-434b-989c-bc2bf760d06f"
+                    },
+                    {
+                        "email":  "jeetraman2122@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "ace4eae5-e207-43e0-b741-7ffa3d72698c"
+                    },
+                    {
+                        "email":  "2525gurpreetkaur@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "c6ddaa65-4170-40b8-93fa-98f2453e5c70"
+                    },
+                    {
+                        "email":  "kamal088007@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "77a0973c-4712-4cdf-953a-09dfe4120d6a"
+                    },
+                    {
+                        "email":  "guptamegha1810mg@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "d04580e0-a78e-4d09-b0e3-971a1fdfaefb"
+                    },
+                    {
+                        "email":  "amanadi8141@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "00087ef9-5aa8-4075-83a9-00b3963668ef"
+                    },
+                    {
+                        "email":  "gkromy@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "fd06ac76-f58b-46e6-899f-55cb98c08c03"
+                    },
+                    {
+                        "email":  "anu89dinesh@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "6d371a74-7fc8-47b0-8827-85e40749166d"
+                    },
+                    {
+                        "email":  "sgsince1993@gmail.com",
+                        "role":  "super_school_admin",
+                        "status":  "sent",
+                        "resend_id":  "31701664-af80-44ce-ad7b-4757f574b4d0"
+                    },
+                    {
+                        "email":  "preetysood99@gmail.com",
+                        "role":  "school_admin",
+                        "status":  "sent",
+                        "resend_id":  "df3c37de-156c-473d-af63-b6a6711f3e41"
+                    },
+                    {
+                        "email":  "jotaman6293@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "17aedd55-2645-4815-b5c7-adfa0af2598d"
+                    },
+                    {
+                        "email":  "anilart83@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "6621db86-eee0-415a-b605-7ece5c9e56e5"
+                    },
+                    {
+                        "email":  "kaurm6865@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "4483ed4e-b6a4-4c0a-96a6-53305caf7a6e"
+                    },
+                    {
+                        "email":  "sharma.rosie30@gmail.com",
+                        "role":  "coordinator",
+                        "status":  "sent",
+                        "resend_id":  "cc002697-e6f2-41a0-b72b-1eb97faa2373"
+                    },
+                    {
+                        "email":  "oberoishivali4@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "b3b365fb-b37c-466d-9598-db4866b0cf7b"
+                    },
+                    {
+                        "email":  "manthan3681@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "a3512eb7-d156-416b-aa59-c6341e30bed3"
+                    },
+                    {
+                        "email":  "kundaliareema@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "0e103f2f-62b9-42c3-80eb-51bd775f44c2"
+                    },
+                    {
+                        "email":  "coordinator-jw@ais.ac.in",
+                        "role":  "coordinator",
+                        "status":  "sent",
+                        "resend_id":  "93d11479-a94a-4542-b17f-19dfac5ec504"
+                    },
+                    {
+                        "email":  "sarbjeetkaurkalra@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "bae30054-90a7-4d5d-84fe-0c656c92be5b"
+                    },
+                    {
+                        "email":  "mansiverma2416@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "a429d03d-833e-4e1f-a506-7f5b768cdd4f"
+                    },
+                    {
+                        "email":  "amansaini1300@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "b0059a73-3106-4ebd-8d0d-65f74e58c598"
+                    },
+                    {
+                        "email":  "rupinder26ais@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "6fc60172-1a13-45a5-955c-06e47c96d3dd"
+                    },
+                    {
+                        "email":  "maninder1986kaur.ais@gmail.com",
+                        "role":  "coordinator",
+                        "status":  "sent",
+                        "resend_id":  "3a6d92ab-4ede-4222-b6a8-4e4482d04247"
+                    },
+                    {
+                        "email":  "ais.sanjeev25@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "54e698a0-a428-4fed-a100-d6e735135a32"
+                    },
+                    {
+                        "email":  "poonam30.ais@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "61e0e922-1730-4265-9d5a-0790bda0b0fc"
+                    },
+                    {
+                        "email":  "academicheadais2026@gmail.com",
+                        "role":  "school_admin",
+                        "status":  "sent",
+                        "resend_id":  "a85675b7-0329-4018-901c-5efb9e91651b"
+                    },
+                    {
+                        "email":  "mukeshinsan@hotmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "dab21723-6054-4d48-966a-48ba3990a372"
+                    },
+                    {
+                        "email":  "navdeepkaur00@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "384c41d1-d55f-4872-8729-1fa575db6ff1"
+                    },
+                    {
+                        "email":  "rahulk96.ais@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "8bebf1e9-07b4-4b59-acf2-63a5fda8d8d3"
+                    },
+                    {
+                        "email":  "amitchughais78@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "b07217ca-dba0-4816-adf1-40afeb550766"
+                    },
+                    {
+                        "email":  "kajalahuja0212@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "5df38274-4ea5-493e-a2f6-8e28ece73901"
+                    },
+                    {
+                        "email":  "gurwindersinghnokwal@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "6e371ed5-91a0-4c7f-83db-5d49fa69c20b"
+                    },
+                    {
+                        "email":  "koyalkinger4243@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "1d947983-aabd-4dd3-8704-e6128c6c942f"
+                    },
+                    {
+                        "email":  "rrani571248@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "1fd515a2-2502-4018-9de7-e6071b0d83eb"
+                    },
+                    {
+                        "email":  "mkaur788872@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "19eb7936-13f8-4cb1-9a41-e6a7ed1cab00"
+                    },
+                    {
+                        "email":  "simratkaurnarang@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "c239d80b-cb24-4b5c-b085-2a9a56464ada"
+                    },
+                    {
+                        "email":  "mr.saurabh707@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "c80bc6de-6e21-4553-ae66-e5aeade7d9b0"
+                    },
+                    {
+                        "email":  "komalkush77@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "f6f314ba-c617-4336-8a8e-41dc0fb8156c"
+                    },
+                    {
+                        "email":  "mail2ranubhandarijain@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "4db4df0f-88ff-4bac-b7aa-e229479d6dd0"
+                    },
+                    {
+                        "email":  "drprabhjot9.ais@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "c79da4f2-f0c7-4be9-84e7-2eb13e3ffe86"
+                    },
+                    {
+                        "email":  "kaurmus8487@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "8d7b7145-e880-4d27-b483-d679528da6a5"
+                    },
+                    {
+                        "email":  "nanhimalhotra12@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "768ea067-bcec-4931-b8a7-b70b3f939232"
+                    },
+                    {
+                        "email":  "amannartej58@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "7e5793e4-3f92-40d7-b19d-156b3d14958c"
+                    },
+                    {
+                        "email":  "aismathsbyshivom@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "ac1cfcd4-fba3-418e-b369-eff316e22f2a"
+                    },
+                    {
+                        "email":  "boxersidhu6565@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "fa965f1a-095a-4def-bbae-398491fae7be"
+                    },
+                    {
+                        "email":  "harshmegh99@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "f11a79a3-ec1c-48ef-894a-d7d0e9593522"
+                    },
+                    {
+                        "email":  "reenahkhr@gmail.com",
+                        "role":  "teacher",
+                        "status":  "sent",
+                        "resend_id":  "7621e88e-88ab-4471-b74b-14058a867f96"
+                    }
+                ]
+}

@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en" style="-webkit-print-color-adjust:exact; print-color-adjust:exact;">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SALCI Olympiad Program Brochure</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root{
+  --teal:#1f9499;
+  --teal-deep:#14696d;
+  --orange:#fa920e;
+  --purple:#6f56a8;
+  --ink:#16202b;
+  --ink-soft:#4a5a6a;
+  --ink-faint:#8595a4;
+  --cream:#fbfaf7;
+  --paper:#f6f7f9;
+  --line:rgba(22,32,43,.08);
+  --glass:rgba(255,255,255,.62);
+  --glass-line:rgba(255,255,255,.85);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+
+@page{ size:210mm 297mm; margin:0; }
+
+html,body{
+  background:#e9eaee;
+  font-family:'Plus Jakarta Sans', sans-serif;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+
+.page{
+  width:210mm;
+  height:297mm;
+  overflow:hidden;
+  position:relative;
+  background:
+    linear-gradient(180deg,#fcfbf8 0%,#f7f8fb 55%,#f4f6f9 100%);
+  margin:0 auto;
+}
+.page + .page{ page-break-before:always; }
+
+/* ---------- Aurora glows ---------- */
+.aurora{ position:absolute; border-radius:50%; filter:blur(70px); opacity:.55; pointer-events:none; }
+.a-teal  { background:radial-gradient(circle at 30% 30%, rgba(31,148,153,.85), rgba(31,148,153,0) 68%); }
+.a-purple{ background:radial-gradient(circle at 30% 30%, rgba(111,86,168,.80), rgba(111,86,168,0) 68%); }
+.a-peach { background:radial-gradient(circle at 30% 30%, rgba(250,146,14,.62), rgba(250,146,14,0) 68%); }
+.a-mint  { background:radial-gradient(circle at 30% 30%, rgba(120,200,196,.70), rgba(120,200,196,0) 68%); }
+
+.grain{
+  position:absolute; inset:0; pointer-events:none; opacity:.5; mix-blend-mode:soft-light;
+  background-image:radial-gradient(rgba(22,32,43,.12) .5px, transparent .6px);
+  background-size:3px 3px;
+}
+
+/* ---------- Layout shell ---------- */
+.frame{ position:absolute; inset:13mm 14mm; z-index:3; display:flex; flex-direction:column; }
+.page2 .frame{ inset:11mm 14mm 9mm; }
+
+/* ---------- Masthead ---------- */
+.masthead{ display:flex; align-items:flex-start; justify-content:space-between; }
+.brand-logo{ height:15mm; width:auto; display:block; }
+.chip{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:7px 15px; border-radius:999px;
+  background:var(--glass); backdrop-filter:blur(8px);
+  border:1px solid var(--glass-line);
+  box-shadow:0 6px 20px rgba(20,105,109,.10), inset 0 1px 0 rgba(255,255,255,.9);
+  font-size:8.5pt; font-weight:600; letter-spacing:.04em; color:var(--teal-deep);
+  text-transform:uppercase;
+}
+.chip .dot{ width:6px; height:6px; border-radius:50%; background:var(--orange); box-shadow:0 0 0 3px rgba(250,146,14,.18); }
+
+/* ---------- Hero ---------- */
+.hero{ margin-top:8mm; }
+.eyebrow{
+  display:inline-flex; align-items:center; gap:9px;
+  font-size:8.5pt; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--teal-deep); margin-bottom:5mm;
+}
+.eyebrow::before{ content:""; width:26px; height:1.5px; background:linear-gradient(90deg,var(--orange),var(--purple)); border-radius:2px; }
+
+.hero h1{
+  font-family:'Fraunces', serif;
+  font-weight:500;
+  font-size:30pt;
+  line-height:1.06;
+  letter-spacing:-.01em;
+  color:var(--ink);
+  max-width:172mm;
+}
+.hero h1 em{ font-style:italic; color:var(--teal-deep); }
+.hero h1 .accent{ position:relative; font-style:italic; color:var(--purple); }
+.hero h1 .accent::after{
+  content:""; position:absolute; left:0; right:0; bottom:1px; height:7px;
+  background:linear-gradient(90deg, rgba(250,146,14,.45), rgba(250,146,14,.08));
+  border-radius:4px; z-index:-1;
+}
+
+.subhead{
+  margin-top:6mm; max-width:148mm;
+  font-size:11.5pt; line-height:1.55; font-weight:400; color:var(--ink-soft);
+}
+.subhead .usp{ position:relative; font-weight:700; color:var(--teal-deep); white-space:nowrap; }
+.subhead .usp::after{ content:""; position:absolute; left:-1px; right:-1px; bottom:1px; height:4.5px; border-radius:3px; z-index:-1;
+  background:linear-gradient(90deg, rgba(31,148,153,.26), rgba(31,148,153,.07)); }
+
+.trust{
+  margin-top:6mm; display:inline-flex; align-items:center; gap:11px;
+  padding:8px 16px 8px 12px; border-radius:999px;
+  background:linear-gradient(120deg, rgba(31,148,153,.10), rgba(111,86,168,.10));
+  border:1px solid rgba(31,148,153,.18);
+  font-size:9pt; font-weight:600; color:var(--ink);
+}
+.trust .seal{
+  width:20px; height:20px; border-radius:50%; flex:0 0 auto;
+  background:conic-gradient(from 200deg, var(--teal), var(--purple), var(--orange), var(--teal));
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 6px rgba(20,105,109,.25);
+}
+.trust .seal svg{ width:11px; height:11px; }
+.trust .sep{ width:4px; height:4px; border-radius:50%; background:var(--ink-faint); }
+
+/* ---------- Section heading ---------- */
+.sec-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:6mm; }
+.sec-head .num{
+  font-family:'Fraunces',serif; font-size:11pt; font-weight:600; font-style:italic;
+  color:var(--orange);
+}
+.sec-head h2{
+  font-family:'Fraunces',serif; font-weight:500; font-size:15pt; letter-spacing:-.01em; color:var(--ink);
+}
+.sec-head .rule{ flex:1; height:1px; background:linear-gradient(90deg,var(--line),transparent); align-self:center; }
+
+/* ---------- Pillars ---------- */
+.pillars{ margin-top:7mm; display:grid; grid-template-columns:1fr 1fr; gap:3.5mm; }
+.pillar{
+  position:relative; padding:4mm 5.5mm;
+  border-radius:18px;
+  background:var(--glass); backdrop-filter:blur(10px);
+  border:1px solid var(--glass-line);
+  box-shadow:0 10px 30px rgba(22,32,43,.06), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.pillar .ic{
+  width:38px; height:38px; border-radius:11px; margin-bottom:13px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 16px rgba(22,32,43,.10), inset 0 1px 0 rgba(255,255,255,.6);
+}
+.pillar .ic svg{ width:20px; height:20px; }
+.ic-teal  { background:linear-gradient(135deg,#e6f5f4,#cfeceb); }
+.ic-purple{ background:linear-gradient(135deg,#f0ebf7,#e3daf1); }
+.ic-orange{ background:linear-gradient(135deg,#fdeedb,#fbe1c2); }
+.ic-mix   { background:linear-gradient(135deg,#e7f4f1,#efe9f6); }
+.pillar h3{ font-size:11pt; font-weight:700; color:var(--ink); margin-bottom:5px; letter-spacing:-.01em; }
+.pillar p{ font-size:9pt; line-height:1.5; color:var(--ink-soft); }
+
+/* ---------- Showcase frames ---------- */
+.showcase{ margin-top:7mm; display:grid; grid-template-columns:1fr 1fr; gap:8mm; }
+.slot-wrap{ perspective:1200px; }
+.slot{
+  position:relative; border-radius:16px; padding:11px;
+  background:linear-gradient(150deg,#ffffff,#f4f6f8);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:
+    0 24px 48px rgba(22,32,43,.14),
+    0 4px 12px rgba(22,32,43,.07),
+    inset 0 1px 0 rgba(255,255,255,1);
+}
+.slot.tilt-l{ transform:rotate(-1.6deg); }
+.slot.tilt-r{ transform:rotate(1.6deg); }
+.slot .label{
+  position:absolute; top:-10px; left:14px; z-index:4;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 12px; border-radius:999px;
+  font-size:7.6pt; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff;
+  box-shadow:0 6px 14px rgba(22,32,43,.18);
+}
+.label-teal{ background:linear-gradient(120deg,var(--teal),var(--teal-deep)); }
+.label-purple{ background:linear-gradient(120deg,var(--purple),#54407f); }
+.slot .placeholder{
+  position:relative; height:40mm; border-radius:9px; overflow:hidden;
+  background:
+    linear-gradient(180deg,#ffffff,#fafbfc);
+  border:1px dashed rgba(22,32,43,.14);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px;
+}
+.placeholder .doc-ic{ width:30px; height:30px; opacity:.55; }
+.placeholder .cap{ font-size:8pt; color:var(--ink-faint); font-weight:500; letter-spacing:.02em; }
+/* faint document mockup lines */
+.mockup{ position:absolute; inset:0; padding:7mm 8mm; opacity:.5; }
+.ml{ height:4px; border-radius:3px; background:rgba(31,148,153,.16); margin-bottom:6px; }
+.ml.w1{ width:55%; background:rgba(111,86,168,.22); height:6px; }
+.ml.w2{ width:88%; } .ml.w3{ width:72%; } .ml.w4{ width:80%; } .ml.w5{ width:40%; }
+.mock-bars{ display:flex; align-items:flex-end; gap:5px; height:16mm; margin-top:6px; }
+.mock-bars i{ width:7px; border-radius:3px 3px 0 0; background:linear-gradient(180deg,var(--teal),rgba(31,148,153,.3)); }
+.donut{ width:18mm; height:18mm; border-radius:50%; margin:4px auto 0;
+  background:conic-gradient(var(--teal) 0 62%, var(--purple) 62% 84%, var(--orange) 84% 100%);
+  -webkit-mask:radial-gradient(circle at center, transparent 42%, #000 43%);
+          mask:radial-gradient(circle at center, transparent 42%, #000 43%); }
+.cert-seal{ width:16mm; height:16mm; border-radius:50%; margin:0 auto 8px;
+  background:conic-gradient(from 0deg, var(--orange), #ffd28a, var(--orange));
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 12px rgba(250,146,14,.3); }
+.cert-seal svg{ width:24px; height:24px; }
+.cert-rule{ height:3px; border-radius:2px; background:rgba(250,146,14,.4); margin:5px auto; }
+
+/* ---------- Footer ---------- */
+.page-footer{
+  margin-top:auto; padding-top:6mm;
+  border-top:1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:8.2pt; color:var(--ink-faint); letter-spacing:.01em;
+}
+.page-footer .ft-name{ font-weight:600; color:var(--ink-soft); }
+.page-footer .ft-name b{ color:var(--teal-deep); font-weight:700; }
+.page-footer .ft-web{ font-weight:700; color:var(--teal-deep); letter-spacing:.03em; }
+
+/* ================= PAGE 2 ================= */
+.p2-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:5.5mm; }
+.p2-kicker{ font-family:'Fraunces',serif; font-style:italic; font-size:11pt; color:var(--purple); }
+.mini-logo{ height:9mm; width:auto; opacity:.92; }
+
+/* Timeline */
+.timeline{ position:relative; padding-left:0; }
+.steps{ display:flex; flex-direction:column; gap:2.2mm; }
+.step{
+  position:relative; display:flex; gap:14px; align-items:flex-start;
+  padding:2.7mm 5.5mm; border-radius:15px;
+  background:var(--glass); backdrop-filter:blur(8px);
+  border:1px solid var(--glass-line);
+  box-shadow:0 8px 22px rgba(22,32,43,.05), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.step .node{
+  flex:0 0 auto; width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-weight:600; font-size:12pt; color:#fff;
+  box-shadow:0 5px 12px rgba(22,32,43,.18), inset 0 1px 0 rgba(255,255,255,.4);
+}
+.n1{ background:linear-gradient(135deg,var(--teal),var(--teal-deep)); }
+.n2{ background:linear-gradient(135deg,#3aa9a6,var(--teal)); }
+.n3{ background:linear-gradient(135deg,var(--purple),#54407f); }
+.n4{ background:linear-gradient(135deg,#8a72c2,var(--purple)); }
+.n5{ background:linear-gradient(135deg,var(--orange),#e07d00); }
+.step .txt h3{ font-size:10.5pt; font-weight:700; color:var(--ink); margin-bottom:3px; letter-spacing:-.01em; }
+.step .txt p{ font-size:8.7pt; line-height:1.5; color:var(--ink-soft); }
+
+/* What your school gets */
+.gets{ margin-top:5mm; display:grid; grid-template-columns:1.35fr 1fr; gap:6mm; align-items:stretch; }
+.heat-card,.kpi-col > *{ }
+.heat-card{
+  padding:5.5mm; border-radius:16px;
+  background:var(--glass); backdrop-filter:blur(8px);
+  border:1px solid var(--glass-line);
+  box-shadow:0 10px 26px rgba(22,32,43,.06), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.heat-title{ font-size:9pt; font-weight:700; color:var(--ink); margin-bottom:1.5mm; letter-spacing:-.01em; }
+.heat-sub{ font-size:7.6pt; color:var(--ink-faint); margin-bottom:4.5mm; }
+.heat-grid{ display:grid; grid-template-columns:auto repeat(4,1fr); gap:5px; }
+.heat-grid .col-h{ font-size:7.2pt; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); text-align:center; padding-bottom:2px; }
+.heat-grid .row-h{ font-size:8pt; font-weight:700; color:var(--ink); display:flex; align-items:center; }
+.cell{
+  height:9mm; border-radius:9px; display:flex; align-items:center; justify-content:center;
+  font-size:9.5pt; font-weight:700; color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25);
+}
+.kpi-col{ display:flex; flex-direction:column; gap:4mm; }
+.kpi{
+  flex:1; padding:4mm 6mm; border-radius:16px; display:flex; flex-direction:column; justify-content:center;
+  background:var(--glass); backdrop-filter:blur(8px);
+  border:1px solid var(--glass-line);
+  box-shadow:0 10px 26px rgba(22,32,43,.06), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.kpi .num{ font-family:'Fraunces',serif; font-weight:600; font-size:21pt; line-height:1; letter-spacing:-.02em; }
+.kpi .lbl{ font-size:8pt; color:var(--ink-soft); margin-top:5px; font-weight:500; letter-spacing:.01em; }
+.kpi.k1 .num{ color:var(--teal-deep); }
+.kpi.k2 .num{ color:var(--purple); }
+.kpi.k3 .num{ color:var(--orange); }
+
+/* Simple for your team */
+.team{ margin-top:5mm; display:grid; grid-template-columns:repeat(3,1fr); gap:5mm; }
+.team .item{ display:flex; gap:11px; align-items:flex-start; }
+.team .tic{
+  flex:0 0 auto; width:30px; height:30px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 5px 12px rgba(22,32,43,.08), inset 0 1px 0 rgba(255,255,255,.6);
+}
+.team .tic svg{ width:16px; height:16px; }
+.team h4{ font-size:9.2pt; font-weight:700; color:var(--ink); margin-bottom:2px; }
+.team p{ font-size:8pt; line-height:1.45; color:var(--ink-soft); }
+
+/* CTA */
+.cta{
+  margin-top:auto; position:relative; overflow:hidden;
+  border-radius:20px; padding:6mm 10mm;
+  background:linear-gradient(125deg,#163e44 0%,#14696d 42%,#2a6e8f 78%,#3d4d8a 100%);
+  box-shadow:0 22px 50px rgba(20,62,68,.35);
+  color:#fff;
+}
+.cta .cta-glow{ position:absolute; border-radius:50%; filter:blur(50px); opacity:.55; }
+.cta .g1{ width:60mm; height:60mm; right:-15mm; top:-22mm; background:radial-gradient(circle,rgba(250,146,14,.7),transparent 70%); }
+.cta .g2{ width:55mm; height:55mm; left:-18mm; bottom:-25mm; background:radial-gradient(circle,rgba(111,86,168,.75),transparent 70%); }
+.cta-inner{ position:relative; z-index:2; display:flex; align-items:flex-end; justify-content:space-between; gap:10mm; }
+.cta .eb{ font-size:8.5pt; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#ffd9a6; margin-bottom:3mm; display:flex; align-items:center; gap:9px; }
+.cta .eb::before{ content:""; width:22px; height:1.5px; background:#fa920e; border-radius:2px; }
+.cta h2{ font-family:'Fraunces',serif; font-weight:500; font-size:19.5pt; line-height:1.08; letter-spacing:-.01em; max-width:118mm; }
+.cta .line{ margin-top:4mm; font-size:9.5pt; line-height:1.5; color:rgba(255,255,255,.82); max-width:108mm; }
+.cta-contact{ flex:0 0 auto; display:flex; flex-direction:column; gap:9px; align-items:flex-start; }
+.cc{ display:flex; align-items:center; gap:9px; font-size:9pt; font-weight:600; color:#fff; }
+.cc .ccic{ width:24px; height:24px; border-radius:7px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; }
+.cc .ccic svg{ width:13px; height:13px; }
+.cc .web{ color:#ffd9a6; }
+
+/* ---------- Online vs Offline ---------- */
+.vs{ margin-top:4mm; display:grid; grid-template-columns:1fr 1fr; gap:5mm; }
+.vs-card{ border-radius:18px; padding:3.6mm 5mm; border:1px solid; }
+.vs-on{ background:linear-gradient(155deg,rgba(31,148,153,.12),rgba(31,148,153,.03)); border-color:rgba(31,148,153,.28); box-shadow:0 12px 30px rgba(31,148,153,.10); }
+.vs-off{ background:rgba(22,32,43,.035); border-color:var(--line); }
+.vs-tag{ display:inline-flex; align-items:center; gap:7px; font-size:8.2pt; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:5px 13px; border-radius:999px; margin-bottom:4mm; white-space:nowrap; }
+.vs-tag svg{ width:13px; height:13px; flex:0 0 auto; }
+.vs-on .vs-tag{ background:var(--teal); color:#fff; }
+.vs-off .vs-tag{ background:#dde3e7; color:var(--ink-soft); }
+.vs-li{ display:flex; gap:9px; align-items:flex-start; padding:1.5mm 0; border-top:1px solid rgba(22,32,43,.06); }
+.vs-li.first{ border-top:none; padding-top:0; }
+.vs-ic{ width:17px; height:17px; border-radius:50%; flex:0 0 auto; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+.vs-on .vs-ic{ background:rgba(31,148,153,.16); }
+.vs-off .vs-ic{ background:rgba(22,32,43,.08); }
+.vs-ic svg{ width:10px; height:10px; }
+.vs-li b{ font-size:9.4pt; font-weight:700; color:var(--ink); display:block; }
+.vs-li span{ font-size:8.2pt; color:var(--ink-soft); line-height:1.4; }
+
+/* ---------- Resources ---------- */
+.res{ margin-top:6mm; display:grid; grid-template-columns:1.05fr 1fr; gap:6mm; align-items:stretch; }
+.res-hero{ border-radius:18px; padding:6.5mm 6mm; color:#fff; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:center;
+  background:linear-gradient(140deg,#14696d,#1f9499 70%,#2aa2a4); box-shadow:0 18px 40px rgba(20,105,109,.30); }
+.res-hero .rb{ font-size:8pt; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#ffd9a6; }
+.res-hero .big{ font-family:'Fraunces',serif; font-weight:500; font-size:23pt; line-height:1.06; margin-top:2mm; }
+.res-hero .big em{ font-style:normal; color:#ffd9a6; }
+.res-hero p{ margin-top:3mm; font-size:9.3pt; line-height:1.5; color:rgba(255,255,255,.9); }
+.res-pills{ margin-top:5mm; display:flex; flex-wrap:nowrap; gap:5px; }
+.res-pill{ font-size:6.9pt; font-weight:700; white-space:nowrap; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.24); padding:5px 9px; border-radius:999px; }
+.res-list{ display:flex; flex-direction:column; gap:4mm; justify-content:center; }
+.res-item{ display:flex; gap:11px; align-items:flex-start; }
+.res-item .ic{ width:32px; height:32px; border-radius:10px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; box-shadow:0 5px 12px rgba(22,32,43,.08), inset 0 1px 0 rgba(255,255,255,.6); }
+.res-item .ic svg{ width:17px; height:17px; }
+.res-item h4{ font-size:10pt; font-weight:700; color:var(--ink); margin-bottom:1px; }
+.res-item p{ font-size:8.5pt; line-height:1.45; color:var(--ink-soft); }
+
+/* ---------- Pricing ---------- */
+.price{ margin-top:6mm; display:grid; grid-template-columns:.8fr 1.2fr; gap:6mm; align-items:stretch; }
+.price-card{ border-radius:20px; padding:6mm; text-align:center; color:#fff; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:center;
+  background:linear-gradient(150deg,#1f9499,#14696d); box-shadow:0 18px 44px rgba(20,105,109,.32); }
+.price-card .eb{ font-size:8pt; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#ffd9a6; }
+.price-card .amt{ font-family:'Fraunces',serif; font-weight:600; font-size:42pt; line-height:1; margin-top:2mm; }
+.price-card .amt sup{ font-size:19pt; vertical-align:top; margin-right:1px; }
+.price-card .per{ font-size:9.5pt; font-weight:600; color:rgba(255,255,255,.92); margin-top:1.5mm; }
+.price-card .tax{ display:inline-block; margin-top:4mm; font-size:7.8pt; font-weight:700; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.26); padding:5px 12px; border-radius:999px; }
+.price-card .taxnote{ margin-top:3mm; font-size:6.5pt; font-weight:500; color:rgba(255,255,255,.72); letter-spacing:.03em; }
+.incl{ display:flex; flex-direction:column; justify-content:center; }
+.incl h4{ font-family:'Fraunces',serif; font-weight:500; font-size:13pt; color:var(--ink); margin-bottom:3.5mm; }
+.incl-grid{ display:grid; grid-template-columns:1fr 1fr; gap:3mm 5mm; }
+.incl-li{ display:flex; gap:8px; align-items:flex-start; }
+.incl-li .ck{ width:16px; height:16px; border-radius:50%; background:rgba(31,148,153,.14); flex:0 0 auto; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+.incl-li .ck svg{ width:9px; height:9px; }
+.incl-li b{ font-size:9pt; font-weight:700; color:var(--ink); display:block; }
+.incl-li span{ color:var(--ink-faint); font-size:7.5pt; }
+
+/* ---------- Integrity / portal ---------- */
+.portal-shot{ margin-top:5.5mm; border-radius:14px; overflow:hidden; border:1px solid var(--line); box-shadow:0 16px 36px rgba(22,32,43,.14); }
+.portal-shot img{ width:100%; display:block; }
+.integrity{ margin-top:6mm; display:grid; grid-template-columns:repeat(3,1fr); gap:5mm; }
+.int-item .ic{ width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:2.5mm; box-shadow:0 5px 12px rgba(22,32,43,.08), inset 0 1px 0 rgba(255,255,255,.6); }
+.int-item .ic svg{ width:17px; height:17px; }
+.int-item h4{ font-size:9.6pt; font-weight:700; color:var(--ink); margin-bottom:1.5px; letter-spacing:-.01em; }
+.int-item p{ font-size:8.2pt; line-height:1.45; color:var(--ink-soft); }
+
+/* ---------- Finale: preparation + rewards (page 4) ---------- */
+.finale-head h3{ font-family:'Fraunces',serif; font-weight:500; font-size:13.5pt; letter-spacing:-.01em; color:var(--ink); }
+.finale-head p{ margin-top:1.5mm; font-size:8.8pt; line-height:1.5; color:var(--ink-soft); max-width:170mm; }
+.rewards{ margin-top:4.5mm; display:grid; grid-template-columns:repeat(3,1fr); gap:5mm; }
+.reward{ text-align:center; padding:4.5mm 4mm 5mm; border-radius:16px;
+  background:var(--glass); backdrop-filter:blur(8px); border:1px solid var(--glass-line);
+  box-shadow:0 10px 26px rgba(22,32,43,.06), inset 0 1px 0 rgba(255,255,255,.9); }
+.reward .ric{ width:42px; height:42px; border-radius:12px; margin:0 auto 9px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 16px rgba(22,32,43,.10), inset 0 1px 0 rgba(255,255,255,.6); }
+.reward .ric svg{ width:22px; height:22px; }
+.reward h4{ font-size:10.5pt; font-weight:700; color:var(--ink); margin-bottom:2px; letter-spacing:-.01em; }
+.reward p{ font-size:8pt; line-height:1.4; color:var(--ink-soft); }
+.safal-note{ text-align:center; margin-top:4mm; font-size:7pt; line-height:1.4; color:var(--ink-faint); letter-spacing:.02em; }
+
+/* ---------- SAFAL alignment (page 1) ---------- */
+.safal-sec{ margin-top:5mm; }
+.safal-lead{ margin-top:3.5mm; display:flex; gap:13px; align-items:flex-start; padding:4.4mm 5mm; border-radius:16px;
+  background:linear-gradient(120deg, rgba(31,148,153,.11), rgba(111,86,168,.08)); border:1px solid rgba(31,148,153,.18); }
+.safal-lead .sl-badge{ width:42px; height:42px; border-radius:12px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#e6f5f4,#cfeceb); box-shadow:0 6px 16px rgba(20,105,109,.12), inset 0 1px 0 rgba(255,255,255,.7); }
+.safal-lead .sl-badge svg{ width:23px; height:23px; }
+.safal-lead p{ font-size:9.7pt; line-height:1.52; color:var(--ink-soft); }
+.safal-lead p b{ color:var(--teal-deep); font-weight:700; }
+.safal-grid{ margin-top:4mm; display:grid; grid-template-columns:repeat(3,1fr); gap:4.5mm; }
+.sfp{ position:relative; display:flex; flex-direction:column; gap:9px; padding:5mm 4.6mm 5mm 5.4mm; border-radius:16px; overflow:hidden;
+  background:linear-gradient(162deg,#ffffff,#f6f8f9); border:1px solid rgba(255,255,255,.92);
+  box-shadow:0 12px 30px rgba(22,32,43,.07), 0 2px 6px rgba(22,32,43,.04), inset 0 1px 0 rgba(255,255,255,1); }
+.sfp::before{ content:""; position:absolute; left:0; top:3.5mm; bottom:3.5mm; width:3px; border-radius:0 3px 3px 0; }
+.sfp.a-t::before{ background:linear-gradient(180deg,var(--teal),rgba(31,148,153,.18)); }
+.sfp.a-o::before{ background:linear-gradient(180deg,var(--orange),rgba(250,146,14,.18)); }
+.sfp.a-p::before{ background:linear-gradient(180deg,var(--purple),rgba(111,86,168,.18)); }
+.sfp .sfc{ width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 16px rgba(22,32,43,.10), inset 0 1px 0 rgba(255,255,255,.6); }
+.sfp .sfc svg{ width:20px; height:20px; }
+.sfp b{ font-size:9.5pt; font-weight:700; color:var(--ink); letter-spacing:-.01em; line-height:1.22; }
+.sfp span{ font-size:7.9pt; line-height:1.46; color:var(--ink-soft); }
+.safal-chips{ margin-top:9mm; display:flex; flex-wrap:nowrap; justify-content:space-between; gap:6px; }
+.sfchip{ font-size:7.4pt; font-weight:700; color:var(--teal-deep); background:rgba(31,148,153,.08); border:1px solid rgba(31,148,153,.18); padding:5px 11px; border-radius:999px; white-space:nowrap; }
+
+/* ---------- 06 question / answer ---------- */
+.qa-answer{ margin-top:5mm; display:inline-flex; align-items:center; gap:11px; padding:3.4mm 6mm 3.4mm 3.8mm; border-radius:14px;
+  background:linear-gradient(120deg, rgba(31,148,153,.13), rgba(31,148,153,.05)); border:1px solid rgba(31,148,153,.22); }
+.qa-answer .qic{ width:33px; height:33px; border-radius:9px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, var(--teal), var(--teal-deep)); box-shadow:0 5px 14px rgba(20,105,109,.28); }
+.qa-answer .qic svg{ width:17px; height:17px; }
+.qa-answer p{ font-family:'Fraunces',serif; font-weight:500; font-size:15.5pt; line-height:1.05; color:var(--teal-deep); letter-spacing:-.01em; }
+.qa-answer .hl{ font-weight:600; color:#e07d00; }
+/* ---------- 08 what students & parents receive (4 portal-preview cards + full card) ---------- */
+.recv-grid{ margin-top:9mm; display:grid; grid-template-columns:1fr 1fr; gap:5mm; }
+.recv{ position:relative; display:flex; flex-direction:column; gap:8px; padding:7.2mm 6mm 6.4mm; border-radius:17px; overflow:hidden;
+  background:linear-gradient(162deg,#ffffff 0%,#fafbfc 100%); border:1px solid rgba(22,32,43,.06);
+  box-shadow:0 14px 32px rgba(22,32,43,.08), 0 2px 6px rgba(22,32,43,.04), inset 0 1px 0 rgba(255,255,255,1); }
+.recv::before{ content:""; position:absolute; left:0; top:5.5mm; bottom:5.5mm; width:3px; border-radius:0 3px 3px 0; }
+.recv.c1::before{ background:linear-gradient(180deg,var(--teal),rgba(31,148,153,.16)); }
+.recv.c2::before{ background:linear-gradient(180deg,var(--orange),rgba(250,146,14,.16)); }
+.recv.c3::before{ background:linear-gradient(180deg,var(--purple),rgba(111,86,168,.16)); }
+.recv.c4::before{ background:linear-gradient(180deg,var(--teal),rgba(111,86,168,.2)); }
+.recv-head{ position:relative; display:flex; align-items:flex-start; gap:11px; }
+.recv .ric{ flex:none; width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 16px rgba(22,32,43,.10), inset 0 1px 0 rgba(255,255,255,.7); }
+.recv .ric svg{ width:25px; height:25px; }
+.recv-head .txt{ padding-top:1px; }
+.recv b{ font-size:10.5pt; font-weight:800; color:var(--ink); letter-spacing:-.01em; line-height:1.16; display:block; }
+.recv p{ margin-top:3px; font-size:8.5pt; line-height:1.46; color:var(--ink-soft); }
+/* widget shell */
+.widget{ position:relative; margin-top:auto; background:#fcfdfe; border:1px solid #e9eef1; border-radius:10px;
+  padding:8px 11px 9px; box-shadow:0 5px 13px -10px rgba(20,60,70,.28), inset 0 1px 0 rgba(255,255,255,.9); }
+.wg-cap{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.wg-cap .lbl,.cmp-head .lbl{ font-size:6.6px; letter-spacing:.08em; color:var(--ink-faint); font-weight:800; text-transform:uppercase; }
+.live{ display:inline-flex; align-items:center; gap:3px; font-size:6px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); }
+.live i{ width:5px; height:5px; border-radius:50%; background:#2f8f57; box-shadow:0 0 0 2px rgba(47,143,87,.16); }
+.stat-lbl{ font-size:6.6px; letter-spacing:.07em; color:var(--ink-faint); font-weight:800; text-transform:uppercase; }
+.stat-val{ font-size:14px; font-weight:800; color:var(--ink); letter-spacing:-.01em; line-height:1; }
+.bar-row{ margin-top:6px; }
+.bar-row:first-child{ margin-top:0; }
+.bar-top{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:4px; }
+.bar-name{ font-size:7.4px; font-weight:700; color:var(--ink-soft); letter-spacing:.01em; }
+.bar-num{ font-size:8.4px; font-weight:800; color:var(--ink); }
+.track{ height:9px; background:#eef2f4; border-radius:6px; overflow:hidden; }
+.fill{ display:block; height:100%; border-radius:6px; }
+.fill.green{ background:linear-gradient(90deg,#3aa86a,#2f8f57); }
+.fill.orange{ background:linear-gradient(90deg,#ffb152,#fa920e); }
+.fill.teal{ background:linear-gradient(90deg,#2bb0b5,#1f9499); }
+.fill.faint{ background:linear-gradient(90deg,#c6d2d9,#aebcc6); }
+.pill{ display:inline-flex; align-items:center; gap:4px; font-size:7px; font-weight:800; text-transform:uppercase; letter-spacing:.04em;
+  padding:3px 8px; border-radius:999px; background:#e4f5ec; color:#2f8f57; }
+.pill.purple{ background:#efeaf7; color:#6f56a8; }
+.pill.orange{ background:#fdeedb; color:#c9730a; }
+.spark-wrap{ display:flex; align-items:flex-end; gap:11px; }
+.spark-left{ flex:none; }
+.spark-svg{ flex:1; height:28px; }
+.c3-tiles{ display:flex; align-items:flex-end; gap:14px; }
+.c3-tile{ flex:none; }
+.c3-acc{ flex:1; }
+.cmp-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+/* full card (5th) keeps row layout, no rail/glow */
+.recv.full{ grid-column:1 / -1; flex-direction:row; align-items:center; gap:16px; padding:6mm 7mm;
+  background:linear-gradient(120deg, rgba(31,148,153,.12), rgba(250,146,14,.08)); border:1px solid rgba(31,148,153,.2); }
+.recv.full::before, .recv.full::after{ display:none; }
+.recv.full .ric{ width:54px; height:54px; }
+.recv.full .ric svg{ width:28px; height:28px; }
+.recv.full .rtext b{ font-size:11.5pt; }
+.recv.full .rtext p{ margin-top:3px; font-size:9.2pt; }
+</style>
+</head>
+<body>
+
+<!-- ============================ PAGE 1 ============================ -->
+<section class="page">
+  <div class="aurora a-teal"   style="width:120mm;height:120mm;top:-40mm;right:-30mm;"></div>
+  <div class="aurora a-purple" style="width:95mm;height:95mm;top:90mm;left:-38mm;opacity:.42;"></div>
+  <div class="aurora a-peach"  style="width:90mm;height:90mm;bottom:-30mm;right:-12mm;opacity:.45;"></div>
+  <div class="aurora a-mint"   style="width:70mm;height:70mm;top:35mm;left:60mm;opacity:.30;"></div>
+  <div class="grain"></div>
+
+  <div class="frame">
+
+    <!-- Masthead -->
+    <header class="masthead">
+      <img class="brand-logo" src="assets/salci-logo.png" alt="SALCI: Self Analysis For Learning &amp; Competency Improvement" />
+      <span class="chip"><span class="dot"></span>Olympiad Program · 2026</span>
+    </header>
+
+    <!-- Hero -->
+    <div class="hero">
+      <span class="eyebrow">The SALCI Olympiad</span>
+      <h1>An Olympiad that gives every student a <em>report</em>, <span class="accent">not just a rank.</span></h1>
+      <p class="subhead">A secure, <span class="usp">Paperless Online Olympiad</span> that turns every student's performance into clear, actionable insights for your teachers and parents to value.</p>
+
+      <span class="trust">
+        <span class="seal">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        Trusted by SALCI schools <span class="sep"></span> Powered by Deep Analytics
+      </span>
+    </div>
+
+    <!-- 01 · Aligned with CBSE SAFAL -->
+    <div class="safal-sec">
+      <div class="sec-head" style="margin-bottom:0;">
+        <span class="num">01</span>
+        <h2>Aligned with NEP 2020 and CBSE SAFAL</h2>
+        <span class="rule"></span>
+      </div>
+
+      <div class="safal-lead">
+        <span class="sl-badge">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="#14696d" stroke-width="2.1" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#fa920e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <p>The <b>SALCI Olympiad</b> is built in sync with the National Education Policy (NEP 2020) and CBSE's SAFAL, the competency-first direction Indian schools are moving towards. We work the same way: concept and application over memorisation, delivered securely on screen, with a real report for every child rather than just a rank, for every class from Class 1 upward.</p>
+      </div>
+
+      <div class="safal-grid">
+        <div class="sfp a-t"><span class="sfc ic-teal"><svg viewBox="0 0 24 24" fill="none"><path d="M3 17l6-6 4 4 7-7" stroke="#1f9499" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 8h4v4" stroke="#1f9499" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Lift your students' performance</b><span>Competency practice through the Olympiad raises every student's performance, which in turn lifts your school's SAFAL results.</span></div>
+        <div class="sfp a-o"><span class="sfc ic-orange"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="13" rx="2" stroke="#fa920e" stroke-width="2.1"/><path d="M8 21h8M12 17v4" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round"/></svg></span><b>Your School: Ready for all digital assessments like SAFAL</b><span>The Olympiad puts your computer lab, network and team through their paces, so your whole school is ready for digital tests like SAFAL.</span></div>
+        <div class="sfp a-p"><span class="sfc ic-purple"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#6f56a8" stroke-width="2.1"/><circle cx="12" cy="12" r="4" stroke="#6f56a8" stroke-width="2.1"/><circle cx="12" cy="12" r="1" fill="#6f56a8"/></svg></span><b>Future-ready for national exams</b><span>On screen, timed and competency-based, the Olympiad makes students future-ready for national-level tests and performance-ready, in sync with CBSE's vision.</span></div>
+        <div class="sfp a-t"><span class="sfc ic-teal"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4" stroke="#1f9499" stroke-width="2.1" stroke-linecap="round"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.5.4.9 1 1 1.7 0 .3.3.5.6.5h4c.3 0 .6-.2.6-.5.1-.7.5-1.3 1-1.7A6 6 0 0 0 12 3z" stroke="#1f9499" stroke-width="2.1" stroke-linejoin="round"/></svg></span><b>Competency, not cramming</b><span>The SALCI Olympiad rewards applying concepts, not memorising them, and moves away from ROTE practices.</span></div>
+        <div class="sfp a-o"><span class="sfc ic-orange"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6z" stroke="#fa920e" stroke-width="2.1" stroke-linejoin="round"/><path d="M14 3v4h4" stroke="#fa920e" stroke-width="2.1" stroke-linejoin="round"/><path d="M9 17v-3M12 17v-5M15 17v-2" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round"/></svg></span><b>A self-analysis report, not only a rank</b><span>This Olympiad provides strengths, gaps and proficiency analysis for every child, to move away from rank pressure.</span></div>
+        <div class="sfp a-p"><span class="sfc ic-purple"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 4.5-9 4.5-9-4.5L12 3z" stroke="#6f56a8" stroke-width="2.1" stroke-linejoin="round"/><path d="M3 12l9 4.5 9-4.5M3 16.5l9 4.5 9-4.5" stroke="#6f56a8" stroke-width="2.1" stroke-linejoin="round"/></svg></span><b>Open to every class</b><span>The Olympiad is available to all students from Class 1 onwards, and students keep receiving competency-based practice appropriate to their grade level.</span></div>
+      </div>
+
+      <div class="safal-chips">
+        <span class="sfchip">NEP 2020 aligned</span>
+        <span class="sfchip">Open to Class 1 onwards</span>
+        <span class="sfchip">Three core subjects</span>
+        <span class="sfchip">Competency-based</span>
+        <span class="sfchip">Performance Gap Focused</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <span class="ft-name">The <b>SALCI Olympiad</b> · Self Analysis For Learning &amp; Competency Improvement</span>
+      <span class="ft-web">salci.ai</span>
+    </footer>
+
+  </div>
+</section>
+
+<!-- ============================ PAGE 2 ============================ -->
+<section class="page page2" style="page-break-before:always;">
+  <div class="aurora a-purple" style="width:110mm;height:110mm;top:-42mm;left:-32mm;opacity:.42;"></div>
+  <div class="aurora a-teal"   style="width:95mm;height:95mm;top:120mm;right:-34mm;opacity:.40;"></div>
+  <div class="aurora a-peach"  style="width:80mm;height:80mm;top:60mm;left:75mm;opacity:.28;"></div>
+  <div class="grain"></div>
+
+  <div class="frame">
+
+    <header class="p2-head">
+      <div class="sec-head" style="margin-bottom:0;">
+        <span class="num">02</span>
+        <h2>Why and how Online Olympiad beats the Offline format</h2>
+      </div>
+      <img class="mini-logo" src="assets/salci-logo.png" alt="SALCI" />
+    </header>
+
+    <!-- Online vs Offline -->
+    <div class="vs" style="margin-top:2mm;">
+      <div class="vs-card vs-on">
+        <span class="vs-tag"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Online · the SALCI way</span>
+        <div class="vs-li first"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Instant, deep results</b><span>Every child gets a full analysis report for deeper insight on performance, giving a clear picture of what is going well and what needs attention.</span></div></div>
+        <div class="vs-li"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Per-question speed &amp; accuracy</b><span>The online format measures the exact time and accuracy for every question, which the offline format simply cannot.</span></div></div>
+        <div class="vs-li"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Future-Ready for Real Exams</b><span>Most major competitive exams are now computer-based, so students practise the format their future demands.</span></div></div>
+        <div class="vs-li"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Far richer analytics</b><span>The online mode will always produce a deeper and more accurate report, which the offline format cannot.</span></div></div>
+        <div class="vs-li"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Zero logistics</b><span>No printing, packing, couriering or collecting answer sheets, ever.</span></div></div>
+        <div class="vs-li"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Fair &amp; tamper-proof</b><span>PIN-gated and auto-graded, with no marking errors or bias.</span></div></div>
+      </div>
+      <div class="vs-card vs-off">
+        <span class="vs-tag">Traditional offline way</span>
+        <div class="vs-li first"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#8595a4" stroke-width="2.8" stroke-linecap="round"/></svg></span><div><b>Weeks of waiting</b><span>A single rank arrives by post, with no insight into how the child actually did.</span></div></div>
+        <div class="vs-li"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#8595a4" stroke-width="2.8" stroke-linecap="round"/></svg></span><div><b>No question-level data</b><span>Just a final mark, with no per-question timing or accuracy to learn from.</span></div></div>
+        <div class="vs-li"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#8595a4" stroke-width="2.8" stroke-linecap="round"/></svg></span><div><b>An outdated format</b><span>Real competitive exams have moved online, leaving paper-trained students behind.</span></div></div>
+        <div class="vs-li"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#8595a4" stroke-width="2.8" stroke-linecap="round"/></svg></span><div><b>Heavy logistics</b><span>This process involves heavy printing, invigilator handling and physical paper handling.</span></div></div>
+        <div class="vs-li"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#8595a4" stroke-width="2.8" stroke-linecap="round"/></svg></span><div><b>Error-prone</b><span>The traditional offline way is a rigorous manual format which can result in transcription slips, lost answer sheets and indeed massive manual errors in evaluation.</span></div></div>
+        <div class="vs-li"><span class="vs-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#8595a4" stroke-width="2.8" stroke-linecap="round"/></svg></span><div><b>Wasteful</b><span>Reams of paper and courier costs, and zero analytics at the end.</span></div></div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="sec-head" style="margin-top:5mm; margin-bottom:0;">
+      <span class="num">03</span>
+      <h2>From Sign-up to Celebration, in Five Steps</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="timeline" style="margin-top:1mm;">
+      <div class="steps">
+        <div class="step">
+          <span class="node n1">1</span>
+          <div class="txt"><h3>Onboard your School</h3><p>We set up your school and create teacher logins. Nothing to install and no upfront cost, so you're ready in minutes.</p></div>
+        </div>
+        <div class="step">
+          <span class="node n2">2</span>
+          <div class="txt"><h3>Enroll Students</h3><p>Enroll straight from your existing SALCI roster, or add new students at your convenience. Fees are paid online with instant receipts, no cash handling, and no manual work required.</p></div>
+        </div>
+        <div class="step">
+          <span class="node n3">3</span>
+          <div class="txt"><h3>Schedule Exam Batches</h3><p>Build batches that fit your computer-lab capacity. The system prevents clashes and seats students automatically.</p></div>
+        </div>
+        <div class="step">
+          <span class="node n4">4</span>
+          <div class="txt"><h3>Students Compete Online</h3><p>A fair, PIN-gated Olympiad delivered entirely online. Fully paperless and tamper-resistant.</p></div>
+        </div>
+        <div class="step">
+          <span class="node n5">5</span>
+          <div class="txt"><h3>Results, Reports &amp; Certificates</h3><p>We publish a professional analysis report and certificate for every student, plus a whole-school dashboard segregated class-wise, student-wise and subject-wise, for deeper insight on the academic progress of the school.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="page-footer">
+      <span class="ft-name">The <b>SALCI Olympiad</b> · Online, Secure &amp; Paperless</span>
+      <span class="ft-web">salci.ai</span>
+    </footer>
+
+  </div>
+</section>
+
+<!-- ============================ PAGE 3 ============================ -->
+<section class="page page2" style="page-break-before:always;">
+  <div class="aurora a-teal"   style="width:115mm;height:115mm;top:-46mm;right:-32mm;opacity:.42;"></div>
+  <div class="aurora a-purple" style="width:98mm;height:98mm;top:135mm;left:-34mm;opacity:.40;"></div>
+  <div class="aurora a-peach"  style="width:80mm;height:80mm;top:70mm;left:72mm;opacity:.26;"></div>
+  <div class="grain"></div>
+
+  <div class="frame">
+    <header class="p2-head">
+      <div class="sec-head" style="margin-bottom:0;">
+        <span class="num">04</span>
+        <h2>Why Schools Choose it</h2>
+      </div>
+      <img class="mini-logo" src="assets/salci-logo.png" alt="SALCI" />
+    </header>
+
+    <div class="pillars" style="margin-top:4mm;">
+      <div class="pillar">
+        <div class="ic ic-teal">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5M9 19v-7M14 19V9M19 19V7" stroke="#1f9499" stroke-width="2.2" stroke-linecap="round"/><circle cx="14" cy="6" r="1.6" fill="#6f56a8"/></svg>
+        </div>
+        <h3>A full Analysis Report per Student</h3>
+        <p>The online way helps achieve concept mastery, with an analysis report focused on strengths and gaps as per national benchmarks.</p>
+      </div>
+      <div class="pillar">
+        <div class="ic ic-purple">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#6f56a8" stroke-width="2.1"/><path d="M12 7.5v4.7l3.4 2" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Least Manpower Required</h3>
+        <p>The online format handles most of it online, with the least teacher involvement in fees collection, invigilation, exam planning, sheet collection and evaluation. A real time-saver.</p>
+      </div>
+      <div class="pillar">
+        <div class="ic ic-orange">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#fa920e" stroke-width="2.1"/><path d="M7 14l3-3 2.5 2L17 8" stroke="#1f9499" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Whole-School Performance Dashboard</h3>
+        <p>See class-versus-subject strengths across your entire school at a glance.</p>
+      </div>
+      <div class="pillar">
+        <div class="ic ic-mix">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="#1f9499" stroke-width="2.1" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#6f56a8" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Secure, Fair &amp; Paperless</h3>
+        <p>PIN-gated, Secure online exam. Zero question-paper printing or logistics.</p>
+      </div>
+    </div>
+
+    <!-- What you need to run it (05) -->
+    <div class="sec-head" style="margin-top:9mm; margin-bottom:0;">
+      <span class="num">05</span>
+      <h2>What you Need to Run it</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="res">
+      <div class="res-hero">
+        <div class="rb">All you really need</div>
+        <div class="big">Just one <em>Computer lab</em>.</div>
+        <p>We batch your students in a way that a single computer lab with 20 to 30 PCs is enough to conduct the Olympiad for your entire school.</p>
+        <div class="res-pills">
+          <span class="res-pill">1 Computer lab</span>
+          <span class="res-pill">A Web browser</span>
+          <span class="res-pill">Stable internet</span>
+        </div>
+      </div>
+      <div class="res-list">
+        <div class="res-item">
+          <span class="ic ic-teal"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7z" stroke="#1f9499" stroke-width="2.1" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="#1f9499" stroke-width="2.1" stroke-linejoin="round"/><path d="M9.5 13l5 5M14.5 13l-5 5" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round"/></svg></span>
+          <div><h4>No Paper, ever</h4><p>No printing, packing or collecting answer sheets.</p></div>
+        </div>
+        <div class="res-item">
+          <span class="ic ic-purple"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="12" rx="2" stroke="#6f56a8" stroke-width="2.1"/><path d="M8 20h8M12 16v4" stroke="#6f56a8" stroke-width="2.1" stroke-linecap="round"/></svg></span>
+          <div><h4>No new Hardware</h4><p>Your existing lab PCs and a browser. Nothing to install.</p></div>
+        </div>
+        <div class="res-item">
+          <span class="ic ic-orange"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#fa920e" stroke-width="2.1"/><path d="M5 20c0-3.3 3-5 7-5s7 1.7 7 5" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round"/></svg></span>
+          <div><h4>No Extra staff</h4><p>Auto-graded and ranked, with minimal manual invigilation.</p></div>
+        </div>
+        <div class="res-item">
+          <span class="ic ic-mix"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#1f9499" stroke-width="2.1"/><path d="M3 9h18M8 2v4M16 2v4" stroke="#1f9499" stroke-width="2.1" stroke-linecap="round"/><path d="M8 14h3M8 17h6" stroke="#6f56a8" stroke-width="2.1" stroke-linecap="round"/></svg></span>
+          <div><h4>We Schedule it for you</h4><p>We design capacity-aware batches to conduct the SALCI Olympiad flawlessly.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="portal-shot" style="margin-top:7mm;">
+      <img src="out/admin-analytics.png" alt="SALCI admin analytics: performance trends, subject strengths and medal distribution" />
+    </div>
+    <p class="heat-sub" style="text-align:center; margin-top:3mm;">Live admin analytics: performance trends, subject strengths and the medal mix across your whole school.</p>
+
+    <footer class="page-footer">
+      <span class="ft-name">The <b>SALCI Olympiad</b> · Report for every Child, not just a Rank with School Performance Dashboard</span>
+      <span class="ft-web">salci.ai</span>
+    </footer>
+
+  </div>
+</section>
+
+<!-- ============================ PAGE 3 ============================ -->
+<section class="page page2" style="page-break-before:always;">
+  <div class="aurora a-teal"   style="width:110mm;height:110mm;top:-44mm;right:-34mm;opacity:.40;"></div>
+  <div class="aurora a-purple" style="width:90mm;height:90mm;top:135mm;left:-30mm;opacity:.36;"></div>
+  <div class="aurora a-peach"  style="width:78mm;height:78mm;top:75mm;right:72mm;opacity:.26;"></div>
+  <div class="grain"></div>
+
+  <div class="frame">
+    <header class="p2-head">
+      <div class="sec-head" style="margin-bottom:0;">
+        <span class="num">06</span>
+        <h2>So, Who runs all of this?</h2>
+      </div>
+      <img class="mini-logo" src="assets/salci-logo.png" alt="SALCI" />
+    </header>
+
+    <div class="qa-answer">
+      <span class="qic"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8 8 0 0 1-8 8H7.5L3 22.5l1.2-4.8A8 8 0 1 1 21 11.5z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 10.5h7M8.5 14h4.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></span>
+      <p>We run the whole thing for you, with <span class="hl">Zero Burden</span> on your teachers.</p>
+    </div>
+
+    <p class="subhead" style="margin-top:4mm; max-width:168mm; font-size:10.5pt;">
+      From setup to results, SALCI implements and operates the entire exam environment: secure access, exam delivery, auto-grading, results publishing and support. Your team just shows up; we handle the rest.
+    </p>
+
+    <div class="portal-shot">
+      <img src="out/dashboards.png" alt="The SALCI portal: admin, teacher and student dashboards" />
+    </div>
+    <p class="heat-sub" style="text-align:center; margin-top:3mm;">Real dashboards for admins, teachers and students, all in one connected portal.</p>
+
+    <div class="integrity">
+      <div class="int-item">
+        <span class="ic ic-teal"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="#1f9499" stroke-width="2.1" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#6f56a8" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h4>Secure &amp; Fair</h4>
+        <p>PIN-gated entry and tamper-resistant attempts, with exam integrity built in.</p>
+      </div>
+      <div class="int-item">
+        <span class="ic ic-orange"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v3M12 19v3M5 5l2 2M17 17l2 2M2 12h3M19 12h3M5 19l2-2M17 7l2-2" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round"/><circle cx="12" cy="12" r="3.5" stroke="#fa920e" stroke-width="2.1"/></svg></span>
+        <h4>Fully Automated</h4>
+        <p>Auto-graded, ranked and published, so reports and certificates generate themselves.</p>
+      </div>
+      <div class="int-item">
+        <span class="ic ic-purple"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#6f56a8" stroke-width="2.1" stroke-linejoin="round"/></svg></span>
+        <h4>We're with you Throughout</h4>
+        <p>Setup, scheduling, on-the-day support and results, all handled end-to-end by SALCI.</p>
+      </div>
+    </div>
+
+    <div class="sec-head" style="margin-top:9mm; margin-bottom:0;">
+      <span class="num">07</span>
+      <h2>One Simple Price, Everything Included</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="price">
+      <div class="price-card">
+        <div class="eb">Per student</div>
+        <div class="amt"><sup>₹</sup>249</div>
+        <div class="per">for all 3 subjects</div>
+        <span class="tax">No hidden costs</span>
+        <div class="taxnote">** Inclusive of all taxes</div>
+      </div>
+      <div class="incl">
+        <h4>Every ₹249 includes:</h4>
+        <div class="incl-grid">
+          <div class="incl-li"><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>The online Olympiad</b><span>Secure &amp; auto-graded</span></div></div>
+          <div class="incl-li"><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Full analytics report</b><span>Strengths, gaps &amp; benchmarks</span></div></div>
+          <div class="incl-li"><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Verified certificate</b><span>Branded &amp; shareable</span></div></div>
+          <div class="incl-li"><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Financial benefit for schools</b><span>Benefit to the schools in the form of discounts or cashback</span></div></div>
+          <div class="incl-li"><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>Printable study material</b><span>Full-syllabus prep, per student</span></div></div>
+          <div class="incl-li"><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4 10-10" stroke="#1f9499" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>School dashboard</b><span>Whole-school analytics</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="page-footer">
+      <span class="ft-name">The <b>SALCI Olympiad</b> · all-inclusive at ₹249 per Student</span>
+      <span class="ft-web">salci.ai</span>
+    </footer>
+  </div>
+</section>
+
+<!-- ============================ PAGE 4 ============================ -->
+<section class="page page2" style="page-break-before:always;">
+  <div class="aurora a-purple" style="width:108mm;height:108mm;top:-40mm;left:-30mm;opacity:.40;"></div>
+  <div class="aurora a-teal"   style="width:92mm;height:92mm;top:155mm;right:-30mm;opacity:.38;"></div>
+  <div class="grain"></div>
+
+  <div class="frame">
+    <header class="p2-head">
+      <div class="sec-head" style="margin-bottom:0;">
+        <span class="num">08</span>
+        <h2>What your Students &amp; Parents receive</h2>
+      </div>
+      <img class="mini-logo" src="assets/salci-logo.png" alt="SALCI" />
+    </header>
+
+    <div class="recv-grid" style="margin-top:6mm;">
+      <div class="recv c1">
+        <div class="recv-head">
+          <span class="ric ic-teal"><svg viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="#1f9499" stroke-width="2.1"/><path d="M15.5 15.5L20 20" stroke="#1f9499" stroke-width="2.1" stroke-linecap="round"/><path d="M8 12v-1.5M10.5 12V8.5M13 12v-3" stroke="#1f9499" stroke-width="2" stroke-linecap="round"/></svg></span>
+          <div class="txt">
+            <b>Comprehensive Performance Analysis</b>
+            <p>Know exactly how your child performed across subjects, concepts and questions.</p>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="wg-cap"><span class="lbl">Overall score</span><span class="live"><i></i>Live</span></div>
+          <div class="spark-wrap">
+            <div class="spark-left"><div class="stat-lbl">Overall</div><div class="stat-val">86%</div></div>
+            <svg class="spark-svg" viewBox="0 0 130 30" preserveAspectRatio="none">
+              <defs><linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f9499" stop-opacity=".22"/><stop offset="1" stop-color="#1f9499" stop-opacity="0"/></linearGradient></defs>
+              <path d="M2,22 L34,17 L66,19 L98,9 L128,5 L128,30 L2,30 Z" fill="url(#sg1)"/>
+              <polyline points="2,22 34,17 66,19 98,9 128,5" fill="none" stroke="#1f9499" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="2" cy="22" r="2" fill="#1f9499"/><circle cx="34" cy="17" r="2" fill="#1f9499"/><circle cx="66" cy="19" r="2" fill="#1f9499"/><circle cx="98" cy="9" r="2" fill="#1f9499"/><circle cx="128" cy="5" r="2.6" fill="#fff" stroke="#1f9499" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="recv c2">
+        <div class="recv-head">
+          <span class="ric ic-orange"><svg viewBox="0 0 24 24" fill="none"><path d="M6 10l3.5-3.5L13 10" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 6.5V14" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round"/><path d="M18 14l-3.5 3.5L11 14" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.5 17.5V10" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round"/></svg></span>
+          <div class="txt">
+            <b>Strengths &amp; Improvement Areas</b>
+            <p>Discover strong concepts and identify the learning gaps that need attention.</p>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="wg-cap"><span class="lbl">Concept map</span><span class="pill">2 flagged</span></div>
+          <div class="bar-row"><div class="bar-top"><span class="bar-name">Strength &middot; Algebra</span><span class="bar-num">88%</span></div><div class="track"><span class="fill green" style="width:88%;"></span></div></div>
+          <div class="bar-row"><div class="bar-top"><span class="bar-name">Gap &middot; Geometry</span><span class="bar-num">61%</span></div><div class="track"><span class="fill orange" style="width:61%;"></span></div></div>
+        </div>
+      </div>
+      <div class="recv c3">
+        <div class="recv-head">
+          <span class="ric ic-purple"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13.5" r="7.5" stroke="#6f56a8" stroke-width="2.1"/><path d="M12 13.5V9.8" stroke="#6f56a8" stroke-width="2.1" stroke-linecap="round"/><path d="M9.5 2.5h5" stroke="#6f56a8" stroke-width="2.1" stroke-linecap="round"/><path d="M12 4.6V2.5" stroke="#6f56a8" stroke-width="2.1"/><path d="M18.6 7.4l1-1" stroke="#6f56a8" stroke-width="2.1" stroke-linecap="round"/></svg></span>
+          <div class="txt">
+            <b>Speed &amp; Time Intelligence</b>
+            <p>Understand your child's speed, accuracy and exam-time management.</p>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="wg-cap"><span class="lbl">Pace &amp; accuracy</span><span class="pill purple">On pace</span></div>
+          <div class="c3-tiles">
+            <div class="c3-tile"><div class="stat-lbl">Avg / question</div><div class="stat-val">42s</div></div>
+            <div class="c3-acc"><div class="bar-top"><span class="bar-name">Accuracy</span><span class="bar-num">91%</span></div><div class="track"><span class="fill teal" style="width:91%;"></span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="recv c4">
+        <div class="recv-head">
+          <span class="ric ic-mix"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20h16" stroke="#1f9499" stroke-width="2.1" stroke-linecap="round"/><path d="M7 20v-4" stroke="#1f9499" stroke-width="2.6" stroke-linecap="round"/><path d="M12 20v-7" stroke="#6f56a8" stroke-width="2.6" stroke-linecap="round"/><path d="M17 20v-10" stroke="#fa920e" stroke-width="2.6" stroke-linecap="round"/><path d="M14.5 6.5L17 4l2.5 2.5" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div class="txt">
+            <b>Benchmarking &amp; Growth Insights</b>
+            <p>Compare performance against class averages, with personalised improvement recommendations.</p>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="cmp-head"><span class="lbl">Vs class average</span><span class="pill orange">Top 12%</span></div>
+          <div class="bar-row"><div class="bar-top"><span class="bar-name">You</span><span class="bar-num">84%</span></div><div class="track"><span class="fill teal" style="width:84%;"></span></div></div>
+          <div class="bar-row"><div class="bar-top"><span class="bar-name">Class avg</span><span class="bar-num" style="color:var(--ink-faint);">71%</span></div><div class="track"><span class="fill faint" style="width:71%;"></span></div></div>
+        </div>
+      </div>
+      <div class="recv full">
+        <span class="ric ic-orange"><svg viewBox="0 0 24 24" fill="none"><path d="M7 4h10v4a5 5 0 0 1-10 0V4z" stroke="#fa920e" stroke-width="2.1" stroke-linejoin="round"/><path d="M7 5.5H4.5V7a3 3 0 0 0 3 3M17 5.5h2.5V7a3 3 0 0 1-3 3" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round"/><path d="M12 13v3.5M9.5 20.5h5M10.5 16.5h3" stroke="#fa920e" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="rtext">
+          <b>Score, Recognition &amp; Rewards</b>
+          <p>Receive your score, rank and certificate, plus the chance to earn medals for outstanding performance.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prepared & rewarded -->
+    <div class="finale-head" style="margin-top:13mm;">
+      <h3>Prepare Better. Perform Better. Get Rewarded</h3>
+      <p>Every student receives complete Olympiad study material to prepare with confidence. With full support from SALCI, schools can conduct the Olympiad at their convenience while students gain valuable practice and competency exposure. Every participant receives recognition, and top performers are rewarded for their achievement.</p>
+    </div>
+    <p class="safal-note">Competency-first and analysis-led, in Sync with CBSE's SAFAL (Structured Assessment for Analysing Learning) assessment direction.</p>
+
+    <!-- CTA -->
+    <div class="cta">
+      <div class="cta-glow g1"></div>
+      <div class="cta-glow g2"></div>
+      <div class="cta-inner">
+        <div>
+          <div class="eb">Bring it to your school</div>
+          <h2>Give every student insight they can actually act on.</h2>
+          <p class="line">Talk to us about running the SALCI Olympiad at your school this academic year.</p>
+        </div>
+        <div class="cta-contact">
+          <span class="cc"><span class="ccic"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="#fff" stroke-width="2"/><path d="M4 7l8 6 8-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>team@salci.in</span>
+          <span class="cc"><span class="ccic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4l3 1 1 4-2 1.5a11 11 0 005 5L17.5 19l4 1 1 3-2 1A16 16 0 013 8L4 5z" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"/></svg></span>+91 96430 22345</span>
+          <span class="cc"><span class="ccic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="2"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" stroke="#fff" stroke-width="1.7"/></svg></span><span class="web">salci.ai</span></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>

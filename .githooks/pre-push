@@ -1,0 +1,178 @@
+#!/bin/sh
+#
+# SALCI pre-push: friction on the STOP block.
+#
+# READ THIS BEFORE TRUSTING IT. A client-side git hook is NOT a security
+# boundary. It lives in the working tree of the person it governs, and
+# `git push --no-verify`, editing this file, or re-pointing core.hooksPath all
+# defeat it in one step. github.com cannot block a direct branch push at all
+# (pre-receive hooks are Enterprise Server only). So this is a speed bump that
+# makes skipping the blocking list deliberate and visible. It is not a wall,
+# and nothing should describe it as one.
+#
+# WHAT IT DOES. Pushing `naman-erp` while a task in the STOP block of
+# docs/superpowers/plans/2026-09-07-naman-work-queue.md is still `status: todo`
+# is refused, unless one of the NEW commits in that push names the task it is
+# working on ("Task 11", "tasks 11 and 15", "Task #11").
+#
+# DESIGN NOTES, each paid for by a bypass that was reproduced on 2026-09-15:
+#  * The list is read from `origin/main`, never from the commit being pushed.
+#    Reading it from the push meant deleting the file, emptying it, renaming
+#    the markers or upper-casing "todo" all disabled the gate silently.
+#  * Only the pusher's OWN new commits can unlock it: `--no-merges` and
+#    `--not origin/main`. Scanning the whole range meant the mandated
+#    `git pull origin main` imported maintainer commits whose messages name
+#    tasks, so the daily sync handed over the key. The commit that installed
+#    this hook was itself one of those keys.
+#  * Every failure to read or parse REFUSES and says why. Every silent-skip
+#    path turned out to be a bypass, including `git show` failing on a long
+#    Windows path.
+#  * A push that adds no new non-merge work of its own is a sync and is
+#    allowed, or the mandated daily merge of main could never be pushed.
+#
+# ESCAPE HATCH: SALCI_STOP_OVERRIDE=1 git push ...
+# Tushar's, for fast-forwarding the branch after a merge. CLAUDE.md section 28
+# forbids Naman's sessions from setting it.
+
+set -u
+
+QUEUE="docs/superpowers/plans/2026-09-07-naman-work-queue.md"
+ZERO="0000000000000000000000000000000000000000"
+
+if [ "${SALCI_STOP_OVERRIDE:-}" = "1" ]; then
+  echo "pre-push: STOP-block check skipped (SALCI_STOP_OVERRIDE=1)." >&2
+  exit 0
+fi
+
+refuse() {
+  echo "" >&2
+  echo "  PUSH REFUSED - naman-erp, STOP block." >&2
+  echo "" >&2
+  printf '  %s\n' "$@" >&2
+  echo "" >&2
+  echo "  The list lives in $QUEUE (section \"STOP\")." >&2
+  echo "  A push is allowed as soon as one of its own new commits names the task" >&2
+  echo "  it works on, e.g. \"fix(tasks): Task 11, the board keeps its cards\"." >&2
+  echo "  Do not use --no-verify and do not set SALCI_STOP_OVERRIDE: that is" >&2
+  echo "  Tushar's, for syncing the branch (CLAUDE.md section 28). If a task is" >&2
+  echo "  wrong or impossible, write that in a commit message and take the next." >&2
+  echo "" >&2
+  exit 1
+}
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  # Branch deletion carries nothing to check.
+  [ "$local_sha" = "$ZERO" ] && continue
+
+  # Only the branch the STOP block governs. main and everything else pass.
+  case "$remote_ref" in
+    refs/heads/naman-erp) ;;
+    *) continue ;;
+  esac
+
+  # The authoritative list is the one on main. Without it we cannot judge, and
+  # guessing in the permissive direction is exactly how the first version failed.
+  if ! git rev-parse --verify -q origin/main >/dev/null 2>&1; then
+    refuse "Cannot read the blocking list: this clone has no origin/main." \
+           "Run:  git fetch origin main" \
+           "Then push again."
+  fi
+
+  queue=$(git show "origin/main:$QUEUE" 2>/dev/null) || queue=""
+  if [ -z "$queue" ]; then
+    refuse "Cannot read $QUEUE from origin/main." \
+           "If this is a long-path Windows checkout, run:" \
+           "  git config --global core.longpaths true" \
+           "Otherwise run:  git fetch origin main"
+  fi
+
+  case "$queue" in
+    *"<!-- STOP-BLOCK:START -->"*) ;;
+    *) refuse "The STOP-BLOCK markers are missing from $QUEUE on origin/main." \
+              "The gate cannot be evaluated. Tell Tushar; do not work around it." ;;
+  esac
+
+  listed=$(printf '%s\n' "$queue" | awk '
+    /<!-- STOP-BLOCK:START -->/ { inside = 1; next }
+    /<!-- STOP-BLOCK:END -->/   { inside = 0; next }
+    inside {
+      line = $0
+      while (match(line, /Task[ _#:.-]*[0-9]+/)) {
+        tok = substr(line, RSTART, RLENGTH)
+        gsub(/[^0-9]/, "", tok)
+        print tok
+        line = substr(line, RSTART + RLENGTH)
+      }
+    }
+  ' 2>/dev/null | sort -un)
+
+  if [ -z "$listed" ]; then
+    # An explicitly cleared block is legitimate and must not gate anything.
+    # Anything else with no tasks in it is malformed, and the safe reading of
+    # a malformed gate is "refuse", not "assume there is nothing to do".
+    case "$queue" in
+      *"STOP-BLOCK:EMPTY"*)
+        echo "pre-push: STOP block is explicitly empty. Allowed." >&2
+        continue
+        ;;
+    esac
+    refuse "The STOP block on origin/main names no tasks, which means it is" \
+           "malformed (or awk is unavailable here). Refusing rather than" \
+           "assuming there is nothing to do. Tell Tushar."
+  fi
+
+  # Of those, the ones whose own heading still says todo. Case-insensitive and
+  # dash-agnostic: "TODO" and an en dash each used to disable the gate.
+  open=""
+  for n in $listed; do
+    if printf '%s\n' "$queue" | grep -qiE "^##[[:space:]]*Task[[:space:]]+$n[[:space:]]*[-_[:space:]].*status:[[:space:]]*todo"; then
+      open="$open $n"
+    fi
+  done
+
+  # Nothing blocking: push freely.
+  [ -z "$open" ] && continue
+
+  if [ "$remote_sha" = "$ZERO" ]; then
+    # The branch is absent on the remote. Creating it AT or BEHIND main is fine
+    # (that is how it is seeded and how it is restored). Creating it WITH work
+    # of its own on top is how a deleted branch smuggled unrelated commits past
+    # the gate, so that case is refused.
+    if git merge-base --is-ancestor "$local_sha" origin/main 2>/dev/null; then
+      echo "pre-push: creating naman-erp at or behind main. Allowed." >&2
+      continue
+    fi
+    refuse "The remote naman-erp branch does not exist, and this push would" \
+           "create it carrying commits that are not on main yet." \
+           "Restore the branch instead of recreating it, or ask Tushar."
+  fi
+
+  # What this push actually contributes: its own commits, excluding merges and
+  # anything already reachable from main.
+  own=$(git rev-list --no-merges "$remote_sha..$local_sha" --not origin/main 2>/dev/null)
+
+  # No new work of its own: a sync (a merge of main, or a fast-forward). Must be
+  # allowed or the mandated daily pull could never be pushed.
+  if [ -z "$own" ]; then
+    echo "pre-push: no new commits of your own in this push (sync). Allowed." >&2
+    continue
+  fi
+
+  msgs=$(git log --format='%B' --no-walk $own 2>/dev/null)
+
+  for n in $open; do
+    if printf '%s\n' "$msgs" | grep -qiE "tasks?[ _#:.-]*$n([^0-9]|$)"; then
+      echo "pre-push: STOP block open, but this push works on Task $n. Allowed." >&2
+      continue 2
+    fi
+  done
+
+  set -- "None of the new commits in this push names a blocking task."
+  for n in $open; do
+    title=$(printf '%s\n' "$queue" | grep -iE "^##[[:space:]]*Task[[:space:]]+$n[[:space:]]*[-_[:space:]].*status:[[:space:]]*todo" | head -1 | sed 's/^##[[:space:]]*//')
+    set -- "$@" "  - $title"
+  done
+  refuse "$@"
+done
+
+exit 0

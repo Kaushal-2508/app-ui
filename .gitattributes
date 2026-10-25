@@ -1,0 +1,9 @@
+# Git hooks are shell scripts. They MUST keep LF endings: a CRLF hook fails on
+# macOS and Linux with "bad interpreter: /bin/sh^M", which would silently
+# disable the STOP-block enforcement rather than announce itself.
+.githooks/* text eol=lf
+
+# Shell scripts run on Vercel's Linux builders (scripts/vercel-ignore-build.sh is the
+# Ignored Build Step). A CRLF copy does not parse there, which would make every
+# push build and silently lose the docs-only skip.
+*.sh text eol=lf

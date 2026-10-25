@@ -1,0 +1,54 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment variables (secrets baked into build — set in Vercel dashboard instead)
+.env
+.env.*
+!.env.example
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.code-workspace
+
+# Local DB dumps
+all_migrations.sql
+
+# Git worktrees (isolated feature workspaces)
+.worktrees/
+
+
+# Brainstorm visual companion (local-only, ephemeral)
+.superpowers/
+
+# Service-account / private keys must never be committed. A Firebase admin
+# service account for salci-app-535ce was once dropped into public/, which Vite
+# copies verbatim into dist/ and serves to the world (2026-09-18). It was caught
+# before any commit; these patterns make a repeat impossible rather than lucky.
+*-firebase-adminsdk-*.json
+**/service-account*.json
+**/*service_account*.json
+*.pem
+*.p8
+*.p12
+# Nothing under public/ may be a JSON credential; real public JSON is named
+# explicitly if ever needed.
+public/**/*firebase*.json

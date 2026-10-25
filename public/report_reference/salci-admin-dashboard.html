@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Dashboard — Alliance International School — SALCI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    /* ---- brand tokens (PRD §26.1 / student-report §2b, reconstructed — swap for real --primary/--brand-* values before ship) ---- */
+    --surface-base: #F7F4EC;
+    --surface-card: #FFFFFF;
+    --teal: #0D9488;
+    --teal-ink: #08655C;
+    --violet: #5B3FA6;
+    --violet-ink: #45307E;
+    --gold: #B8860B;
+
+    /* ---- status palette (fixed, never themed — validated dataviz/palette.md) ---- */
+    --status-critical: #d03b3b;   /* Needs Attention / Struggling  <50 */
+    --status-warning:  #E29A0E;   /* Developing                    50–65 */
+    --status-good:     #0ca30c;   /* Stable / Fine                 65–85 */
+    --status-excellent:#B8860B;   /* Excellent / Excelling          ≥85 */
+
+    /* ---- ink / chrome ---- */
+    --ink-900: #1C1B17;
+    --ink-700: #3C3A34;
+    --ink-500: #6B695F;
+    --ink-400: #8C8A7E;
+    --border: rgba(28,27,23,0.11);
+    --border-strong: rgba(28,27,23,0.16);
+    --grid-line: #E7E3D6;
+    --shadow-sm: 0 1px 2px rgba(28,27,23,0.06);
+    --shadow-lg: 0 10px 28px rgba(28,27,23,0.08);
+    --radius-card: 20px;
+    --radius-sm: 12px;
+    --radius-pill: 999px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--surface-base);
+    color: var(--ink-900);
+    -webkit-font-smoothing: antialiased;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  .wrap{ max-width: 1320px; margin: 0 auto; padding: 28px 32px 80px; }
+
+  /* ---------------- header ---------------- */
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
+  .brandline{ display:flex; align-items:center; gap:14px; }
+  .mark{
+    width:44px; height:44px; border-radius: 12px; flex:none;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--violet) 100%);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:800; font-size:15px; letter-spacing:.02em;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow{ text-transform:uppercase; letter-spacing:.08em; font-size:11px; font-weight:700; color: var(--ink-500); margin:0 0 2px; }
+  h1.school-name{ font-size:22px; font-weight:800; margin:0; letter-spacing:-0.01em; }
+  .school-sub{ font-size:13px; color:var(--ink-500); margin-top:2px; }
+  .topbar-actions{ display:flex; align-items:center; gap:10px; }
+  .btn{
+    font-size:13px; font-weight:600; cursor:pointer;
+    border-radius: var(--radius-pill); padding:9px 16px; border:1px solid var(--border-strong);
+    background:var(--surface-card); color:var(--ink-700);
+    display:inline-flex; align-items:center; gap:6px;
+    transition: background .15s, border-color .15s;
+  }
+  .btn:hover{ background:#FBFAF6; border-color: var(--ink-400); }
+  .btn.primary{ background: var(--teal); border-color: var(--teal); color:#fff; }
+  .btn.primary:hover{ background: var(--teal-ink); border-color: var(--teal-ink); }
+  .btn svg{ width:14px; height:14px; }
+
+  /* ---------------- jump nav ---------------- */
+  .jumpnav{
+    position: sticky; top:0; z-index:20;
+    display:flex; gap:4px; padding:12px 2px; margin-bottom:18px;
+    background: var(--surface-base); border-bottom:1px solid var(--border);
+    flex-wrap:wrap;
+  }
+  .jumpnav a{ font-size:12px; font-weight:700; color:var(--ink-500); text-decoration:none; padding:7px 12px; border-radius:var(--radius-pill); white-space:nowrap; }
+  .jumpnav a:hover{ background:#EFEBDD; color:var(--ink-900); }
+  .jumpnav a.active{ background:var(--ink-900); color:#fff; }
+  #section-overview, .group{ scroll-margin-top: 60px; }
+
+  /* ---------------- section headers ---------------- */
+  .group{ margin-top:40px; }
+  .group-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+  .group-title-row{ display:flex; align-items:center; gap:10px; }
+  .group-icon{ width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center; background:#EFEBDD; color:var(--ink-700); flex:none; }
+  .group-icon svg{ width:16px;height:16px; }
+  h2.group-title{ font-size:17px; font-weight:800; margin:0; letter-spacing:-0.01em;}
+  .group-desc{ font-size:12.5px; color:var(--ink-500); }
+  .group-link{ font-size:12.5px; font-weight:700; color:var(--teal-ink); text-decoration:none; white-space:nowrap; background:none; border:none; cursor:pointer; padding:0; }
+  .group-link:hover{ text-decoration:underline; }
+
+  /* ---------------- generic card ---------------- */
+  .card{ background: var(--surface-card); border:1px solid var(--border); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding: 20px 22px; }
+  .card-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:14px;}
+  .card-title{ font-size:14px; font-weight:700; margin:0 0 2px; }
+  .card-caption{ font-size:12px; color:var(--ink-500); margin:0; }
+  .table-toggle{
+    font-size:11.5px; font-weight:700; color:var(--ink-500); background:#F1EFE6;
+    border:1px solid var(--border); border-radius:var(--radius-pill); padding:5px 10px; cursor:pointer; white-space:nowrap;
+  }
+  .table-toggle:hover{ color:var(--ink-900); border-color:var(--ink-400); }
+  .table-toggle.active{ background:var(--ink-900); color:#fff; border-color:var(--ink-900); }
+  .toggle-group{ display:flex; gap:6px; }
+
+  /* ---------------- KPI strip ---------------- */
+  .kpi-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap:14px; }
+  .kpi-tile{ background: var(--surface-card); border:1px solid var(--border); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding:16px 16px 14px; position:relative; overflow:hidden; }
+  .kpi-tile::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; background: var(--accent, var(--teal)); }
+  .kpi-label{ font-size:11.5px; font-weight:600; color:var(--ink-500); margin-bottom:8px; }
+  .kpi-value{ font-size:26px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
+  .kpi-value .unit{ font-size:15px; font-weight:700; color:var(--ink-500); margin-left:2px;}
+  .kpi-delta{ font-size:11.5px; font-weight:700; margin-top:8px; display:inline-flex; align-items:center; gap:3px;}
+  .kpi-delta.up{ color: var(--status-good); }
+  .kpi-delta.down{ color: var(--status-critical); }
+  .kpi-delta.flat{ color: var(--ink-500); }
+  .kpi-sub{ font-size:11px; color:var(--ink-400); margin-top:6px; }
+
+  /* ---------------- badges / chips ---------------- */
+  .badge{ display:inline-flex; align-items:center; font-size:10.5px; font-weight:800; letter-spacing:.03em; text-transform:uppercase; padding:3px 8px; border-radius: var(--radius-pill); }
+  .badge.high{ background: rgba(208,59,59,0.12); color:#A32323; }
+  .badge.medium{ background: rgba(226,154,14,0.16); color:#8A5B00; }
+  .badge.low, .badge.watch{ background: rgba(107,105,95,0.12); color: var(--ink-500); }
+  .badge.good{ background: rgba(13,148,136,0.12); color:var(--teal-ink); }
+  .chip{ display:inline-flex; align-items:center; font-size:11px; font-weight:600; padding:4px 9px; border-radius: var(--radius-pill); background:#F1EFE6; color:var(--ink-700); border:1px solid var(--border); }
+  .chip.negative{ background: rgba(208,59,59,0.09); color:#A32323; border-color: rgba(208,59,59,0.18); }
+
+  /* ---------------- AI Insights digest ---------------- */
+  .ai-card{
+    background: linear-gradient(155deg, #FFFFFF 0%, #F3F8F7 60%, #F1EEF8 100%);
+    border:1px solid var(--border); border-radius: var(--radius-card); box-shadow: var(--shadow-sm);
+    padding:20px 22px; margin-top:16px;
+  }
+  .ai-badge{
+    width:32px;height:32px;border-radius:10px; flex:none;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--violet) 100%);
+    display:flex; align-items:center; justify-content:center; color:#fff;
+  }
+  .ai-badge svg{ width:17px;height:17px; }
+  .ai-list{ list-style:none; margin:14px 0 0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .ai-list li{ display:flex; gap:10px; font-size:13px; line-height:1.5; color:var(--ink-700); }
+  .ai-list li .dot{ width:5px;height:5px;border-radius:50%; background:var(--violet); flex:none; margin-top:8px; }
+  .ai-list li b{ color:var(--ink-900); }
+  .ai-foot{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding-top:14px; border-top:1px solid var(--border); }
+  .ai-timestamp{ font-size:11px; color:var(--ink-400); }
+
+  /* ---------------- Academic performance card ---------------- */
+  .acad-card{ display:grid; grid-template-columns: auto 1fr auto; align-items:center; gap:28px; margin-top:16px; }
+  .acad-score{ }
+  .acad-score .v{ font-size:40px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
+  .acad-score .l{ font-size:12px; font-weight:600; color:var(--ink-500); margin-top:6px; }
+  .acad-deltas{ display:flex; flex-direction:column; gap:8px; }
+  .acad-delta-row{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-700); }
+  .acad-delta-row b{ font-weight:800; }
+  .acad-delta-row b.up{ color:var(--status-good); }
+  .acad-delta-row b.down{ color:var(--status-critical); }
+  .acad-delta-row .lbl{ color:var(--ink-500); }
+  .acad-spark{ width:140px; }
+
+  /* ---------------- Students: distribution donut ---------------- */
+  .donut-wrap{ display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
+  .donut-svg{ flex:none; cursor:pointer; }
+  .donut-svg path, .donut-svg circle.seg{ transition: opacity .12s; }
+  .donut-legend{ display:flex; flex-direction:column; gap:10px; flex:1; min-width:180px; }
+  .donut-legend-row{
+    display:flex; align-items:center; gap:9px; font-size:13px; color:var(--ink-700);
+    cursor:pointer; padding:6px 8px; margin:0 -8px; border-radius:10px;
+  }
+  .donut-legend-row:hover{ background:#F6F4EC; }
+  .donut-legend-row .sw{ width:11px;height:11px;border-radius:3px; flex:none;}
+  .donut-legend-row b{ color:var(--ink-900); }
+  .donut-legend-row .pct{ margin-left:auto; color:var(--ink-500); font-weight:600; font-size:12px;}
+
+  /* ---------------- wing split bars ---------------- */
+  .wing-split{ margin-top:16px; padding-top:14px; border-top:1px solid var(--border); }
+  .wing-split-title{ font-size:12px; font-weight:700; color:var(--ink-700); margin-bottom:10px; }
+  .wing-row{ display:grid; grid-template-columns: 118px 1fr 50px auto; align-items:center; gap:10px; margin-bottom:9px; }
+  .wing-name{ font-size:12px; font-weight:600; color:var(--ink-700); }
+  .wing-track{ background:var(--grid-line); border-radius:5px; height:10px; }
+  .wing-fill{ height:100%; border-radius:5px; background:var(--violet); }
+  .wing-pct{ font-size:12px; font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
+  .wing-assign{ font-size:11px; font-weight:700; color:var(--teal-ink); background:none; border:1px solid var(--border); border-radius:var(--radius-pill); padding:4px 10px; cursor:pointer; white-space:nowrap; }
+  .wing-assign:hover{ background:#F1EFE6; }
+
+  /* ---------------- predicted-to-slip callout ---------------- */
+  .predict-box{ margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+  .predict-title{ font-size:12px; font-weight:700; color:var(--ink-700); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .predict-row{ display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--ink-700); margin-bottom:6px; line-height:1.5;}
+  .predict-row svg{ width:13px;height:13px; color:var(--status-critical); flex:none; margin-top:2px;}
+
+  /* ---------------- Students: distribution bar (legacy, unused now but kept for CSS parity) ---------------- */
+  .distbar{ display:flex; height:26px; width:100%; border-radius:8px; overflow:hidden; margin: 6px 0 12px; }
+  .distbar > div{ height:100%; }
+
+  /* ---------------- two-col layout ---------------- */
+  .row-2{ display:grid; grid-template-columns: 1.15fr 0.85fr; gap:18px; align-items:start; }
+  .stack{ display:flex; flex-direction:column; gap:18px; }
+
+  /* ---------------- heatmap (legacy CSS kept, unused) ---------------- */
+  .heatmap-scroll{ overflow-x:auto; }
+
+  /* ---------------- bar chart (CSS bars) ---------------- */
+  .barchart{ display:flex; flex-direction:column; gap:11px; margin-top:6px; }
+  .bar-row{ display:grid; grid-template-columns: 152px 1fr 44px; align-items:center; gap:10px; }
+  .bar-row.clickable{ cursor:pointer; }
+  .bar-row.clickable:hover .bar-fill{ filter:brightness(0.92); }
+  .bar-label{ font-size:12.5px; font-weight:600; color:var(--ink-700); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-sub{ font-size:10.5px; color:var(--ink-500); font-weight:500; }
+  .bar-track{ background:var(--grid-line); border-radius:5px; height:14px; position:relative; }
+  .bar-fill{ height:100%; border-radius: 0 5px 5px 0; background: var(--teal); position:relative; cursor:default; }
+  .bar-val{ font-size:12px; font-weight:700; color:var(--ink-700); text-align:right; font-variant-numeric: tabular-nums;}
+
+  /* ---------------- line chart ---------------- */
+  .linechart-wrap{ position:relative; }
+  .legend-row{ display:flex; gap:18px; margin-bottom:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  .legend-swatches{ display:flex; gap:18px; }
+  .legend-item{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-700);}
+  .legend-dot{ width:9px;height:9px;border-radius:3px; flex:none;}
+  #tooltip, #tooltip2{
+    position:absolute; pointer-events:none; background:var(--ink-900); color:#fff;
+    font-size:11.5px; border-radius:8px; padding:7px 10px; line-height:1.5;
+    box-shadow: var(--shadow-lg); opacity:0; transform: translate(-50%,-115%); transition: opacity .1s;
+    white-space:nowrap; z-index:5;
+  }
+  #tooltip b, #tooltip2 b{font-weight:800;}
+
+  /* ---------------- lists ---------------- */
+  .plist{ display:flex; flex-direction:column; }
+  .prow{ display:flex; align-items:center; gap:12px; padding:12px 2px; border-bottom:1px solid var(--border); }
+  .prow.clickable{ cursor:pointer; }
+  .prow.clickable:hover{ background:#FAF8F2; margin:0 -8px; padding:12px 8px; border-radius:10px; }
+  .prow:last-child{ border-bottom:none; padding-bottom:4px;}
+  .avatar{ width:34px;height:34px;border-radius:50%; flex:none; display:flex;align-items:center;justify-content:center; font-size:11.5px; font-weight:800; color:#fff; background: var(--violet); }
+  .prow-main{ flex:1; min-width:0; }
+  .prow-name{ font-size:13.5px; font-weight:700; }
+  .prow-meta{ font-size:11.5px; color:var(--ink-500); margin-top:1px;}
+  .prow-chips{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+  .prow-side{ flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:6px;}
+  .prow-actions{ font-size:11.5px; }
+  .prow-actions a, .prow-actions button{ color:var(--teal-ink); font-weight:700; text-decoration:none; background:none; border:none; padding:0; cursor:pointer; font-size:11.5px; font-family:inherit; }
+  .prow-actions a:hover, .prow-actions button:hover{ text-decoration:underline; }
+  .prow-actions .sep{ color:var(--ink-400); margin:0 4px; font-weight:400;}
+  .viewall{ display:block; text-align:center; font-size:12.5px; font-weight:700; color:var(--teal-ink); text-decoration:none; padding-top:12px; margin-top:6px; border-top:1px solid var(--border); background:none; border-left:none; border-right:none; border-bottom:none; width:100%; cursor:pointer; }
+  .viewall:hover{ text-decoration:underline; }
+
+  .tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+  .tab{ font-size:12px; font-weight:700; padding:6px 12px; border-radius:var(--radius-pill); background:#F1EFE6; color:var(--ink-500); cursor:pointer; border:1px solid transparent; }
+  .tab.active{ background: var(--ink-900); color:#fff; }
+
+  .statchip-row{ display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-bottom:16px;}
+  .statchip{ background:#FAF8F2; border:1px solid var(--border); border-radius:14px; padding:12px 14px; }
+  .statchip .v{ font-size:20px; font-weight:800; letter-spacing:-.01em; }
+  .statchip .l{ font-size:11px; color:var(--ink-500); font-weight:600; margin-top:2px;}
+
+  table.exceptions{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.exceptions th{ text-align:left; font-size:11px; color:var(--ink-500); font-weight:700; padding:0 8px 8px 8px; border-bottom:1px solid var(--border);}
+  table.exceptions th.sortable{ cursor:pointer; user-select:none; }
+  table.exceptions td{ padding:11px 8px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  table.exceptions tr:last-child td{ border-bottom:none; }
+  table.exceptions tr.clickable{ cursor:pointer; }
+  table.exceptions tr.clickable:hover{ background:#FAF8F2; }
+  .staffname{ font-weight:700; }
+  .staffrole{ font-size:11.5px; color:var(--ink-500); }
+  .metric-bad{ color:#A32323; font-weight:700; }
+  .metric-ok{ color:var(--ink-700); font-weight:600; }
+  .metric-up{ color:var(--status-good); font-weight:700; }
+  .metric-down{ color:var(--status-critical); font-weight:700; }
+  .rank-badge{ display:inline-flex; align-items:center; justify-content:center; width:20px;height:20px; border-radius:50%; background:#F1EFE6; color:var(--ink-700); font-size:10.5px; font-weight:800; }
+
+  .queue{ display:flex; flex-direction:column; gap:10px; }
+  .queue-item{ display:flex; align-items:center; gap:14px; padding:13px 16px; border-radius:14px; background:#FAF8F2; border:1px solid var(--border); }
+  .queue-sev{ width:8px; height:8px; border-radius:50%; flex:none; }
+  .queue-sev.high{ background:var(--status-critical); }
+  .queue-sev.medium{ background:var(--status-warning); }
+  .queue-sev.low{ background:var(--ink-400); }
+  .queue-text{ flex:1; font-size:13px; font-weight:600; }
+  .queue-text span{ display:block; font-size:11.5px; font-weight:500; color:var(--ink-500); margin-top:1px;}
+  .queue-cta{ font-size:12px; font-weight:700; color:var(--teal-ink); text-decoration:none; white-space:nowrap; }
+  .queue-cta:hover{ text-decoration:underline; }
+
+  table.events{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.events th{ text-align:left; font-size:11px; color:var(--ink-500); font-weight:700; padding:0 8px 8px 0; border-bottom:1px solid var(--border);}
+  table.events td{ padding:10px 8px 10px 0; border-bottom:1px solid var(--border); color:var(--ink-700);}
+  table.events tr:last-child td{ border-bottom:none; }
+  table.events td.time{ color:var(--ink-400); white-space:nowrap; }
+
+  .data-table{ display:none; width:100%; border-collapse:collapse; font-size:12.5px; margin-top:6px;}
+  .data-table.show{ display:table; }
+  .data-table th{ text-align:left; font-size:11px; color:var(--ink-500); font-weight:700; padding:6px 8px; border-bottom:1px solid var(--border);}
+  .data-table td{ padding:8px; border-bottom:1px solid var(--border); }
+  .hide{ display:none; }
+
+  /* ---------------- class-wise column chart ---------------- */
+  .colchart-area{ position:relative; height:186px; margin:16px 2px 0; border-bottom:1px solid var(--grid-line); }
+  .colchart-refline{ position:absolute; left:0; right:0; border-top:2px dashed var(--ink-400); z-index:1; }
+  .colchart-reflabel{ position:absolute; right:2px; top:-17px; font-size:10px; font-weight:700; color:var(--ink-500); background:var(--surface-card); padding:0 4px; white-space:nowrap; }
+  .colchart-bars{ position:absolute; inset:0; display:flex; align-items:flex-end; gap:12px; padding:0 4px; }
+  .colbar-col{ flex:1; height:100%; display:flex; align-items:flex-end; justify-content:center; position:relative; }
+  .colbar{ width:100%; max-width:40px; border-radius:5px 5px 0 0; position:relative; cursor:default; }
+  .colbar-val{ position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:10.5px; font-weight:800; color:var(--ink-700); white-space:nowrap; }
+  .colchart-xlabels{ display:flex; gap:12px; padding:8px 4px 0; }
+  .colchart-xlabel{ flex:1; max-width:64px; text-align:center; font-size:10px; font-weight:700; color:var(--ink-500); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:default; }
+
+  /* ---------------- adoption hero card ---------------- */
+  .alert-box{ display:flex; align-items:flex-start; gap:12px; background:rgba(208,59,59,0.07); border:1px solid rgba(208,59,59,0.22); border-radius:14px; padding:13px 16px; margin:14px 0 18px; }
+  .alert-icon{ color:var(--status-critical); flex:none; margin-top:1px; }
+  .alert-title{ font-size:13.5px; font-weight:800; color:#A32323; }
+  .alert-sub{ font-size:12px; color:var(--ink-700); margin-top:2px; }
+  .alert-cta{ font-size:12.5px; font-weight:700; color:#A32323; text-decoration:none; white-space:nowrap; align-self:center; background:none; border:none; cursor:pointer; }
+  .alert-cta:hover{ text-decoration:underline; }
+
+  .adopt-stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+  .adopt-stat{ background:#FAF8F2; border:1px solid var(--border); border-radius:14px; padding:13px 15px; }
+  .adopt-stat.accent{ border-left:3px solid var(--status-warning); }
+  .adopt-stat .l{ font-size:11.5px; color:var(--ink-500); font-weight:600; }
+  .adopt-stat .v{ font-size:23px; font-weight:800; margin-top:5px; letter-spacing:-0.01em; }
+  .adopt-stat .s{ font-size:11px; color:var(--ink-500); margin-top:3px; }
+  .adopt-stat .d{ font-size:11px; font-weight:700; margin-top:6px; }
+  .adopt-stat .d.down{ color:var(--status-critical); }
+  .adopt-stat .d.up{ color:var(--status-good); }
+  .adopt-stat .note{ font-size:10.5px; font-weight:700; color:var(--ink-700); margin-top:6px; }
+
+  .progress-row{ display:flex; align-items:center; gap:14px; margin-top:11px; }
+  .progress-label{ width:190px; flex:none; font-size:12.5px; font-weight:700; color:var(--ink-700); }
+  .progress-track{ flex:1; height:10px; background:var(--grid-line); border-radius:6px; overflow:hidden; }
+  .progress-fill{ height:100%; border-radius:6px; }
+  .progress-val{ width:40px; flex:none; text-align:right; font-size:12.5px; font-weight:800; }
+
+  /* ---------------- modal ---------------- */
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background:rgba(20,19,15,0.5); z-index:100;
+    align-items:center; justify-content:center; padding:24px;
+  }
+  .modal-overlay.show{ display:flex; }
+  .modal-box{
+    background:var(--surface-card); border-radius:20px; max-width:720px; width:100%;
+    max-height:85vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,0.25);
+  }
+  .modal-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:20px 22px 16px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--surface-card); border-radius:20px 20px 0 0; }
+  .modal-title{ font-size:16px; font-weight:800; margin:0 0 3px; }
+  .modal-sub{ font-size:12px; color:var(--ink-500); margin:0; }
+  .modal-close{ background:#F1EFE6; border:none; width:30px;height:30px; border-radius:50%; cursor:pointer; font-size:16px; color:var(--ink-700); flex:none; line-height:1;}
+  .modal-close:hover{ background:#E7E3D6; }
+  .modal-body{ padding:20px 22px 22px; }
+  .modal-body table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  .modal-body th{ text-align:left; font-size:11px; color:var(--ink-500); font-weight:700; padding:0 8px 8px 0; border-bottom:1px solid var(--border);}
+  .modal-body td{ padding:10px 8px 10px 0; border-bottom:1px solid var(--border); vertical-align:middle; }
+  .modal-body tr:last-child td{ border-bottom:none; }
+
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:11.5px; font-weight:700; color:var(--ink-500); margin-bottom:6px; }
+  .field .readonly{ background:#F6F4EC; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:13px; color:var(--ink-700); }
+  .field input, .field textarea{
+    width:100%; border:1px solid var(--border-strong); border-radius:10px; padding:10px 12px;
+    font-size:13px; font-family:inherit; color:var(--ink-900); background:var(--surface-card);
+  }
+  .field textarea{ resize:vertical; min-height:64px; }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
+
+  /* ---------------- toast ---------------- */
+  #toast{
+    position:fixed; bottom:24px; right:24px; background:var(--ink-900); color:#fff;
+    padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600;
+    box-shadow:var(--shadow-lg); z-index:200; opacity:0; transform:translateY(8px);
+    transition: opacity .2s, transform .2s; display:flex; align-items:center; gap:10px;
+  }
+  #toast.show{ opacity:1; transform:translateY(0); }
+  #toast svg{ width:16px;height:16px; color:var(--status-good); flex:none; }
+
+  footer.note{ margin-top:48px; padding-top:18px; border-top:1px solid var(--border); font-size:11.5px; color:var(--ink-400); line-height:1.6; }
+
+  @media (max-width: 1180px){
+    .row-2{ grid-template-columns: 1fr; }
+    .statchip-row{ grid-template-columns: repeat(2,1fr); }
+    .adopt-stat-row{ grid-template-columns: repeat(2,1fr); }
+    .acad-card{ grid-template-columns: 1fr; gap:14px; }
+    .acad-spark{ width:100%; }
+  }
+  @media (max-width: 640px){
+    .wrap{ padding:20px 16px 60px; }
+    .kpi-grid{ grid-template-columns: repeat(2,1fr); }
+    .bar-row{ grid-template-columns: 92px 1fr 36px; }
+    .donut-wrap{ flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <div class="topbar">
+    <div class="brandline">
+      <div class="mark">AIS</div>
+      <div>
+        <p class="eyebrow">Admin overview</p>
+        <h1 class="school-name">Alliance International School</h1>
+        <div class="school-sub">Academic Year 2026–27 · Command Center · Thursday, 20 Aug 2026</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export report
+      </button>
+      <button class="btn primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+        Quick action
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ JUMP NAV ============ -->
+  <nav class="jumpnav">
+    <a href="#section-overview">Overview</a>
+    <a href="#section-students">Students</a>
+    <a href="#section-teachers">Teachers &amp; Staff</a>
+    <a href="#section-academics">Academics</a>
+    <a href="#section-attendance">Attendance</a>
+    <a href="#section-communication">Communication</a>
+    <a href="#section-queue">Needs Attention</a>
+  </nav>
+
+  <!-- ============ OVERVIEW STRIP ============ -->
+  <div class="kpi-grid" id="section-overview">
+    <div class="kpi-tile" style="--accent:var(--teal)">
+      <div class="kpi-label">Students</div>
+      <div class="kpi-value">1,543</div>
+      <div class="kpi-delta up">▲ 18 <span style="color:var(--ink-400);font-weight:500;">this month</span></div>
+    </div>
+    <div class="kpi-tile" style="--accent:var(--status-good)">
+      <div class="kpi-label">Students present today</div>
+      <div class="kpi-value">1,378</div>
+      <div class="kpi-sub">of 1,543 · 89.3%</div>
+    </div>
+    <div class="kpi-tile" style="--accent:var(--violet)">
+      <div class="kpi-label">Teachers &amp; staff</div>
+      <div class="kpi-value">96</div>
+      <div class="kpi-delta flat">— unchanged</div>
+    </div>
+    <div class="kpi-tile" style="--accent:var(--status-good)">
+      <div class="kpi-label">Teachers present today</div>
+      <div class="kpi-value">91</div>
+      <div class="kpi-sub">of 96 · 94.8%</div>
+    </div>
+    <div class="kpi-tile" style="--accent:var(--ink-400)">
+      <div class="kpi-label">Classes</div>
+      <div class="kpi-value">39</div>
+      <div class="kpi-sub">across 3 wings</div>
+    </div>
+  </div>
+
+  <!-- ============ AI INSIGHTS DIGEST ============ -->
+  <div class="ai-card">
+    <div class="card-head">
+      <div style="display:flex; gap:12px; align-items:flex-start;">
+        <div class="ai-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2L12 3z" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <p class="card-title" style="font-size:15px;">This week's AI insights</p>
+          <p class="card-caption">Auto-generated every Monday from everything below — the one thing worth reading before you open anything else</p>
+        </div>
+      </div>
+      <span class="badge good">New</span>
+    </div>
+    <ul class="ai-list">
+      <li><span class="dot"></span><span>Portal adoption dropped <b>7pp this week</b> — 9 students have never logged in at all. See Students → Portal adoption.</span></li>
+      <li><span class="dot"></span><span><b>Mathematics</b> is your weakest subject school-wide at 58%, dragged down mainly by Class 10 A (48%).</span></li>
+      <li><span class="dot"></span><span>Attendance dipped <b>1.2pp vs last week</b> — concentrated in the Senior Secondary wing.</span></li>
+      <li><span class="dot"></span><span><b>7 classes</b> are more than 2 weeks behind on syllabus pacing — worth a look before the next assessment cycle.</span></li>
+      <li><span class="dot"></span><span><b>Rakesh Verma's</b> attendance has fallen to 71% over the last 30 days — flagged for a check-in, not a task.</span></li>
+    </ul>
+    <div class="ai-foot">
+      <span class="ai-timestamp">Generated Mon, 17 Aug 2026 · next refresh Monday</span>
+      <button class="group-link">Regenerate ↻</button>
+    </div>
+  </div>
+
+  <!-- ============ ACADEMIC PERFORMANCE ============ -->
+  <div class="card acad-card">
+    <div class="acad-score">
+      <div class="v">64.8%</div>
+      <div class="l">School avg. accuracy ▲</div>
+    </div>
+    <div class="acad-deltas">
+      <div class="acad-delta-row"><b class="up">▲ 2.1pp</b><span class="lbl">vs last exam</span></div>
+      <div class="acad-delta-row"><b class="up">▲ 1.4pp</b><span class="lbl">vs last week's avg</span></div>
+      <div class="acad-delta-row"><b class="up">▲ 3.1pp</b><span class="lbl">vs last month's avg</span></div>
+    </div>
+    <svg class="acad-spark" viewBox="0 0 140 46" id="acad-sparkline"></svg>
+  </div>
+
+  <!-- ============ STUDENTS ============ -->
+  <div class="group" id="section-students">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M17 8a4 4 0 1 0-8 0 4 4 0 0 0 8 0zM20 20v-1a3 3 0 0 0-2-2.83M15 4.17a3 3 0 0 1 0 5.66" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Students</h2>
+          <div class="group-desc">1,543 enrolled · portal adoption, where they stand, who needs help</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- adoption hero card -->
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-head">
+        <div>
+          <p class="card-title" style="font-size:16px;">Are your students using SALCI?</p>
+          <p class="card-caption" style="max-width:620px;">Logins, plus what they're actually doing once they're in — homework, tests, assignments. This is what tells parents to stop asking for results over the phone.</p>
+        </div>
+        <span class="badge good" style="background:rgba(13,148,136,0.12); color:var(--teal-ink);">1,543 students</span>
+      </div>
+
+      <div class="alert-box">
+        <svg class="alert-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="flex:1;">
+          <div class="alert-title">9 students have never logged in to SALCI</div>
+          <div class="alert-sub">Priyanka Desai, and 8 others — accounts created, never opened</div>
+        </div>
+        <button class="alert-cta">View →</button>
+      </div>
+
+      <div class="adopt-stat-row">
+        <div class="adopt-stat">
+          <div class="l">Today</div>
+          <div class="v">71%</div>
+          <div class="s">1,096 of 1,543 logged in</div>
+        </div>
+        <div class="adopt-stat">
+          <div class="l">Yesterday</div>
+          <div class="v">74%</div>
+          <div class="s">1,142 of 1,543 logged in</div>
+        </div>
+        <div class="adopt-stat accent">
+          <div class="l">Last 7 days · daily avg</div>
+          <div class="v">73%</div>
+          <div class="s">1,126 of 1,543, avg/day</div>
+          <div class="d down">▼ 7pp vs last month</div>
+        </div>
+        <div class="adopt-stat accent">
+          <div class="l">Last 30 days · daily avg</div>
+          <div class="v">80%</div>
+          <div class="s">1,234 of 1,543, avg/day</div>
+          <div class="note">Healthy range starts ~85%</div>
+        </div>
+      </div>
+
+      <div class="card-head" style="margin-bottom:2px;">
+        <p class="card-caption" style="font-weight:700; color:var(--ink-700);">Daily active students · last 14 days</p>
+        <span style="font-size:11.5px; font-weight:700; color:var(--status-critical);">▼ Trending down</span>
+      </div>
+      <svg id="sparkline" viewBox="0 0 560 70" style="width:100%; height:70px; overflow:visible; margin-bottom:18px;"></svg>
+
+      <div class="progress-row">
+        <div class="progress-label">Homework submitted</div>
+        <div class="progress-track"><div class="progress-fill" style="width:71%; background:var(--teal);"></div></div>
+        <div class="progress-val">71%</div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label">Tests / assignments attempted</div>
+        <div class="progress-track"><div class="progress-fill" style="width:84%; background:var(--violet);"></div></div>
+        <div class="progress-val">84%</div>
+      </div>
+
+      <div class="wing-split">
+        <div class="wing-split-title">Adoption by wing (7-day avg)</div>
+        <div class="wing-row"><div class="wing-name">Primary</div><div class="wing-track"><div class="wing-fill" style="width:82%; background:var(--status-good);"></div></div><div class="wing-pct">82%</div><div></div></div>
+        <div class="wing-row"><div class="wing-name">Middle</div><div class="wing-track"><div class="wing-fill" style="width:76%; background:var(--status-warning);"></div></div><div class="wing-pct">76%</div><div></div></div>
+        <div class="wing-row"><div class="wing-name">Senior Secondary</div><div class="wing-track"><div class="wing-fill" style="width:68%; background:var(--status-critical);"></div></div><div class="wing-pct">68%</div><div></div></div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <!-- distribution donut + class performance stacked -->
+      <div class="stack">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <p class="card-title">Where students stand</p>
+              <p class="card-caption">By latest exam accuracy · click a slice for the student list</p>
+            </div>
+          </div>
+          <div class="donut-wrap">
+            <svg class="donut-svg" width="180" height="180" viewBox="0 0 180 180" id="donut-chart"></svg>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <p class="card-title">Class-wise average performance</p>
+              <p class="card-caption">Avg. accuracy per class · dashed line = school average · showing 8 of 39, weakest first</p>
+            </div>
+            <button class="table-toggle" onclick="toggleView('classperf')">View as table</button>
+          </div>
+          <div id="classperf-chart"></div>
+          <table class="data-table" id="classperf-table">
+            <thead><tr><th>Class</th><th>Avg. accuracy</th></tr></thead>
+            <tbody id="classperf-tbody"></tbody>
+          </table>
+          <div class="predict-box">
+            <div class="predict-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--ink-700);"><path d="M3 17l6-6 4 4 8-8M21 7v6h-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Predicted to slip next
+            </div>
+            <div class="predict-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><b>Class 10 A</b> — Mathematics trending down 3 checkpoints in a row</span>
+            </div>
+            <div class="predict-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><b>Class 10 B</b> — attendance decline correlates with a predicted dip next cycle</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- at-risk list -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Students who may need help</p>
+            <p class="card-caption">Ranked by severity · academic risk signals</p>
+          </div>
+        </div>
+        <div class="plist" id="at-risk-list"></div>
+        <button class="viewall">View all 47 flagged students →</button>
+
+        <div class="wing-split">
+          <div class="wing-split-title">Where the 47 flagged students are</div>
+          <div class="wing-row">
+            <div class="wing-name">Primary</div>
+            <div class="wing-track"><div class="wing-fill" style="width:15%;"></div></div>
+            <div class="wing-pct">15%</div>
+            <button class="wing-assign" onclick="openAssignTaskModal({assignee:'Meera Iyer', role:'Coordinator · Primary Wing', context:'7 of 47 school-wide at-risk students (15%) are in the Primary Wing.', title:'Review at-risk students — Primary Wing', description:'7 students flagged this week for failing grades, attendance, or low engagement. Please review and plan follow-ups with the relevant class teachers.'})">Assign</button>
+          </div>
+          <div class="wing-row">
+            <div class="wing-name">Middle</div>
+            <div class="wing-track"><div class="wing-fill" style="width:34%;"></div></div>
+            <div class="wing-pct">34%</div>
+            <button class="wing-assign" onclick="openAssignTaskModal({assignee:'Divya Menon', role:'Coordinator · Middle Wing', context:'16 of 47 school-wide at-risk students (34%) are in the Middle Wing.', title:'Review at-risk students — Middle Wing', description:'16 students flagged this week for failing grades, attendance, or low engagement. Please review and plan follow-ups with the relevant class teachers.'})">Assign</button>
+          </div>
+          <div class="wing-row">
+            <div class="wing-name">Senior Secondary</div>
+            <div class="wing-track"><div class="wing-fill" style="width:51%; background:var(--status-critical);"></div></div>
+            <div class="wing-pct">51%</div>
+            <button class="wing-assign" onclick="openAssignTaskModal({assignee:'Alok Mehta', role:'Coordinator · Senior Secondary Wing', context:'24 of 47 school-wide at-risk students (51%) are in the Senior Secondary Wing — the highest share of any wing.', title:'Review at-risk students — Senior Secondary Wing', description:'24 students flagged this week for failing grades, attendance, or low engagement — over half of all flagged students school-wide. Please review and plan follow-ups with the relevant class teachers.'})">Assign</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- adoption list card -->
+    <div class="card" style="margin-top:18px;">
+      <div class="card-head">
+        <div>
+          <p class="card-title">Not using the portal <span style="font-weight:500;color:var(--ink-500);">— school-wide</span></p>
+          <p class="card-caption">Low logins and low submission/attempt rate together — a kid who's quiet on both fronts is the one still relying on paper or WhatsApp</p>
+        </div>
+        <span class="badge high">38 flagged</span>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="setWingTab(this,'all')">All (38)</div>
+        <div class="tab" onclick="setWingTab(this,'Primary')">Primary (6)</div>
+        <div class="tab" onclick="setWingTab(this,'Middle')">Middle (11)</div>
+        <div class="tab" onclick="setWingTab(this,'Senior Secondary')">Senior Secondary (21)</div>
+      </div>
+      <div class="plist" id="adoption-list"></div>
+      <p class="card-caption" id="adoption-sample-note" style="margin-top:2px;">Sample shown — 4 of 38</p>
+      <button class="viewall">View all 38 not using the portal →</button>
+    </div>
+  </div>
+
+  <!-- ============ TEACHERS & STAFF ============ -->
+  <div class="group" id="section-teachers">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Teachers &amp; staff</h2>
+          <div class="group-desc">96 staff · workload, performance, and wing accountability</div>
+        </div>
+      </div>
+      <a href="#" class="group-link">Full Workforce Overview →</a>
+    </div>
+
+    <div class="card" style="margin-bottom:18px;">
+      <div class="statchip-row">
+        <div class="statchip"><div class="v">96</div><div class="l">Total staff</div></div>
+        <div class="statchip"><div class="v">143</div><div class="l">Open tasks</div></div>
+        <div class="statchip"><div class="v" style="color:#A32323">21</div><div class="l">Overdue tasks</div></div>
+        <div class="statchip"><div class="v">82%</div><div class="l">Completion rate</div></div>
+      </div>
+      <div class="card-head" style="margin-bottom:8px;">
+        <div>
+          <p class="card-title">Needs a look</p>
+          <p class="card-caption">Worst-first: lowest attendance, most overdue tasks, longest inactive. Leave days already excluded.</p>
+        </div>
+      </div>
+      <table class="exceptions">
+        <thead><tr><th>Staff</th><th>Attendance (30d)</th><th>Overdue tasks</th><th>Last active</th></tr></thead>
+        <tbody id="staff-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="row-2">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Coordinators by wing performance</p>
+            <p class="card-caption">Wing avg. accuracy and attendance compliance, ranked</p>
+          </div>
+        </div>
+        <table class="exceptions">
+          <thead><tr><th></th><th>Coordinator</th><th>Wing avg.</th><th>Attendance logging</th></tr></thead>
+          <tbody id="coordinator-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Teachers ranked by performance</p>
+            <p class="card-caption">By class · section · subject — pick the fair lens</p>
+          </div>
+          <div class="toggle-group">
+            <button class="table-toggle active" id="teacher-sort-score" onclick="setTeacherSort('score')">Score</button>
+            <button class="table-toggle" id="teacher-sort-trend" onclick="setTeacherSort('trend')">Improvement</button>
+          </div>
+        </div>
+        <table class="exceptions">
+          <thead><tr><th>Teacher</th><th>Class · subject</th><th>Score</th><th>vs last month</th></tr></thead>
+          <tbody id="teacher-rank-tbody"></tbody>
+        </table>
+        <div class="predict-box" style="border-top:1px solid var(--border);">
+          <div class="predict-row" id="teacher-shoutout" style="margin-bottom:0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--status-good);"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ACADEMICS ============ -->
+  <div class="group" id="section-academics">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14M4 19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M4 19h16M8 7h8M8 11h8M8 15h5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Academics</h2>
+          <div class="group-desc">Subject performance, trend over time, syllabus pacing</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Subjects by performance</p>
+            <p class="card-caption">School-wide avg. accuracy, weakest first</p>
+          </div>
+          <button class="table-toggle" onclick="toggleView('bars')">View as table</button>
+        </div>
+        <div class="barchart" id="bars-chart"></div>
+        <table class="data-table" id="bars-table">
+          <thead><tr><th>Subject</th><th>Avg. accuracy</th></tr></thead>
+          <tbody id="bars-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="card linechart-wrap">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Exam performance over time</p>
+            <p class="card-caption">School-wide avg. accuracy — prior-year comparison not yet available</p>
+          </div>
+          <div class="toggle-group">
+            <button class="table-toggle active" id="trend-week" onclick="setTrendRange('week')">Week</button>
+            <button class="table-toggle" id="trend-month" onclick="setTrendRange('month')">Month</button>
+            <button class="table-toggle" id="trend-exam" onclick="setTrendRange('exam')">By exam</button>
+          </div>
+        </div>
+        <svg id="linechart" viewBox="0 0 560 200" style="width:100%; height:auto; overflow:visible;"></svg>
+        <div id="tooltip"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="card-head">
+        <div>
+          <p class="card-title">Weakest class · section · subject</p>
+          <p class="card-caption">Worst 10 combinations school-wide · click a row to assign the teacher a task</p>
+        </div>
+      </div>
+      <div class="barchart" id="weakest-chart"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="card-head">
+        <div>
+          <p class="card-title">Syllabus coverage</p>
+          <p class="card-caption">Overall pacing across all classes and subjects</p>
+        </div>
+        <button class="group-link" onclick="openSyllabusModal()">Review behind-schedule classes →</button>
+      </div>
+      <div class="statchip-row" style="margin-bottom:0;">
+        <div class="statchip"><div class="v">61%</div><div class="l">Overall coverage <span style="color:var(--status-good);font-weight:700;">▲4pp</span></div></div>
+        <div class="statchip"><div class="v">32 / 39</div><div class="l">Classes on track</div></div>
+        <div class="statchip"><div class="v" style="color:#A32323">7 / 39</div><div class="l">Classes behind schedule</div></div>
+        <div class="statchip"><div class="v">3</div><div class="l">Subjects with no upload &gt;2 weeks</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ATTENDANCE ============ -->
+  <div class="group" id="section-attendance">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Attendance</h2>
+          <div class="group-desc">School-wide, today and over time</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="card linechart-wrap">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Attendance trend</p>
+            <p class="card-caption">Students vs. staff, last 14 days</p>
+          </div>
+        </div>
+        <div class="legend-row">
+          <div class="legend-swatches">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--teal)"></span>Students</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--violet)"></span>Staff</div>
+          </div>
+        </div>
+        <svg id="attendance-chart" viewBox="0 0 560 190" style="width:100%; height:auto; overflow:visible;"></svg>
+        <div id="tooltip2"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Attendance logging compliance</p>
+            <p class="card-caption">Classes that haven't logged today's attendance yet</p>
+          </div>
+        </div>
+        <div class="statchip-row" style="grid-template-columns:1fr; margin-bottom:12px;">
+          <div class="statchip">
+            <div class="v" style="color:#A32323;">12 of 39</div>
+            <div class="l">classes have not logged attendance today</div>
+          </div>
+        </div>
+        <p class="card-caption" style="margin-bottom:10px;">This is also compliance risk, not just a data gap — flagged in the Action Queue below.</p>
+        <a href="#section-queue" class="group-link">See in Needs Attention →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ COMMUNICATION ============ -->
+  <div class="group" id="section-communication">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Communication</h2>
+          <div class="group-desc">Notices you've sent — and whether parents actually opened them</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="statchip-row">
+        <div class="statchip"><div class="v">8</div><div class="l">Circulars sent this month</div></div>
+        <div class="statchip"><div class="v">64%</div><div class="l">Avg. open rate</div></div>
+        <div class="statchip"><div class="v">3</div><div class="l">PTMs scheduled</div></div>
+        <div class="statchip"><div class="v">61%</div><div class="l">Parents opening ≥1 comm monthly</div></div>
+      </div>
+      <div class="card-head" style="margin-bottom:8px;">
+        <div><p class="card-title">Recent circulars</p></div>
+      </div>
+      <table class="exceptions">
+        <thead><tr><th>Title</th><th>Sent</th><th>Opened</th></tr></thead>
+        <tbody>
+          <tr><td class="staffname">Fee payment reminder — Senior Wing</td><td class="staffrole">3 days ago</td><td class="metric-ok">78%</td></tr>
+          <tr><td class="staffname">PTM schedule — Class 9 &amp; 10</td><td class="staffrole">5 days ago</td><td class="metric-ok">61%</td></tr>
+          <tr><td class="staffname">Sports day circular</td><td class="staffrole">1 week ago</td><td class="metric-bad">55%</td></tr>
+          <tr><td class="staffname">Syllabus completion update</td><td class="staffrole">2 weeks ago</td><td class="metric-bad">49%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ ACTION QUEUE ============ -->
+  <div class="group" id="section-queue">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Needs your attention</h2>
+          <div class="group-desc">One unified queue, sorted by severity — replaces the duplicate alert cards</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="card">
+        <div class="queue">
+          <div class="queue-item">
+            <span class="queue-sev high"></span>
+            <div class="queue-text">9 students have never logged into SALCI <span>Portal adoption · High</span></div>
+            <a href="#" class="queue-cta">Review →</a>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev high"></span>
+            <div class="queue-text">12 classes have not logged attendance today <span>Attendance sync · High</span></div>
+            <a href="#" class="queue-cta">Review →</a>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev high"></span>
+            <div class="queue-text">Syllabus pacing is 2+ weeks behind in 7 classes <span>Syllabus · High</span></div>
+            <a href="#" class="queue-cta">Review →</a>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev medium"></span>
+            <div class="queue-text">Portal adoption is down 7pp vs last month — 38 students flagged <span>Portal adoption · Medium</span></div>
+            <a href="#" class="queue-cta">Review →</a>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev medium"></span>
+            <div class="queue-text">21 staff tasks overdue across 3 wings <span>Workforce · Medium</span></div>
+            <a href="#" class="queue-cta">Review →</a>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev medium"></span>
+            <div class="queue-text">Attendance sync delayed for 2 classes <span>Attendance sync · Medium</span></div>
+            <a href="#" class="queue-cta">Review →</a>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev low"></span>
+            <div class="queue-text">Syllabus material not uploaded for 4 subjects this week <span>Syllabus · Low</span></div>
+            <a href="#" class="queue-cta">Review →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Recent events</p>
+            <p class="card-caption">Latest actions across the school</p>
+          </div>
+        </div>
+        <table class="events">
+          <thead><tr><th>Type</th><th>Event</th><th class="time">When</th></tr></thead>
+          <tbody>
+            <tr><td>Exam</td><td>Class 10B Physics Unit Test finalized</td><td class="time">2h ago</td></tr>
+            <tr><td>Staff</td><td>Rakesh Verma added as teacher</td><td class="time">5h ago</td></tr>
+            <tr><td>Payments</td><td>Fee reminder batch sent — Senior Wing</td><td class="time">Yesterday</td></tr>
+            <tr><td>Task</td><td>Syllabus audit (Class 9) completed</td><td class="time">Yesterday</td></tr>
+            <tr><td>Exam</td><td>Class 8A English recheck approved</td><td class="time">2 days ago</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer class="note">
+    Mockup for internal review — data shown is illustrative, not live. Colors: teal = current/this-school data, violet = benchmark/reference series, red/amber/green/gold = fixed status bands (PRD §12.3), never reused as series colors. Palette validated against dataviz/scripts/validate_palette.js. "Where students stand" uses a donut per your request — deviates from the dataviz skill's default preference for a stacked bar, noted for the record. Every "Assign task" button in this mockup opens a working modal and shows a confirmation toast, but nothing is actually saved or sent — this is a front-end demo, not the live product. Brand hex values are reconstructed from PRD §26.1 token references — swap for real <code>--primary</code>/<code>--brand-*</code> CSS variable values before shipping.
+  </footer>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <p class="modal-title" id="modal-title"></p>
+        <p class="modal-sub" id="modal-sub"></p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toast-text">Task created</span>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Shared helpers
+// ---------------------------------------------------------------------------
+const statusColor = (v) => v < 50 ? 'var(--status-critical)' : v < 65 ? 'var(--status-warning)' : v < 85 ? 'var(--status-good)' : 'var(--status-excellent)';
+const statusTint = (v) => v < 50 ? 'rgba(208,59,59,0.14)' : v < 65 ? 'rgba(226,154,14,0.16)' : v < 85 ? 'rgba(12,163,12,0.13)' : 'rgba(184,134,11,0.16)';
+const statusLabel = (v) => v < 50 ? 'Needs Attention' : v < 65 ? 'Developing' : v < 85 ? 'Stable' : 'Excellent';
+const initials = n => n.split(' ').map(w=>w[0]).slice(0,2).join('');
+
+function showToast(text){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = text;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=> t.classList.remove('show'), 3200);
+}
+
+function openModal(title, sub, bodyHtml){
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-sub').textContent = sub || '';
+  document.getElementById('modal-body').innerHTML = bodyHtml;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+// -------- Assign Task modal --------
+function openAssignTaskModal({assignee, role, context, title, description}){
+  const body = `
+    <div class="field"><label>Assignee</label><div class="readonly"><b>${assignee}</b> — ${role}</div></div>
+    <div class="field"><label>Context (auto-filled from this dashboard)</label><div class="readonly">${context}</div></div>
+    <div class="field"><label>Task title</label><input type="text" value="${title}" /></div>
+    <div class="field"><label>Description</label><textarea>${description}</textarea></div>
+    <div class="field" style="max-width:200px;"><label>Due date</label><input type="date" /></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="submitAssignTask('${assignee.replace(/'/g,"")}')">Create task</button>
+    </div>`;
+  openModal('Assign task', 'Sent as a task, not a public flag — only the assignee sees this', body);
+}
+function submitAssignTask(assignee){
+  closeModal();
+  showToast(`Task created and assigned to ${assignee}`);
+}
+
+// ---------------------------------------------------------------------------
+// Subjects by performance (weakest first)
+// ---------------------------------------------------------------------------
+const subjects = [
+  {name:'Mathematics', v:58},
+  {name:'Science', v:61},
+  {name:'Social Science', v:66},
+  {name:'2nd Language', v:70},
+  {name:'English', v:74},
+  {name:'Computer Science', v:79},
+  {name:'Physical Education', v:88},
+  {name:'Art', v:91},
+];
+const barsEl = document.getElementById('bars-chart');
+const barsBody = document.getElementById('bars-tbody');
+subjects.forEach(s=>{
+  const row = document.createElement('div'); row.className='bar-row';
+  row.innerHTML = `
+    <div class="bar-label">${s.name}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${s.v}%; background:${statusColor(s.v)};" title="${s.name}: ${s.v}% — ${statusLabel(s.v)}"></div></div>
+    <div class="bar-val">${s.v}%</div>`;
+  barsEl.appendChild(row);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${s.name}</td><td>${s.v}% — ${statusLabel(s.v)}</td>`;
+  barsBody.appendChild(tr);
+});
+
+// ---------------------------------------------------------------------------
+// Class-wise average performance (bar + school-average line)
+// ---------------------------------------------------------------------------
+const classPerf = [
+  {name:'Class 10 A', short:'10 A', v:58.0},
+  {name:'Class 10 B', short:'10 B', v:60.4},
+  {name:'Class 11 Humanities A', short:'11 Hum A', v:65.0},
+  {name:'Class 8 A', short:'8 A', v:66.6},
+  {name:'Class 12 Commerce A', short:'12 Comm A', v:69.2},
+  {name:'Class 9 A', short:'9 A', v:71.2},
+  {name:'Class 12 Non-Medical A', short:'12 NMed A', v:71.4},
+  {name:'Class 7 A', short:'7 A', v:76.0},
+];
+const schoolAvg = 64.8;
+const cpMin = 40, cpMax = 90;
+const cpPct = v => ((v - cpMin) / (cpMax - cpMin)) * 100;
+
+const cpChart = document.getElementById('classperf-chart');
+const cpBarsHtml = classPerf.map(c => {
+  const h = cpPct(c.v);
+  return `<div class="colbar-col"><div class="colbar" style="height:${h}%; background:${statusColor(c.v)};" title="${c.name}: ${c.v.toFixed(1)}% — ${statusLabel(c.v)}"><span class="colbar-val">${c.v.toFixed(1)}%</span></div></div>`;
+}).join('');
+const cpLabelsHtml = classPerf.map(c => `<div class="colchart-xlabel" title="${c.name}">${c.short}</div>`).join('');
+cpChart.innerHTML = `
+  <div class="colchart-area">
+    <div class="colchart-refline" style="bottom:${cpPct(schoolAvg)}%"><span class="colchart-reflabel">School avg ${schoolAvg}%</span></div>
+    <div class="colchart-bars">${cpBarsHtml}</div>
+  </div>
+  <div class="colchart-xlabels">${cpLabelsHtml}</div>
+`;
+const cpBody = document.getElementById('classperf-tbody');
+classPerf.forEach(c => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${c.name}</td><td>${c.v.toFixed(1)}% — ${statusLabel(c.v)}</td>`;
+  cpBody.appendChild(tr);
+});
+
+// ---------------------------------------------------------------------------
+// Where students stand — donut (3 buckets: struggling / fine / excelling)
+// ---------------------------------------------------------------------------
+const distribution = [
+  {key:'struggling', label:'Struggling', count:612, color:'var(--status-critical)', hex:'#d03b3b'},
+  {key:'fine', label:'Fine', count:673, color:'var(--status-good)', hex:'#0ca30c'},
+  {key:'excelling', label:'Excelling', count:258, color:'var(--status-excellent)', hex:'#B8860B'},
+];
+const distTotal = distribution.reduce((a,b)=>a+b.count,0);
+(function(){
+  const svg = document.getElementById('donut-chart');
+  const r = 70, cx = 90, cy = 90, sw = 26;
+  const circ = 2 * Math.PI * r;
+  let offsetAcc = 0;
+  const NS = 'http://www.w3.org/2000/svg';
+  const g = document.createElementNS(NS,'g');
+  g.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+  distribution.forEach(d=>{
+    const frac = d.count / distTotal;
+    const len = frac * circ;
+    const circle = document.createElementNS(NS,'circle');
+    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
+    circle.setAttribute('fill','none'); circle.setAttribute('stroke', d.hex);
+    circle.setAttribute('stroke-width', sw);
+    circle.setAttribute('stroke-dasharray', `${len} ${circ - len}`);
+    circle.setAttribute('stroke-dashoffset', -offsetAcc);
+    circle.classList.add('seg');
+    circle.style.cursor = 'pointer';
+    circle.addEventListener('click', ()=> openStudentCategoryModal(d.key));
+    const title = document.createElementNS(NS,'title');
+    title.textContent = `${d.label}: ${d.count} students (${(frac*100).toFixed(1)}%)`;
+    circle.appendChild(title);
+    g.appendChild(circle);
+    offsetAcc += len;
+  });
+  svg.appendChild(g);
+  const t1 = document.createElementNS(NS,'text');
+  t1.setAttribute('x',cx); t1.setAttribute('y',cy-4); t1.setAttribute('text-anchor','middle');
+  t1.setAttribute('font-size','22'); t1.setAttribute('font-weight','800'); t1.setAttribute('fill','#1C1B17');
+  t1.setAttribute('font-family','Inter, sans-serif'); t1.textContent = distTotal.toLocaleString();
+  svg.appendChild(t1);
+  const t2 = document.createElementNS(NS,'text');
+  t2.setAttribute('x',cx); t2.setAttribute('y',cy+16); t2.setAttribute('text-anchor','middle');
+  t2.setAttribute('font-size','11'); t2.setAttribute('fill','#6B695F');
+  t2.setAttribute('font-family','Inter, sans-serif'); t2.textContent = 'students';
+  svg.appendChild(t2);
+
+  const legend = document.getElementById('donut-legend');
+  distribution.forEach(d=>{
+    const row = document.createElement('div'); row.className='donut-legend-row';
+    row.onclick = ()=> openStudentCategoryModal(d.key);
+    row.innerHTML = `<span class="sw" style="background:${d.hex}"></span><span>${d.label} — <b>${d.count}</b></span><span class="pct">${((d.count/distTotal)*100).toFixed(1)}%</span>`;
+    legend.appendChild(row);
+  });
+})();
+
+// -------- student category modal (donut drill-down) --------
+const studentSamples = {
+  struggling: [
+    {name:'Aarav Mehta', cls:'Class 10B', acc:38}, {name:'Priya Nair', cls:'Class 9A', acc:41},
+    {name:'Devansh Rao', cls:'Class 11 Hum A', acc:44}, {name:'Kabir Singh', cls:'Class 11 Hum A', acc:46},
+    {name:'Sara Iqbal', cls:'Class 12 Comm A', acc:47}, {name:'Priyanka Desai', cls:'Class 11 Hum A', acc:35},
+    {name:'Kabir Nanda', cls:'Class 11 Hum A', acc:49}, {name:'Rohan Verma', cls:'Class 10A', acc:43},
+  ],
+  fine: [
+    {name:'Ananya Bose', cls:'Class 9A', acc:71}, {name:'Ishaan Roy', cls:'Class 8A', acc:74},
+    {name:'Meher Chatterjee', cls:'Class 12 NMed A', acc:69}, {name:'Tanvi Shah', cls:'Class 7A', acc:78},
+    {name:'Yusuf Khan', cls:'Class 10B', acc:72}, {name:'Simran Kaur', cls:'Class 12 Comm A', acc:80},
+  ],
+  excelling: [
+    {name:'Aditi Rao', cls:'Class 12 NMed A', acc:92}, {name:'Karan Malhotra', cls:'Class 11 Hum A', acc:88},
+    {name:'Zara Ahmed', cls:'Class 9A', acc:95}, {name:'Arjun Pillai', cls:'Class 7A', acc:90},
+    {name:'Naina Chopra', cls:'Class 10A', acc:87}, {name:'Rehan Siddiqui', cls:'Class 8A', acc:93},
+  ],
+};
+let currentCategory = 'struggling';
+function openStudentCategoryModal(cat){
+  currentCategory = cat;
+  const d = distribution.find(x=>x.key===cat);
+  const tabsHtml = distribution.map(x=>`<div class="tab ${x.key===cat?'active':''}" onclick="switchCategoryTab('${x.key}')">${x.label} (${x.count})</div>`).join('');
+  const body = `
+    <div class="tabs">${tabsHtml}</div>
+    <div style="margin-bottom:12px;">
+      <select id="cat-class-filter" onchange="renderCategoryList()" style="font-size:12.5px;font-weight:600;padding:7px 10px;border-radius:8px;border:1px solid var(--border-strong);color:var(--ink-700);background:var(--surface-card);">
+        <option value="">All classes</option>
+      </select>
+    </div>
+    <div id="cat-list" class="plist"></div>`;
+  openModal(`${d.label} students`, `${d.count} students school-wide (sample shown) · click a student to open their profile`, body);
+  populateClassFilter();
+  renderCategoryList();
+}
+function switchCategoryTab(cat){ openStudentCategoryModal(cat); }
+function populateClassFilter(){
+  const sel = document.getElementById('cat-class-filter');
+  const classes = [...new Set(studentSamples[currentCategory].map(s=>s.cls))];
+  sel.innerHTML = '<option value="">All classes</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+function renderCategoryList(){
+  const filter = document.getElementById('cat-class-filter').value;
+  const list = document.getElementById('cat-list');
+  const rows = studentSamples[currentCategory].filter(s => !filter || s.cls === filter);
+  list.innerHTML = rows.map(s => `
+    <div class="prow clickable" onclick="openStudentProfile('${s.name.replace(/'/g,"")}','${s.cls}',${s.acc})">
+      <div class="avatar" style="background:${statusColor(s.acc)}">${initials(s.name)}</div>
+      <div class="prow-main"><div class="prow-name">${s.name}</div><div class="prow-meta">${s.cls}</div></div>
+      <div class="prow-side"><span class="badge ${s.acc<50?'high':s.acc<65?'medium':'good'}">${s.acc}%</span></div>
+    </div>`).join('') || '<p class="card-caption">No students match this filter.</p>';
+}
+function openStudentProfile(name, cls, acc){
+  const body = `
+    <button class="group-link" onclick="switchCategoryTab(currentCategory)">← Back to list</button>
+    <div style="display:flex; align-items:center; gap:14px; margin:16px 0;">
+      <div class="avatar" style="width:52px;height:52px;font-size:16px;background:${statusColor(acc)}">${initials(name)}</div>
+      <div><div style="font-size:16px;font-weight:800;">${name}</div><div class="card-caption">${cls} · ${statusLabel(acc)}</div></div>
+    </div>
+    <div class="statchip-row">
+      <div class="statchip"><div class="v">${acc}%</div><div class="l">Latest accuracy</div></div>
+      <div class="statchip"><div class="v">${Math.max(60, acc+15)}%</div><div class="l">Attendance</div></div>
+      <div class="statchip"><div class="v">${acc<50?'4 of 5':'5 of 5'}</div><div class="l">Homework submitted</div></div>
+      <div class="statchip"><div class="v">${acc<50?'9 days ago':'Today'}</div><div class="l">Last portal login</div></div>
+    </div>
+    <div class="modal-actions" style="justify-content:flex-start;">
+      <button class="btn primary" onclick="closeModal(); showToast('Message sent to parent')">Message parent</button>
+      <button class="btn" onclick="closeModal(); showToast('Remedial task assigned')">Assign remedial task</button>
+    </div>`;
+  openModal(name, `${cls} · student profile`, body);
+}
+
+// ---------------------------------------------------------------------------
+// Students who may need help
+// ---------------------------------------------------------------------------
+const atRisk = [
+  {name:'Aarav Mehta', cls:'Class 10B', chips:['Highest fail %'], sev:'high'},
+  {name:'Priya Nair', cls:'Class 9A', chips:['High absenteeism','Low attendance'], sev:'high'},
+  {name:'Devansh Rao', cls:'Class 11 Humanities A', chips:['Low attendance','Partial submit'], sev:'high'},
+  {name:'Kabir Singh', cls:'Class 11 Humanities A', chips:['Partial submit'], sev:'medium'},
+  {name:'Sara Iqbal', cls:'Class 12 Commerce A', chips:['Low engagement'], sev:'medium'},
+];
+const riskList = document.getElementById('at-risk-list');
+atRisk.forEach(s=>{
+  const row = document.createElement('div'); row.className='prow';
+  row.innerHTML = `
+    <div class="avatar" style="background:${s.sev==='high'?'var(--status-critical)':s.sev==='medium'?'var(--status-warning)':'var(--ink-400)'}">${initials(s.name)}</div>
+    <div class="prow-main">
+      <div class="prow-name">${s.name}</div>
+      <div class="prow-meta">${s.cls}</div>
+      <div class="prow-chips">${s.chips.map(c=>`<span class="chip negative">${c}</span>`).join('')}</div>
+    </div>
+    <div class="prow-side">
+      <span class="badge ${s.sev}">${s.sev}</span>
+      <div class="prow-actions"><a href="#">Message parent</a></div>
+    </div>`;
+  riskList.appendChild(row);
+});
+
+// ---------------------------------------------------------------------------
+// Not using the portal (school-wide)
+// ---------------------------------------------------------------------------
+const adoption = [
+  {name:'Priyanka Desai', cls:'History · Class 11 Humanities A', wing:'Senior Secondary', last:'14 days', hw:'0 of 5', tests:'1 of 3', sev:'high'},
+  {name:'Devansh Rao', cls:'History · Class 11 Humanities A', wing:'Senior Secondary', last:'11 days', hw:'1 of 5', tests:'1 of 3', sev:'high'},
+  {name:'Kabir Nanda', cls:'History · Class 11 Humanities A', wing:'Senior Secondary', last:'6 days', hw:'2 of 5', tests:'2 of 3', sev:'medium'},
+  {name:'Meher Chatterjee', cls:'English Core · Class 12 Non-Medical A', wing:'Senior Secondary', last:'5 days', hw:'—', tests:'—', sev:'watch', note:'Logs in rarely — work is otherwise fine'},
+  {name:'Aditi Malhotra', cls:'Science · Class 8A', wing:'Middle', last:'9 days', hw:'1 of 6', tests:'0 of 2', sev:'high'},
+  {name:'Yash Thakur', cls:'Math · Class 4A', wing:'Primary', last:'7 days', hw:'2 of 5', tests:'1 of 2', sev:'medium'},
+];
+const adoptEl = document.getElementById('adoption-list');
+function renderAdoption(wing){
+  wing = wing || 'all';
+  const rows = wing==='all' ? adoption : adoption.filter(s=>s.wing===wing);
+  adoptEl.innerHTML = '';
+  if(!rows.length){
+    adoptEl.innerHTML = `<div class="card-caption" style="padding:14px 0;">No sample rows for this wing — see "View all 38" for the full list.</div>`;
+  }
+  rows.forEach(s=>{
+    const row = document.createElement('div'); row.className='prow';
+    row.innerHTML = `
+      <div class="avatar" style="background:var(--violet)">${initials(s.name)}</div>
+      <div class="prow-main">
+        <div class="prow-name">${s.name}</div>
+        <div class="prow-meta">${s.cls} · Last seen ${s.last} ago</div>
+        <div class="prow-chips">
+          ${s.note ? `<span class="chip">${s.note}</span>` : `<span class="chip negative">Homework ${s.hw} submitted</span><span class="chip negative">Tests ${s.tests} attempted</span>`}
+        </div>
+      </div>
+      <div class="prow-side">
+        <span class="badge ${s.sev}">${s.sev}</span>
+        <div class="prow-actions"><a href="#">Nudge</a><span class="sep">·</span><a href="#">Message parent</a></div>
+      </div>`;
+    adoptEl.appendChild(row);
+  });
+  const note = document.getElementById('adoption-sample-note');
+  if(note) note.textContent = `Sample shown — ${rows.length} of ${wing==='all'?38:{Primary:6,Middle:11,'Senior Secondary':21}[wing]}`;
+}
+renderAdoption('all');
+function setWingTab(el, wing){
+  document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderAdoption(wing);
+}
+
+// ---------------------------------------------------------------------------
+// Teachers & staff — exceptions, coordinators, ranked performance
+// ---------------------------------------------------------------------------
+const staff = [
+  {name:'Rakesh Verma', role:'Physics · Senior Wing', att:'71%', overdue:6, active:'9 days ago'},
+  {name:'Sunita Rao', role:'History · Senior Wing', att:'68%', overdue:4, active:'3 days ago'},
+  {name:'Neha Kapoor', role:'Mathematics · Middle Wing', att:'—', overdue:5, active:'12 days ago'},
+  {name:'Alok Mehta', role:'Coordinator · Senior Wing', att:'—', overdue:3, active:'today'},
+  {name:'Farah Sheikh', role:'English · Middle Wing', att:'—', overdue:3, active:'60 days ago'},
+];
+const staffBody = document.getElementById('staff-tbody');
+staff.forEach(s=>{
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><div class="staffname">${s.name}</div><div class="staffrole">${s.role}</div></td>
+    <td class="${s.att!=='—' && parseInt(s.att)<75 ? 'metric-bad':'metric-ok'}">${s.att}</td>
+    <td class="${s.overdue>=4?'metric-bad':'metric-ok'}">${s.overdue}</td>
+    <td class="${s.active.includes('days') && parseInt(s.active)>7 ? 'metric-bad':'metric-ok'}">${s.active}</td>`;
+  staffBody.appendChild(tr);
+});
+
+const coordinators = [
+  {name:'Meera Iyer', wing:'Primary Wing', avg:74, att:92, rank:1},
+  {name:'Divya Menon', wing:'Middle Wing', avg:68, att:88, rank:2},
+  {name:'Alok Mehta', wing:'Senior Secondary Wing', avg:61, att:85, rank:3},
+];
+const coordBody = document.getElementById('coordinator-tbody');
+coordinators.forEach(c=>{
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><span class="rank-badge">${c.rank}</span></td>
+    <td><div class="staffname">${c.name}</div><div class="staffrole">${c.wing}</div></td>
+    <td class="${c.avg<65?'metric-bad':'metric-ok'}">${c.avg}%</td>
+    <td class="${c.att<88?'metric-bad':'metric-ok'}">${c.att}%</td>`;
+  coordBody.appendChild(tr);
+});
+
+const teacherRank = [
+  {name:'Rakesh Verma', tag:'Class 10A · Physics', score:52, trend:-3},
+  {name:'Neha Kapoor', tag:'Class 9A · Mathematics', score:56, trend:-1},
+  {name:'Sunita Rao', tag:'Class 11 Hum A · History', score:59, trend:4},
+  {name:'Farah Sheikh', tag:'Class 8A · English', score:61, trend:6},
+  {name:'Anjali Kulkarni', tag:'Class 12 Comm A · Accountancy', score:63, trend:2},
+  {name:'Ritu Bhatia', tag:'Class 11 Hum A · Social Science', score:66, trend:1},
+  {name:'Vikram Nair', tag:'Class 7A · Science', score:70, trend:5},
+  {name:'Deepak Joshi', tag:'Class 12 NMed A · Chemistry', score:72, trend:0},
+];
+const teacherBody = document.getElementById('teacher-rank-tbody');
+function renderTeacherRank(sortBy){
+  const rows = [...teacherRank].sort((a,b)=> sortBy==='score' ? a.score-b.score : a.trend-b.trend);
+  teacherBody.innerHTML = rows.map(t=>{
+    const trendTxt = t.trend===0 ? '— 0pp' : (t.trend>0?`▲ +${t.trend}pp`:`▼ ${t.trend}pp`);
+    const trendCls = t.trend===0 ? 'metric-ok' : (t.trend>0?'metric-up':'metric-down');
+    return `<tr>
+      <td class="staffname">${t.name}</td>
+      <td class="staffrole">${t.tag}</td>
+      <td class="${t.score<65?'metric-bad':'metric-ok'}">${t.score}%</td>
+      <td class="${trendCls}">${trendTxt}</td>
+    </tr>`;
+  }).join('');
+}
+renderTeacherRank('score');
+(function(){
+  const best = [...teacherRank].sort((a,b)=>b.trend-a.trend)[0];
+  if(best && best.trend>0){
+    document.querySelector('#teacher-shoutout span').innerHTML =
+      `<b>${best.name}</b>'s ${best.tag.split(' · ')[0]} is up <b>+${best.trend}pp</b> this month — worth a shoutout.`;
+  }
+})();
+function setTeacherSort(mode){
+  document.getElementById('teacher-sort-score').classList.toggle('active', mode==='score');
+  document.getElementById('teacher-sort-trend').classList.toggle('active', mode==='trend');
+  renderTeacherRank(mode);
+}
+
+// ---------------------------------------------------------------------------
+// Weakest class · section · subject → assign task
+// ---------------------------------------------------------------------------
+const weakest = [
+  {cls:'Class 10 A', subj:'Mathematics', teacher:'Neha Kapoor', v:48},
+  {cls:'Class 10 B', subj:'Science', teacher:'Vikram Nair', v:52},
+  {cls:'Class 11 Humanities A', subj:'History', teacher:'Sunita Rao', v:55},
+  {cls:'Class 9 A', subj:'Mathematics', teacher:'Neha Kapoor', v:58},
+  {cls:'Class 12 Non-Medical A', subj:'Chemistry', teacher:'Deepak Joshi', v:58},
+  {cls:'Class 8 A', subj:'English', teacher:'Farah Sheikh', v:61},
+  {cls:'Class 12 Commerce A', subj:'Accountancy', teacher:'Anjali Kulkarni', v:62},
+  {cls:'Class 10 A', subj:'Physics', teacher:'Rakesh Verma', v:62},
+  {cls:'Class 11 Humanities A', subj:'Social Science', teacher:'Ritu Bhatia', v:66},
+  {cls:'Class 7 A', subj:'Science', teacher:'Vikram Nair', v:70},
+];
+const weakestEl = document.getElementById('weakest-chart');
+weakest.forEach(w=>{
+  const row = document.createElement('div'); row.className='bar-row clickable';
+  row.onclick = ()=> openAssignTaskModal({
+    assignee: w.teacher, role: `${w.subj} teacher`,
+    context: `${w.cls} · ${w.subj} is at ${w.v}% — ${(schoolAvg-w.v).toFixed(1)}pp below the school average of ${schoolAvg}%.`,
+    title: `Improve ${w.subj} performance in ${w.cls}`,
+    description: `Flagged as one of the school's weakest class-subject combinations this cycle. Please review topic-level gaps and share a remediation plan.`
+  });
+  row.innerHTML = `
+    <div class="bar-label" title="${w.cls}">${w.cls}<div class="bar-sub">${w.subj} · ${w.teacher}</div></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${w.v}%; background:${statusColor(w.v)};" title="Click to assign ${w.teacher} a task"></div></div>
+    <div class="bar-val">${w.v}%</div>`;
+  weakestEl.appendChild(row);
+});
+
+// ---------------------------------------------------------------------------
+// Syllabus drill-down modal
+// ---------------------------------------------------------------------------
+const syllabusRows = [
+  {cls:'Class 12 Commerce A', subj:'Accountancy', teacher:'Anjali Kulkarni', v:38},
+  {cls:'Class 11 Humanities A', subj:'History', teacher:'Sunita Rao', v:41},
+  {cls:'Class 10 A', subj:'Mathematics', teacher:'Neha Kapoor', v:45},
+  {cls:'Class 9 A', subj:'Science', teacher:'Vikram Nair', v:52},
+  {cls:'Class 8 A', subj:'English', teacher:'Farah Sheikh', v:55},
+  {cls:'Class 12 Non-Medical A', subj:'Chemistry', teacher:'Deepak Joshi', v:58},
+  {cls:'Class 10 B', subj:'Physics', teacher:'Rakesh Verma', v:60},
+  {cls:'Class 7 A', subj:'Social Science', teacher:'Ritu Bhatia', v:63},
+  {cls:'Class 11 Humanities A', subj:'Political Science', teacher:'Sunita Rao', v:68},
+  {cls:'Class 9 A', subj:'English', teacher:'Farah Sheikh', v:71},
+];
+function openSyllabusModal(){
+  const rows = syllabusRows.map(r=>{
+    const behind = r.v < 50;
+    return `<tr>
+      <td class="staffname">${r.cls}</td>
+      <td class="staffrole">${r.subj}</td>
+      <td class="staffrole">${r.teacher}</td>
+      <td class="${behind?'metric-bad':'metric-ok'}">${r.v}%</td>
+      <td><button class="table-toggle" onclick='openAssignTaskModal({assignee:"${r.teacher}", role:"${r.subj} teacher", context:"${r.cls} · ${r.subj} syllabus coverage is at ${r.v}%.", title:"Catch up syllabus — ${r.cls} · ${r.subj}", description:"Coverage is behind schedule for this point in the year. Please share an updated pacing plan."})'>${behind?'Assign task':'Nudge'}</button></td>
+    </tr>`;
+  }).join('');
+  const body = `<table><thead><tr><th>Class</th><th>Subject</th><th>Teacher</th><th>Coverage</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  openModal('Syllabus coverage — by class · section · subject', 'Worst-first · 10 of 39 classes shown', body);
+}
+
+// ---------------------------------------------------------------------------
+// Attendance trend (students vs staff, 14 days) — SVG line chart w/ tooltip
+// ---------------------------------------------------------------------------
+(function(){
+  const students = [91,90,89,92,88,87,89,90,91,89,88,90,89,89.3];
+  const staffAtt = [95,96,94,95,93,94,95,96,95,94,93,95,94,94.8];
+  const svg = document.getElementById('attendance-chart');
+  const W=560,H=190, padL=32, padR=14, padT=14, padB=26;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const minV=80, maxV=100;
+  const x = i => padL + (i/(students.length-1))*plotW;
+  const y = v => padT + plotH - ((v-minV)/(maxV-minV))*plotH;
+  const NS='http://www.w3.org/2000/svg';
+  function el(tag,attrs){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+  [80,90,100].forEach(v=>{
+    svg.appendChild(el('line',{x1:padL,x2:W-padR,y1:y(v),y2:y(v),stroke:'#E7E3D6','stroke-width':1}));
+    const t = el('text',{x:2,y:y(v)+4,'font-size':10,fill:'#8C8A7E','font-family':'Inter, sans-serif'});
+    t.textContent=v+'%'; svg.appendChild(t);
+  });
+  function drawSeries(data,color){
+    const pts = data.map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+    svg.appendChild(el('polyline',{points:pts, fill:'none', stroke:color, 'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
+    const last = data[data.length-1];
+    const t = el('text',{x:x(data.length-1)+6,y:y(last)+4,'font-size':11,'font-weight':700,fill:color,'font-family':'Inter, sans-serif'});
+    t.textContent = last.toFixed(1)+'%'; svg.appendChild(t);
+  }
+  drawSeries(staffAtt,'#5B3FA6');
+  drawSeries(students,'#0D9488');
+
+  const tooltip = document.getElementById('tooltip2');
+  const overlay = el('rect',{x:padL,y:0,width:plotW,height:H,fill:'transparent'});
+  const crosshair = el('line',{x1:0,x2:0,y1:padT,y2:padT+plotH,stroke:'#8C8A7E','stroke-width':1,'stroke-dasharray':'3,3',opacity:0});
+  svg.appendChild(crosshair); svg.appendChild(overlay);
+  overlay.addEventListener('mousemove',(e)=>{
+    const rect = svg.getBoundingClientRect(); const scaleX = W/rect.width;
+    const mx = (e.clientX-rect.left)*scaleX;
+    let i = Math.round((mx-padL)/plotW*(students.length-1));
+    i = Math.max(0, Math.min(students.length-1, i));
+    crosshair.setAttribute('x1',x(i)); crosshair.setAttribute('x2',x(i)); crosshair.setAttribute('opacity',1);
+    tooltip.style.opacity=1; tooltip.style.left=(e.clientX-rect.left)+'px'; tooltip.style.top=(y(Math.max(students[i],staffAtt[i])))+'px';
+    tooltip.innerHTML = `Day ${i+1}<br>Students: <b>${students[i].toFixed(1)}%</b><br>Staff: <b>${staffAtt[i].toFixed(1)}%</b>`;
+  });
+  overlay.addEventListener('mouseleave', ()=>{ tooltip.style.opacity=0; crosshair.setAttribute('opacity',0); });
+})();
+
+// ---------------------------------------------------------------------------
+// Exam performance over time — week / month / by-exam toggle
+// ---------------------------------------------------------------------------
+const trendDatasets = {
+  exam: {labels:['Unit Test 1','Unit Test 2','Unit Test 3','Unit Test 4','Final Prep'], data:[58,61,63,65,67], min:45, max:75},
+  week: {labels:['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7','Wk 8'], data:[60,61,62,61,63,64,65,66], min:50, max:75},
+  month:{labels:['Apr','May','Jun','Jul','Aug'], data:[56,59,61,63,67], min:45, max:75},
+};
+let currentTrend = 'week';
+function renderLineChart(){
+  const {labels, data, min, max} = trendDatasets[currentTrend];
+  const svg = document.getElementById('linechart');
+  svg.innerHTML = '';
+  const W=560,H=200, padL=30, padR=14, padT=14, padB=28;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const x = i => padL + (i/(labels.length-1))*plotW;
+  const y = v => padT + plotH - ((v-min)/(max-min))*plotH;
+  const NS='http://www.w3.org/2000/svg';
+  function el(tag,attrs){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+  const step = (max-min)/3;
+  [min, min+step, min+2*step, max].forEach(v=>{
+    svg.appendChild(el('line',{x1:padL,x2:W-padR,y1:y(v),y2:y(v),stroke:'#E7E3D6','stroke-width':1}));
+    const t = el('text',{x:4,y:y(v)+4,'font-size':10,fill:'#8C8A7E','font-family':'Inter, sans-serif'});
+    t.textContent = Math.round(v)+'%'; svg.appendChild(t);
+  });
+  labels.forEach((l,i)=>{
+    const t = el('text',{x:x(i),y:H-8,'font-size':9.5,fill:'#8C8A7E','text-anchor':'middle','font-family':'Inter, sans-serif'});
+    t.textContent = l.replace('Unit Test','UT'); svg.appendChild(t);
+  });
+  const areaPts = `${x(0)},${y(min)} ` + data.map((v,i)=>`${x(i)},${y(v)}`).join(' ') + ` ${x(data.length-1)},${y(min)}`;
+  svg.appendChild(el('polygon',{points:areaPts, fill:'#0D9488', opacity:0.10}));
+  const pts = data.map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+  svg.appendChild(el('polyline',{points:pts, fill:'none', stroke:'#0D9488', 'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
+  data.forEach((v,i)=> svg.appendChild(el('circle',{cx:x(i),cy:y(v),r:4,fill:'#0D9488',stroke:'#fff','stroke-width':2})));
+  const last = data[data.length-1];
+  const lt = el('text',{x:x(data.length-1)+6,y:y(last)+4,'font-size':11,'font-weight':700,fill:'#0D9488','font-family':'Inter, sans-serif'});
+  lt.textContent = last+'%'; svg.appendChild(lt);
+
+  const tooltip = document.getElementById('tooltip');
+  const overlay = el('rect',{x:padL,y:0,width:plotW,height:H,fill:'transparent'});
+  const crosshair = el('line',{x1:0,x2:0,y1:padT,y2:padT+plotH,stroke:'#8C8A7E','stroke-width':1,'stroke-dasharray':'3,3',opacity:0});
+  svg.appendChild(crosshair); svg.appendChild(overlay);
+  overlay.addEventListener('mousemove',(e)=>{
+    const rect = svg.getBoundingClientRect(); const scaleX = W/rect.width;
+    const mx = (e.clientX-rect.left)*scaleX;
+    let i = Math.round((mx-padL)/plotW*(labels.length-1));
+    i = Math.max(0, Math.min(labels.length-1, i));
+    crosshair.setAttribute('x1',x(i)); crosshair.setAttribute('x2',x(i)); crosshair.setAttribute('opacity',1);
+    tooltip.style.opacity=1; tooltip.style.left=(e.clientX-rect.left)+'px'; tooltip.style.top=(y(data[i]))+'px';
+    tooltip.innerHTML = `<b>${labels[i]}</b><br>Avg. accuracy: <b>${data[i]}%</b>`;
+  });
+  overlay.addEventListener('mouseleave', ()=>{ tooltip.style.opacity=0; crosshair.setAttribute('opacity',0); });
+}
+function setTrendRange(range){
+  currentTrend = range;
+  ['week','month','exam'].forEach(r => document.getElementById('trend-'+r).classList.toggle('active', r===range));
+  renderLineChart();
+}
+renderLineChart();
+
+// ---------------------------------------------------------------------------
+// Sparklines — adoption (14-day) + academic performance (mini)
+// ---------------------------------------------------------------------------
+(function(){
+  const data = [82,80,79,81,78,76,77,75,74,76,73,72,74,71];
+  const svg = document.getElementById('sparkline');
+  const W=560,H=70, pad=6, minV=68, maxV=85;
+  const x = i => pad + (i/(data.length-1))*(W-pad*2);
+  const y = v => H-14 - ((v-minV)/(maxV-minV))*(H-24);
+  const NS='http://www.w3.org/2000/svg';
+  function el(tag,attrs){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+  const areaPts = `${x(0)},${H-14} ` + data.map((v,i)=>`${x(i)},${y(v)}`).join(' ') + ` ${x(data.length-1)},${H-14}`;
+  svg.appendChild(el('polygon',{points:areaPts, fill:'var(--status-critical)', opacity:0.08}));
+  svg.appendChild(el('polyline',{points:data.map((v,i)=>`${x(i)},${y(v)}`).join(' '), fill:'none', stroke:'var(--status-critical)', 'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
+  svg.appendChild(el('circle',{cx:x(data.length-1),cy:y(data[data.length-1]),r:4,fill:'var(--status-critical)',stroke:'#fff','stroke-width':2}));
+  const lbl = el('text',{x:x(data.length-1)-4,y:y(data[data.length-1])-10,'font-size':11,'font-weight':800,fill:'var(--status-critical)','text-anchor':'end','font-family':'Inter, sans-serif'});
+  lbl.textContent = data[data.length-1]+'%'; svg.appendChild(lbl);
+})();
+
+(function(){
+  const data = [58,61,63,65,67];
+  const svg = document.getElementById('acad-sparkline');
+  const W=140,H=46, pad=3, minV=50, maxV=72;
+  const x = i => pad + (i/(data.length-1))*(W-pad*2);
+  const y = v => H-8 - ((v-minV)/(maxV-minV))*(H-14);
+  const NS='http://www.w3.org/2000/svg';
+  function el(tag,attrs){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+  const areaPts = `${x(0)},${H-8} ` + data.map((v,i)=>`${x(i)},${y(v)}`).join(' ') + ` ${x(data.length-1)},${H-8}`;
+  svg.appendChild(el('polygon',{points:areaPts, fill:'#0D9488', opacity:0.10}));
+  svg.appendChild(el('polyline',{points:data.map((v,i)=>`${x(i)},${y(v)}`).join(' '), fill:'none', stroke:'#0D9488', 'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
+  svg.appendChild(el('circle',{cx:x(data.length-1),cy:y(data[data.length-1]),r:3.5,fill:'#0D9488',stroke:'#fff','stroke-width':1.5}));
+})();
+
+// ---------------------------------------------------------------------------
+// table-view toggles
+// ---------------------------------------------------------------------------
+function toggleView(which){
+  if(which==='classperf'){
+    document.getElementById('classperf-chart').classList.toggle('hide');
+    document.getElementById('classperf-table').classList.toggle('show');
+  } else if(which==='bars'){
+    document.getElementById('bars-chart').classList.toggle('hide');
+    document.getElementById('bars-table').classList.toggle('show');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Jump nav — scroll-spy
+// ---------------------------------------------------------------------------
+(function(){
+  const navLinks = [...document.querySelectorAll('.jumpnav a')];
+  const sections = navLinks.map(a => document.querySelector(a.getAttribute('href')));
+  function onScroll(){
+    const probe = window.scrollY + 90;
+    let current = sections[0];
+    sections.forEach((s)=>{ if(s && s.offsetTop <= probe) current = s; });
+    navLinks.forEach((a,i)=> a.classList.toggle('active', sections[i]===current));
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+</script>
+</body>
+</html>

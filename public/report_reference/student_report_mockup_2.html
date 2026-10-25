@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SALCI — Student Report</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    /* SALCI brand: teal + violet gradient (HeroCard token), warm cream / pure-white surface
+       hierarchy (src/index.css --surface-base / --surface-card), Inter type. Exact hex wasn't
+       recoverable from the brand PDF (image-only, no extractable swatches) — these are
+       best-effort values pulled from the documented token descriptions; confirm against the
+       live --primary / --surface-* tokens before shipping. */
+    --brand-teal: #0D9488;
+    --brand-violet: #5B3FA6;
+    --brand-gold: #B8860B;
+
+    --surface-1: #ffffff;         /* surface-card: pure white */
+    --page-plane: #F7F4EC;        /* surface-base: warm cream */
+    --page-outer: #ECE7DA;        /* behind the sheet, for screen preview contrast only */
+    --text-primary: #17181a;
+    --text-secondary: #454339;
+    --text-muted: #78766c;
+    --gridline: #ded9cb;
+    --baseline: #b9b4a4;
+    --border: rgba(23,24,26,0.14);
+
+    --series-student: var(--brand-teal);
+    --series-class: var(--brand-violet);
+    --series-topper: var(--brand-gold);
+
+    --status-good: var(--brand-teal);
+    --status-good-bg: rgba(13,148,136,0.14);
+    --status-good-ink: #0a6a61;
+    --status-stable: var(--brand-violet);
+    --status-stable-bg: rgba(91,63,166,0.13);
+    --status-stable-ink: #4a3286;
+    --status-warning: #e79a0a;
+    --status-warning-bg: rgba(231,154,10,0.20);
+    --status-warning-ink: #7a4f00;
+    --status-critical: #cf3838;
+    --status-critical-bg: rgba(207,56,56,0.14);
+    --status-critical-ink: #9c2b2b;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--page-outer);
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- non-print chrome ---------- */
+  .no-print { }
+  .toolbar {
+    max-width: 900px;
+    margin: 22px auto 0;
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .toolbar .hint { font-size: 12px; color: var(--text-muted); }
+  .toggle-group { display: inline-flex; background: #e9e8e3; border-radius: 9px; padding: 3px; gap: 2px; }
+  .toggle-btn {
+    font-family: inherit; font-size: 12px; font-weight: 600; border: none; cursor: pointer;
+    padding: 7px 12px; border-radius: 7px; background: transparent; color: var(--text-secondary);
+  }
+  .toggle-btn.active { background: #fff; color: var(--text-primary); box-shadow: 0 1px 3px rgba(11,11,11,0.15); }
+  .btn-print {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface-1); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 13px;
+    font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  }
+
+  /* ---------- the document ---------- */
+  .doc-wrap { padding: 20px 0 60px; }
+  .document {
+    width: 210mm;
+    margin: 0 auto;
+    background: var(--surface-1);
+    box-shadow: 0 10px 36px rgba(23,24,26,0.16), 0 1px 0 rgba(23,24,26,0.06);
+    padding: 14mm 13mm 16mm;
+  }
+
+  /* ---------- hero band ---------- */
+  .hero-band {
+    margin: -14mm -13mm 0;
+    padding: 10mm 13mm 40px;
+    background: var(--brand-teal); /* fallback beneath the SVG scene while fonts/assets settle */
+    color: #fff; position: relative; overflow: hidden; border-radius: 0 0 26px 26px;
+  }
+  .hero-illustration {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: block; z-index: 0;
+  }
+  .page-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding-bottom: 8px; margin-bottom: 4px; position: relative; z-index: 1;
+    text-shadow: 0 1px 5px rgba(20,10,40,0.38);
+  }
+  .brand-block { display: flex; align-items: center; gap: 10px; }
+  .logo-badge {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: rgba(255,255,255,0.22); backdrop-filter: blur(2px);
+    color: #fff; font-weight: 800; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.35);
+  }
+  .brand-text .name { font-size: 13.5px; font-weight: 700; line-height: 1.15; color: #fff; }
+  .brand-text .sub { font-size: 10px; color: rgba(255,255,255,0.75); }
+  .doc-meta { text-align: right; font-size: 10px; color: rgba(255,255,255,0.75); line-height: 1.5; }
+  .doc-meta b { color: #fff; }
+
+  .doc-footer {
+    margin-top: 26px; padding-top: 10px; border-top: 1px solid var(--gridline);
+    display: flex; justify-content: space-between; font-size: 9.5px; color: var(--text-muted);
+  }
+
+  .section-title { font-size: 15px; font-weight: 800; margin: 0 0 3px; display: flex; align-items: center; gap: 9px; letter-spacing: -0.005em; }
+  .section-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 12px; }
+  .section-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--brand-teal), var(--brand-violet));
+    color: #fff; font-size: 11px; font-weight: 800;
+    box-shadow: 0 1px 3px rgba(91,63,166,0.35);
+  }
+  .block { margin: 0 0 22px; break-inside: avoid; }
+  .divider { border: none; border-top: 1px solid var(--gridline); margin: 22px 0; }
+
+  .card { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: var(--surface-1); break-inside: avoid; }
+
+  /* cover */
+  .cover-title-row { text-align: center; margin: 8px 0 4px; position: relative; z-index: 1; text-shadow: 0 1px 6px rgba(20,10,40,0.4); }
+  .cover-title-row .kicker { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: rgba(255,255,255,0.85); font-weight: 800; margin-bottom: 6px; }
+  .cover-title-row h1 { font-size: 26px; margin: 0; font-weight: 800; letter-spacing: -0.01em; color: #fff; }
+  .cover-title-row .period { font-size: 12.5px; color: rgba(255,255,255,0.85); margin-top: 5px; }
+
+  .student-id-card {
+    display: grid; grid-template-columns: 68px 1fr; gap: 16px; align-items: center;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px;
+    padding: 15px 18px; margin: -30px 0 22px; position: relative; z-index: 2; break-inside: avoid;
+    box-shadow: 0 12px 28px rgba(23,24,26,0.14);
+  }
+  .avatar-circle {
+    width: 68px; height: 68px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-teal), var(--brand-violet));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800; color: #fff;
+    border: 3px solid var(--surface-1);
+    box-shadow: 0 0 0 2px rgba(91,63,166,0.25);
+  }
+  .id-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 18px; }
+  .id-grid .name-row { grid-column: 1 / -1; font-size: 16px; font-weight: 800; }
+  .id-item .k { font-size: 9.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); }
+  .id-item .v { font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-top: 1px; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .stat-tile {
+    background: linear-gradient(165deg, var(--stat-wash, rgba(13,148,136,0.07)) 0%, #ffffff 62%);
+    border: 1px solid var(--border); border-radius: 14px; padding: 13px 14px 12px; break-inside: avoid;
+    box-shadow: 0 2px 8px rgba(23,24,26,0.06); position: relative; overflow: hidden;
+  }
+  .stat-tile .icon-badge {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--stat-badge, rgba(13,148,136,0.16));
+    display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 9px;
+  }
+  .stat-tile .label { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-secondary); font-weight: 700; }
+  .stat-tile .value { font-size: 26px; font-weight: 800; margin-top: 5px; line-height:1; color: var(--text-primary); }
+  .stat-tile.muted .value { color: var(--text-muted); font-size: 20px; }
+  .stat-tile .delta { font-size: 11px; margin-top: 6px; display: flex; align-items: center; gap: 4px; font-weight: 700; }
+  .delta.up { color: var(--status-good-ink); }
+  .delta.down { color: var(--status-critical-ink); }
+  .delta.flat { color: var(--text-muted); font-weight: 600; }
+
+  .narrative {
+    background: linear-gradient(160deg, rgba(13,148,136,0.09), rgba(13,148,136,0.02));
+    border-left: 4px solid var(--brand-teal); border-radius: 0 10px 10px 0;
+    padding: 13px 16px; font-size: 12.5px; line-height: 1.62; color: var(--text-secondary); break-inside: avoid;
+  }
+  .narrative b { color: var(--text-primary); }
+
+  .parent-note {
+    background: linear-gradient(160deg, rgba(91,63,166,0.11), rgba(91,63,166,0.04));
+    border: 1px solid rgba(91,63,166,0.30); border-left: 4px solid var(--brand-violet); border-radius: 0 12px 12px 0;
+    padding: 13px 16px; font-size: 12px; line-height: 1.6; color: #362654; break-inside: avoid;
+  }
+  .parent-note .tag { display:inline-block; font-size: 9.5px; font-weight: 800; letter-spacing:.06em; text-transform: uppercase; color: var(--brand-violet); margin-bottom: 5px; }
+
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .badge-critical { background: var(--status-critical-bg); color: var(--status-critical-ink); }
+  .badge-critical .dot { background: var(--status-critical); }
+  .badge-warning { background: var(--status-warning-bg); color: var(--status-warning-ink); }
+  .badge-warning .dot { background: var(--status-warning); }
+  .badge-stable { background: var(--status-stable-bg); color: var(--status-stable-ink); }
+  .badge-stable .dot { background: var(--brand-violet); }
+  .badge-good { background: var(--status-good-bg); color: var(--status-good-ink); }
+  .badge-good .dot { background: var(--status-good); }
+
+  .trend-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; padding: 5px 12px; border-radius: 999px; }
+  .trend-pill.up { background: var(--status-good-bg); color: var(--status-good-ink); }
+  .trend-pill.gathering { background: #eeecf5; color: var(--text-secondary); }
+
+  /* strengths */
+  .strength-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; }
+  .strength-card {
+    border: 1px solid rgba(13,148,136,0.35);
+    background: linear-gradient(160deg, rgba(13,148,136,0.13), rgba(13,148,136,0.03));
+    border-radius: 12px; padding: 12px 14px; break-inside: avoid; position: relative; overflow: hidden;
+  }
+  .strength-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--brand-teal), var(--brand-violet)); }
+  .strength-card .st-top { display: flex; align-items: flex-start; gap: 10px; }
+  .strength-card .st-icon {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(13,148,136,0.18); color: var(--brand-teal);
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+  }
+  .strength-card .st-heading { flex: 1; min-width: 0; }
+  .strength-card .st-name { font-size: 12.5px; font-weight: 700; line-height: 1.3; }
+  .strength-card .st-kind { font-size: 9.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; margin-top: 1px; }
+  .strength-card .st-value { font-size: 19px; font-weight: 800; color: var(--status-good-ink); flex-shrink: 0; padding-left: 6px; }
+  .strength-card .st-note { font-size: 11px; color: var(--text-secondary); margin-top: 8px; line-height: 1.45; }
+
+  /* problems */
+  .problem-card { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 14px; break-inside: avoid; }
+  .problem-head { padding: 14px 16px 12px; display: grid; grid-template-columns: 1fr 130px; gap: 16px; }
+  .problem-main { min-width: 0; }
+  .problem-title-row { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
+  .problem-num {
+    width: 25px; height: 25px; border-radius: 50%;
+    color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .problem-num.sev-warning { background: var(--status-warning); }
+  .problem-num.sev-critical { background: var(--status-critical); }
+  .problem-title { font-size: 13.5px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .problem-evidence { font-size: 12px; color: var(--text-secondary); line-height: 1.55; margin: 0 0 8px; }
+  .sub-evidence { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .sub-evidence li { display: grid; grid-template-columns: 1fr 120px; align-items: center; gap: 10px; font-size: 11.5px; }
+  .sub-evidence .se-name { color: var(--text-primary); font-weight: 600; }
+  .problem-side { display: flex; flex-direction: column; gap: 12px; border-left: 1px solid var(--border); padding-left: 14px; }
+  .side-stat .side-label { font-size: 8.8px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); font-weight: 800; margin-bottom: 4px; }
+  .side-stars { font-size: 13px; letter-spacing: 1.5px; line-height: 1; }
+  .side-tag { font-size: 10.5px; font-weight: 800; margin-top: 3px; letter-spacing: .02em; }
+  .side-tag.high { color: var(--status-critical-ink); }
+  .side-tag.medium { color: var(--status-warning-ink); }
+  .side-tag.watch { color: var(--text-secondary); }
+  .side-value { font-size: 12px; font-weight: 700; color: var(--text-primary); }
+  .solution-box { background: linear-gradient(160deg, rgba(13,148,136,0.12), rgba(13,148,136,0.04)); border-top: 2px dashed rgba(13,148,136,0.4); padding: 12px 16px 14px; }
+  .solution-label { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--status-good-ink); margin-bottom: 7px; }
+  .solution-box ul { margin: 0; padding-left: 18px; }
+  .solution-box li { font-size: 12px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 4px; }
+  .solution-box li:last-child { margin-bottom: 0; }
+  .problems-note { font-size: 11.5px; color: var(--text-muted); font-style: italic; padding: 2px 2px 0; }
+  .no-problems {
+    border: 1px solid rgba(13,148,136,0.35); background: linear-gradient(135deg, rgba(13,148,136,0.12), rgba(91,63,166,0.06));
+    border-radius: 12px; padding: 14px 16px; font-size: 12.5px; color: var(--status-good-ink); font-weight: 700;
+  }
+
+  /* tables */
+  table.report-table { width: 100%; border-collapse: collapse; font-size: 11.3px; }
+  table.report-table thead { display: table-header-group; }
+  table.report-table th { text-align: left; font-size: 9.5px; text-transform: uppercase; letter-spacing: .03em; color: var(--text-secondary); border-bottom: 2px solid var(--text-primary); padding: 6px 7px; font-weight: 800; }
+  table.report-table td { padding: 7px 7px; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; vertical-align: middle; }
+  table.report-table tr { break-inside: avoid; }
+  table.report-table tr:last-child td { border-bottom: none; }
+  .num { text-align: right; }
+  .muted-cell { color: var(--text-muted); }
+  .gap-pos { color: var(--status-good-ink); font-weight: 700; }
+  .gap-neg { color: var(--status-critical-ink); font-weight: 700; }
+
+  .meter-row { display: flex; align-items: center; gap: 8px; }
+  .meter-track { flex: 1; height: 7px; border-radius: 4px; background: #e9e8e3; overflow: hidden; }
+  .meter-fill { height: 100%; border-radius: 4px; }
+  .meter-val { font-size: 11px; font-weight: 700; width: 34px; text-align: right; font-variant-numeric: tabular-nums; }
+  .meter-mini .meter-track { height: 6px; }
+  .meter-mini .meter-val { font-size: 10.5px; width: 30px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .callout-mini {
+    border: 1px solid var(--border); border-left: 3px solid var(--accent-mini, var(--brand-teal)); border-radius: 0 10px 10px 0;
+    padding: 11px 13px; break-inside: avoid;
+    background: linear-gradient(160deg, var(--accent-mini-bg, rgba(13,148,136,0.07)) 0%, #ffffff 68%);
+  }
+  .callout-mini .h { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); font-weight: 700; margin-bottom: 4px;}
+  .callout-mini .v { font-size: 15px; font-weight: 800; }
+  .callout-mini .d { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+
+  .legend-row { display: flex; gap: 16px; align-items: center; margin: 4px 0 10px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); font-weight: 600; }
+  .legend-swatch { width: 16px; height: 3px; border-radius: 2px; }
+
+  .passport-card {
+    margin-top: 6px; border-radius: 14px; padding: 14px 16px; color: #fff; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, var(--brand-teal), var(--brand-violet));
+  }
+  .passport-card::after { content: ''; position: absolute; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.10); right: -30px; top: -50px; }
+  .passport-card .h { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: rgba(255,255,255,0.85); font-weight: 800; margin-bottom: 4px; }
+  .passport-card .v { font-size: 16px; font-weight: 800; position: relative; z-index: 1; }
+  .passport-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; position: relative; z-index: 1; }
+  .passport-chip { display: flex; align-items: center; gap: 6px; border: 1px solid rgba(255,255,255,0.35); border-radius: 999px; padding: 5px 11px 5px 7px; font-size: 10.5px; font-weight: 700; background: rgba(255,255,255,0.16); color: #fff; }
+  .passport-chip .ic { font-size: 14px; }
+
+  .empty-hint { font-size: 11px; color: var(--text-muted); font-style: italic; padding: 8px 2px; }
+
+  svg text { font-family: 'Inter', system-ui, sans-serif; }
+
+  @media print {
+    body { background: #fff; }
+    .no-print { display: none !important; }
+    .doc-wrap { padding: 0; }
+    .document { width: auto; margin: 0; box-shadow: none; }
+    .hero-band { border-radius: 0 0 20px 20px; }
+    /* margin:0 here on purpose — .document's own padding is the single source of page margin.
+       A non-zero @page margin PLUS .document padding would double up under a real browser
+       print (Ctrl/Cmd+P), which honors @page margin unlike some headless PDF export paths. */
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="toolbar no-print">
+    <div class="hint" id="toolbarHint">This is the PDF a student/parent gets when they hit "Download Report"</div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="btnFull" onclick="setMode('full')">Later in the Year (rich data)</button>
+        <button class="toggle-btn" id="btnEarly" onclick="setMode('early')">Start of the Year (sparse data)</button>
+      </div>
+      <button class="btn-print" onclick="window.print()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print preview
+      </button>
+    </div>
+  </div>
+
+  <div class="doc-wrap">
+    <div class="document" id="document">
+
+      <div class="hero-band">
+        <svg class="hero-illustration" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#12A79A"/>
+              <stop offset="45%" stop-color="#3E7FA0"/>
+              <stop offset="100%" stop-color="#5B3FA6"/>
+            </linearGradient>
+            <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#E8B84B" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#E8B84B" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="mtnBack" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#9782CC" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#5B3FA6" stop-opacity="0.55"/>
+            </linearGradient>
+            <linearGradient id="mtnFront" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#4a2f8c"/>
+              <stop offset="100%" stop-color="#38225f"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="1000" height="300" fill="url(#skyGrad)"/>
+          <circle cx="800" cy="65" r="130" fill="url(#sunGlow)"/>
+          <circle cx="800" cy="65" r="32" fill="#F2C86B" opacity="0.9"/>
+          <g fill="#ffffff" opacity="0.16">
+            <ellipse cx="150" cy="55" rx="70" ry="16"/>
+            <ellipse cx="205" cy="44" rx="48" ry="12"/>
+            <ellipse cx="480" cy="34" rx="58" ry="13"/>
+            <ellipse cx="525" cy="44" rx="38" ry="10"/>
+          </g>
+          <g stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" fill="none" opacity="0.7">
+            <path d="M300 60 q8 -10 16 0 q8 -10 16 0"/>
+            <path d="M352 88 q7 -9 14 0 q7 -9 14 0"/>
+            <path d="M628 48 q7 -9 14 0 q7 -9 14 0"/>
+          </g>
+          <polygon points="0,222 120,122 230,202 340,92 470,212 560,142 660,212 760,152 860,222 1000,162 1000,300 0,300" fill="url(#mtnBack)"/>
+          <polyline points="0,222 120,122 230,202 340,92 470,212 560,142 660,212 760,152 860,222 1000,162" fill="none" stroke="#F2C86B" stroke-width="2" opacity="0.5"/>
+          <polygon points="0,300 0,252 100,172 220,252 330,182 430,252 520,192 620,252 720,192 830,252 1000,212 1000,300" fill="url(#mtnFront)"/>
+          <g fill="#F7F4EC" opacity="0.94">
+            <rect x="830" y="228" width="112" height="44" rx="2"/>
+            <polygon points="820,228 886,204 952,228"/>
+            <circle cx="886" cy="220" r="8" fill="#B8860B"/>
+            <rect x="846" y="244" width="16" height="27" fill="#5B3FA6" opacity="0.38"/>
+            <rect x="871" y="244" width="16" height="27" fill="#5B3FA6" opacity="0.38"/>
+            <rect x="910" y="244" width="16" height="27" fill="#5B3FA6" opacity="0.38"/>
+          </g>
+          <g>
+            <rect x="90" y="232" width="6" height="46" fill="#38225f"/>
+            <g fill="#E8B84B" opacity="0.85">
+              <circle cx="93" cy="220" r="22"/>
+              <circle cx="70" cy="233" r="16"/>
+              <circle cx="116" cy="233" r="16"/>
+            </g>
+            <rect x="902" y="236" width="6" height="46" fill="#38225f"/>
+            <g fill="#E8B84B" opacity="0.85">
+              <circle cx="905" cy="225" r="20"/>
+              <circle cx="884" cy="237" r="15"/>
+              <circle cx="926" cy="237" r="15"/>
+            </g>
+          </g>
+          <rect x="0" y="272" width="1000" height="28" fill="#2c1c56"/>
+        </svg>
+        <div class="page-header">
+          <div class="brand-block">
+            <div class="logo-badge">GGS</div>
+            <div class="brand-text">
+              <div class="name">Greenfield Global School</div>
+              <div class="sub">Sector 21, Gurugram, Haryana · CBSE Affiliation No. 1234567</div>
+            </div>
+          </div>
+          <div class="doc-meta">
+            Generated by <b>SALCI</b> on <span id="metaGenerated"></span><br/>
+            Confidential — for student &amp; parent/guardian use
+          </div>
+        </div>
+
+        <div class="cover-title-row">
+          <div class="kicker">🎓 Academic Progress Report</div>
+          <h1 id="coverTerm"></h1>
+          <div class="period" id="coverPeriod"></div>
+        </div>
+      </div>
+
+      <div class="student-id-card">
+        <div class="avatar-circle">AS</div>
+        <div class="id-grid">
+          <div class="name-row">Aditi Sharma</div>
+          <div class="id-item"><div class="k">Class &amp; Section</div><div class="v">10 – B</div></div>
+          <div class="id-item"><div class="k">Roll No.</div><div class="v">24</div></div>
+          <div class="id-item"><div class="k">Admission No.</div><div class="v">GGS-2031</div></div>
+          <div class="id-item"><div class="k">Class Teacher</div><div class="v">Mrs. Nandita Rao</div></div>
+          <div class="id-item"><div class="k">Students in Class</div><div class="v">42</div></div>
+          <div class="id-item"><div class="k">Assessments So Far</div><div class="v" id="idAssessments"></div></div>
+        </div>
+      </div>
+
+      <!-- 1. SNAPSHOT -->
+      <div class="block">
+        <div class="section-title"><span class="section-num">1</span> 📊 Executive Snapshot</div>
+        <div class="section-sub">The headline numbers — everything below is explained in the sections that follow.</div>
+        <div class="stat-grid" id="statGrid"></div>
+      </div>
+
+      <div class="block">
+        <div id="trendPillWrap" style="margin-bottom:10px;"></div>
+        <div class="narrative" id="narrativeText"></div>
+      </div>
+
+      <!-- 2. STRENGTHS -->
+      <div class="block">
+        <div class="section-title"><span class="section-num">2</span> 🌟 What Aditi Does Well</div>
+        <div class="section-sub">Starting here on purpose — this is what to build on, not just what to fix.</div>
+        <div class="strength-grid" id="strengthsGrid"></div>
+      </div>
+
+      <!-- 3. PROBLEMS + SOLUTIONS -->
+      <div class="block">
+        <div class="section-title"><span class="section-num">3</span> 🎯 Where Aditi Needs Support — and What to Do About It</div>
+        <div class="section-sub">Each issue is paired immediately with a concrete next step, in priority order.</div>
+        <div id="problemsContainer"></div>
+        <div id="problemsNote" class="problems-note"></div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- 4. TREND + STANDING -->
+      <div class="block">
+        <div class="section-title"><span class="section-num">4</span> 📈 Performance Trend &amp; Class Standing</div>
+        <div class="section-sub" id="trendSectionSub"></div>
+        <div class="legend-row">
+          <div class="legend-item"><span class="legend-swatch" style="background:var(--series-student);"></span> Aditi</div>
+          <div class="legend-item"><span class="legend-swatch" style="background:var(--series-class); background-image:repeating-linear-gradient(90deg,var(--series-class) 0 4px, transparent 4px 7px); background-color:transparent;"></span> Class Average</div>
+        </div>
+        <div id="trendChart"></div>
+      </div>
+
+      <div class="block">
+        <div class="two-col" style="margin-bottom:10px;">
+          <div class="callout-mini" style="--accent-mini:var(--brand-teal); --accent-mini-bg:rgba(13,148,136,0.09)">
+            <div class="h">🏆 Percentile Rank</div>
+            <div class="v" id="percentileValue"></div>
+            <div class="d" id="percentileNote"></div>
+          </div>
+          <div class="callout-mini" style="--accent-mini:var(--brand-gold); --accent-mini-bg:rgba(184,134,11,0.10)">
+            <div class="h">🥇 Gap to Class Topper</div>
+            <div class="v" id="topperGapValue"></div>
+            <div class="d" id="topperGapNote"></div>
+          </div>
+        </div>
+        <div id="distChart"></div>
+      </div>
+
+      <!-- 5. SUBJECT TABLE -->
+      <div class="block">
+        <div class="section-title"><span class="section-num">5</span> 📚 Subject-wise Performance vs Class Average</div>
+        <div class="section-sub">Full reference table — every subject with data so far, worst gap first.</div>
+        <div id="subjectBarChart"></div>
+        <table class="report-table" style="margin-top:10px;">
+          <thead><tr><th>Subject</th><th class="num">Aditi</th><th class="num">Class Avg</th><th class="num">Gap</th><th class="num">Topper</th><th>Status</th></tr></thead>
+          <tbody id="subjectsTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- 6. TOPIC MASTERY -->
+      <div class="block">
+        <div class="section-title"><span class="section-num">6</span> 🧠 Topic / Concept Mastery — Full Detail</div>
+        <div class="section-sub">Every topic attempted so far, weakest first.</div>
+        <table class="report-table">
+          <thead><tr><th style="width:16%">Subject</th><th style="width:30%">Topic</th><th style="width:24%">Mastery</th><th>Trend</th><th class="num">Questions Seen</th></tr></thead>
+          <tbody id="topicsTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- 7. EFFICIENCY -->
+      <div class="block">
+        <div class="section-title"><span class="section-num">7</span> ⏱️ Time &amp; Effort Efficiency</div>
+        <div class="section-sub" id="efficiencySub"></div>
+        <div style="display:grid; grid-template-columns: 1fr 1.1fr; gap:18px; align-items:center;" id="efficiencyWrap"></div>
+      </div>
+
+      <!-- 8. EXAM LOG -->
+      <div class="block">
+        <div class="section-title"><span class="section-num">8</span> 📝 Exam-by-Exam Log</div>
+        <div class="section-sub">Every assessment included in this report, in order.</div>
+        <table class="report-table">
+          <thead><tr><th>Assessment</th><th>Subject</th><th>Date</th><th class="num">Aditi</th><th class="num">Class Avg</th><th class="num">Gap</th><th class="num">Rank</th></tr></thead>
+          <tbody id="examLogBody"></tbody>
+        </table>
+      </div>
+
+      <!-- 9. ENGAGEMENT -->
+      <div class="block">
+        <div class="two-col">
+          <div>
+            <div class="section-title" style="font-size:12.5px;"><span class="section-num">9</span> 🏅 Engagement &amp; Recognition</div>
+            <div class="passport-card">
+              <div class="h">Learning Passport</div>
+              <div class="v" id="passportLevel"></div>
+              <div class="passport-row" id="passportBadges"></div>
+            </div>
+          </div>
+          <div class="parent-note">
+            <div class="tag">💬 What this means for you</div>
+            <span id="parentNoteText"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-footer">
+        <span>SALCI — Self Analysis for Learning &amp; Competency Improvement · "Empowering Learning Beyond Marks"</span>
+        <span>Confidential student &amp; parent document</span>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+(function () {
+  var COLOR = {
+    student: '#0D9488', classAvg: '#5B3FA6', topper: '#B8860B',
+    grid: '#ded9cb', ink: '#17181a', inkMuted: '#78766c', inkSecondary: '#454339',
+    good: '#0D9488', stable: '#5B3FA6', warning: '#e79a0a', critical: '#cf3838'
+  };
+
+  /* ============================= DATA: LATER IN THE YEAR ============================= */
+  var FULL_DATA = {
+    meta: { yearLabel: 'Academic Year 2026–27', period: '1 Apr 2026 – 5 Aug 2026', assessments: 10, generated: '5 Aug 2026' },
+    snapshot: {
+      accuracy: 68.8, classAvg: 69.7, passCount: 10, totalCount: 10,
+      percentile: 60, rank: 17, classSize: 42, consistency: 91, trendState: 'trend', trendDir: 'up',
+      trendText: 'Improving — last 3 assessments trending up'
+    },
+    narrative: 'Aditi is performing close to the class average overall (68.8% vs 69.7%) and has passed every assessment so far this year. Two focus areas stand out — both explained below, each with a specific next step — while everything else is at or above class average.',
+    parentNote: 'Aditi is a steady, engaged student who is on par with her class overall and ahead in most subjects. The two things worth acting on right now are specific chapters in Maths and Social Science — not whole subjects — each with a clear next step below. Nothing here needs urgent intervention.',
+    strengths: [
+      { name: 'Computer Applications', kind: 'Subject', value: '88%', note: '8 points above class average — the strongest subject so far this year.' },
+      { name: 'English', kind: 'Subject', value: '82%', note: '7 points above class average in every test so far.' },
+      { name: 'Python Basics', kind: 'Topic · Computer Applications', value: '91%', note: 'Highest mastery of any topic so far, and still climbing.' }
+    ],
+    problems: [
+      {
+        title: 'Mathematics', badge: 'Developing', severity: 'critical',
+        priority: 'High', priorityStars: 4, estTime: '4–6 Days',
+        evidence: 'Running 6–10 percentage points behind the class average in all three Maths tests so far this year. The gap traces to two chapters specifically:',
+        subEvidence: [
+          { name: 'Trigonometry — Heights & Distances', mastery: 38 },
+          { name: 'Quadratic Equations', mastery: 42 }
+        ],
+        solutions: [
+          'Redo NCERT Ex 9.1 + 10 mixed Heights & Distances problems from the AI practice set — target: by Friday.',
+          'Revise factorisation and the quadratic-formula method; complete the 12-question AI practice set assigned this week.',
+          'Flag any question missed twice for teacher follow-up.'
+        ]
+      },
+      {
+        title: 'Social Science', badge: 'Stable, but slipping', severity: 'warning',
+        priority: 'Medium', priorityStars: 3, estTime: '2–3 Days',
+        evidence: 'Sitting 5 points below class average overall, driven mainly by one chapter that’s trending down:',
+        subEvidence: [ { name: 'Nationalism in India', mastery: 48 } ],
+        solutions: [
+          'Re-read the Chapter 2 summary notes and attempt the timeline recap quiz.',
+          'Walk through the sequence of the Non-Cooperation Movement with the subject teacher.'
+        ]
+      }
+    ],
+    problemsNote: '',
+    trend: [
+      { code: 'PT1-M', accuracy: 58, classAvg: 66 }, { code: 'PT1-Sc', accuracy: 71, classAvg: 69 },
+      { code: 'UT1-SSt', accuracy: 64, classAvg: 70 }, { code: 'UT1-En', accuracy: 82, classAvg: 75 },
+      { code: 'PT2-M', accuracy: 55, classAvg: 65 }, { code: 'PT2-Sc', accuracy: 74, classAvg: 70 },
+      { code: 'UT2-Hi', accuracy: 79, classAvg: 73 }, { code: 'HY-M', accuracy: 61, classAvg: 67 },
+      { code: 'HY-Sc', accuracy: 76, classAvg: 71 }, { code: 'HY-SSt', accuracy: 68, classAvg: 71 }
+    ],
+    distribution: { bins: [ ['<50',3], ['50–60',6], ['60–70',14], ['70–80',12], ['80–90',5], ['90–100',2] ], studentBinIdx: 2, studentLabel: '68.8%' },
+    topperGap: '22.2 pp', topperNote: 'Topper: Kabir Mehta — 91.0%',
+    percentileNote: 'Ahead of 25 of 41 classmates',
+    subjects: [
+      { name: 'Mathematics', student: 58.0, classAvg: 66.0, topper: 89, status: 'warning', statusLabel: 'Developing' },
+      { name: 'Social Science', student: 66.0, classAvg: 71.0, topper: 88, status: 'stable', statusLabel: 'Stable' },
+      { name: 'Science', student: 74.0, classAvg: 70.0, topper: 92, status: 'stable', statusLabel: 'Stable' },
+      { name: 'Hindi', student: 79.0, classAvg: 73.0, topper: 90, status: 'stable', statusLabel: 'Stable' },
+      { name: 'English', student: 82.0, classAvg: 75.0, topper: 96, status: 'stable', statusLabel: 'Stable' },
+      { name: 'Computer Applications', student: 88.0, classAvg: 80.0, topper: 97, status: 'good', statusLabel: 'Excellent' }
+    ],
+    topics: [
+      { subject: 'Mathematics', topic: 'Trigonometry — Heights & Distances', mastery: 38, trend: 'stable', qs: 22 },
+      { subject: 'Mathematics', topic: 'Quadratic Equations', mastery: 42, trend: 'declining', qs: 19 },
+      { subject: 'Social Science', topic: 'Nationalism in India', mastery: 48, trend: 'declining', qs: 15 },
+      { subject: 'Mathematics', topic: 'Polynomials', mastery: 55, trend: 'declining', qs: 24 },
+      { subject: 'Social Science', topic: 'Resources & Development', mastery: 58, trend: 'stable', qs: 17 },
+      { subject: 'Social Science', topic: 'Money & Credit', mastery: 60, trend: 'stable', qs: 14 },
+      { subject: 'Mathematics', topic: 'Coordinate Geometry', mastery: 61, trend: 'improving', qs: 20 },
+      { subject: 'Social Science', topic: 'Federalism', mastery: 66, trend: 'improving', qs: 16 },
+      { subject: 'Science', topic: 'Life Processes', mastery: 65, trend: 'stable', qs: 21 },
+      { subject: 'Mathematics', topic: 'Arithmetic Progressions', mastery: 70, trend: 'stable', qs: 18 },
+      { subject: 'Science', topic: 'Chemical Reactions & Equations', mastery: 72, trend: 'stable', qs: 23 },
+      { subject: 'English', topic: 'Grammar — Tenses & Modals', mastery: 75, trend: 'stable', qs: 20 },
+      { subject: 'Science', topic: 'Light — Reflection & Refraction', mastery: 80, trend: 'improving', qs: 19 },
+      { subject: 'Hindi', topic: 'Vyakaran — Sandhi', mastery: 81, trend: 'stable', qs: 13 },
+      { subject: 'English', topic: 'Prose — First Flight', mastery: 88, trend: 'improving', qs: 16 },
+      { subject: 'Computer Applications', topic: 'Python Basics', mastery: 91, trend: 'improving', qs: 22 }
+    ],
+    examLog: [
+      { name: 'Periodic Test 1', subject: 'Mathematics', date: '15 Apr 2026', code: 'PT1-M', rank: 29 },
+      { name: 'Periodic Test 1', subject: 'Science', date: '18 Apr 2026', code: 'PT1-Sc', rank: 17 },
+      { name: 'Unit Test 1', subject: 'Social Science', date: '25 Apr 2026', code: 'UT1-SSt', rank: 27 },
+      { name: 'Unit Test 1', subject: 'English', date: '02 May 2026', code: 'UT1-En', rank: 8 },
+      { name: 'Periodic Test 2', subject: 'Mathematics', date: '10 Jun 2026', code: 'PT2-M', rank: 31 },
+      { name: 'Periodic Test 2', subject: 'Science', date: '14 Jun 2026', code: 'PT2-Sc', rank: 14 },
+      { name: 'Unit Test 2', subject: 'Hindi', date: '20 Jun 2026', code: 'UT2-Hi', rank: 10 },
+      { name: 'Half-Yearly', subject: 'Mathematics', date: '28 Jul 2026', code: 'HY-M', rank: 26 },
+      { name: 'Half-Yearly', subject: 'Science', date: '30 Jul 2026', code: 'HY-Sc', rank: 12 },
+      { name: 'Half-Yearly', subject: 'Social Science', date: '01 Aug 2026', code: 'HY-SSt', rank: 22 }
+    ],
+    efficiency: {
+      show: true, studentTime: 96, classTime: 78, studentAcc: 69, classAcc: 70,
+      sub: 'A low score can come from rushing OR overthinking — this shows which one applies.',
+      note: 'Aditi averages <b>96 sec/question</b> against a class average of <b>78 sec/question</b>, for very similar accuracy (69% vs 70%). She isn’t making careless errors from rushing — she’s <b>spending longer than peers without a matching accuracy gain</b>. Timed practice (see Section 3) targets this directly.'
+    },
+    passport: { level: '⭐ Advanced — 340 points', badges: [['🏅','Consistent Performer'],['🔬','Science Explorer'],['🔥','7-Day Streak']] }
+  };
+
+  /* ============================= DATA: START OF THE YEAR ============================= */
+  var EARLY_DATA = {
+    meta: { yearLabel: 'Academic Year 2026–27', period: '1 Apr 2026 – 22 Apr 2026', assessments: 2, generated: '22 Apr 2026' },
+    snapshot: {
+      accuracy: 64.5, classAvg: 67.5, passCount: 2, totalCount: 2,
+      percentile: 48, rank: 22, classSize: 42, consistency: null, trendState: 'gathering',
+      trendText: 'Gathering data — one more assessment needed for a trend'
+    },
+    narrative: 'It’s early days — only two assessments in so far, so treat every number here as a first read, not a verdict. Science is off to a strong start, while Mathematics needs a bit of early attention on one chapter. This report will get sharper as more assessments come in.',
+    parentNote: 'Two tests in, Aditi looks solid: on par with the class overall and ahead in Science. There’s one early flag in Maths (a single chapter, not the whole subject) worth a few focused practice sessions before it becomes a pattern. Nothing urgent — just worth watching.',
+    strengths: [
+      { name: 'Science', kind: 'Subject', value: '71%', note: '2 points above class average on the first test — a strong opening.' }
+    ],
+    problems: [
+      {
+        title: 'Mathematics', badge: 'Watch', severity: 'warning',
+        priority: 'Watch', priorityStars: 2, estTime: '2–3 Days',
+        evidence: '6 points below class average on the first Maths test, concentrated in one chapter:',
+        subEvidence: [ { name: 'Polynomials', mastery: 45 } ],
+        solutions: [
+          'Revisit factorisation basics — NCERT Ex 2.2, questions 1–5.',
+          'Try the 8-question AI warm-up set before the next Maths class.'
+        ]
+      }
+    ],
+    problemsNote: 'Only one focus area stands out this early — we’ll flag more (or confirm this one has cleared up) after the next couple of assessments.',
+    trend: [
+      { code: 'PT1-M', accuracy: 58, classAvg: 66 }, { code: 'PT1-Sc', accuracy: 71, classAvg: 69 }
+    ],
+    distribution: { bins: [ ['<50',4], ['50–60',7], ['60–70',15], ['70–80',10], ['80–90',4], ['90–100',2] ], studentBinIdx: 2, studentLabel: '64.5%' },
+    topperGap: '25.5 pp', topperNote: 'Topper so far: Kabir Mehta — 90.0%',
+    percentileNote: 'Ahead of 20 of 41 classmates',
+    subjects: [
+      { name: 'Mathematics', student: 58.0, classAvg: 66.0, topper: 89, status: 'warning', statusLabel: 'Developing' },
+      { name: 'Science', student: 71.0, classAvg: 69.0, topper: 92, status: 'stable', statusLabel: 'Stable' }
+    ],
+    topics: [
+      { subject: 'Mathematics', topic: 'Polynomials', mastery: 45, trend: 'new', qs: 8 },
+      { subject: 'Science', topic: 'Metals and Non-metals', mastery: 58, trend: 'new', qs: 7 },
+      { subject: 'Mathematics', topic: 'Pair of Linear Equations', mastery: 60, trend: 'new', qs: 9 },
+      { subject: 'Science', topic: 'Chemical Reactions & Equations', mastery: 68, trend: 'new', qs: 8 },
+      { subject: 'Mathematics', topic: 'Real Numbers', mastery: 72, trend: 'new', qs: 10 },
+      { subject: 'Science', topic: 'Acids, Bases and Salts', mastery: 74, trend: 'new', qs: 9 }
+    ],
+    examLog: [
+      { name: 'Periodic Test 1', subject: 'Mathematics', date: '15 Apr 2026', code: 'PT1-M', rank: 29 },
+      { name: 'Periodic Test 1', subject: 'Science', date: '18 Apr 2026', code: 'PT1-Sc', rank: 17 }
+    ],
+    efficiency: {
+      show: true, studentTime: 90, classTime: 80, studentAcc: 64.5, classAcc: 67.5,
+      sub: 'Based on 2 assessments so far — early signal, not yet a firm pattern.',
+      note: 'Aditi is already spending a little longer per question (<b>90 sec</b>) than the class average (<b>80 sec</b>) for slightly lower accuracy. Too early to call it a pattern — worth a glance again after the next test.'
+    },
+    passport: { level: '🌱 Beginner — 45 points', badges: [['🔥','7-Day Streak']] }
+  };
+
+  /* ============================= helpers ============================= */
+  function el(tag, attrs, children) {
+    var ns = 'http://www.w3.org/2000/svg';
+    var e = document.createElementNS(ns, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    (children || []).forEach(function (c) { e.appendChild(c); });
+    return e;
+  }
+  function svgRoot(w, h) { return el('svg', { viewBox: '0 0 ' + w + ' ' + h, width: '100%', height: h, style: 'display:block;overflow:visible;' }); }
+  function scaleFn(domain, range) {
+    var d0 = domain[0], d1 = domain[1], r0 = range[0], r1 = range[1];
+    return function (v) { return r0 + (v - d0) / (d1 - d0) * (r1 - r0); };
+  }
+  function meterColor(v) {
+    if (v < 50) return COLOR.critical;
+    if (v < 65) return COLOR.warning;
+    if (v < 85) return COLOR.stable;
+    return COLOR.good;
+  }
+  function trendArrowHtml(t) {
+    if (t === 'improving') return '<span style="color:' + COLOR.good + ';font-weight:700;">▲ Improving</span>';
+    if (t === 'declining') return '<span style="color:' + COLOR.critical + ';font-weight:700;">▼ Declining</span>';
+    if (t === 'new') return '<span style="color:' + COLOR.inkMuted + ';font-weight:600;">● First attempt</span>';
+    return '<span style="color:' + COLOR.inkMuted + ';font-weight:600;">─ Stable</span>';
+  }
+  function statusBadgeHtml(status, label) {
+    return '<span class="badge badge-' + status + '"><span class="dot"></span>' + label + '</span>';
+  }
+  function starsHtml(n) {
+    var s = '';
+    for (var i = 1; i <= 5; i++) s += '<span style="color:' + (i <= n ? 'var(--brand-gold)' : '#e3ddc9') + ';">★</span>';
+    return s;
+  }
+  function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+  function fmtPct(v) { return (Math.round(v * 10) / 10).toFixed(1) + '%'; }
+
+  /* ============================= render ============================= */
+  function render(d) {
+    document.getElementById('metaGenerated').textContent = d.meta.generated;
+    document.getElementById('coverTerm').textContent = d.meta.yearLabel;
+    document.getElementById('coverPeriod').textContent = 'Reporting period: ' + d.meta.period + ' · ' + d.meta.assessments + ' assessment' + (d.meta.assessments === 1 ? '' : 's') + ' included';
+    document.getElementById('idAssessments').textContent = d.meta.assessments;
+
+    /* --- stat grid --- */
+    var s = d.snapshot;
+    var accDelta = s.accuracy - s.classAvg;
+    var statGrid = document.getElementById('statGrid');
+    clear(statGrid);
+    statGrid.innerHTML =
+      '<div class="stat-tile" style="--stat-wash:rgba(13,148,136,0.09); --stat-badge:rgba(13,148,136,0.17)"><div class="icon-badge">🎯</div><div class="label">Overall Accuracy</div><div class="value">' + fmtPct(s.accuracy) + '</div>' +
+        '<div class="delta ' + (accDelta >= 0 ? 'up' : 'down') + '">' + (accDelta >= 0 ? '▲' : '▼') + ' ' + Math.abs(accDelta).toFixed(1) + ' pp vs class avg (' + fmtPct(s.classAvg) + ')</div></div>' +
+      '<div class="stat-tile" style="--stat-wash:rgba(91,63,166,0.08); --stat-badge:rgba(91,63,166,0.17)"><div class="icon-badge">✅</div><div class="label">Pass Rate</div><div class="value">' + Math.round(s.passCount / s.totalCount * 100) + '%</div>' +
+        '<div class="delta up">' + s.passCount + ' of ' + s.totalCount + ' assessments passed</div></div>' +
+      '<div class="stat-tile" style="--stat-wash:rgba(184,134,11,0.10); --stat-badge:rgba(184,134,11,0.20)"><div class="icon-badge">🏆</div><div class="label">Class Percentile</div><div class="value">' + s.percentile + (s.percentile === 1 ? 'st' : (s.percentile % 10 === 0 || s.percentile > 50 ? 'th' : 'th')) + '</div>' +
+        '<div class="delta flat">Rank ' + s.rank + ' of ' + s.classSize + '</div></div>' +
+      (s.consistency === null
+        ? '<div class="stat-tile muted" style="--stat-wash:rgba(185,180,164,0.14); --stat-badge:rgba(185,180,164,0.30)"><div class="icon-badge" style="color:var(--text-muted);">📈</div><div class="label">Consistency Score</div><div class="value">—</div><div class="delta flat">Needs 3+ assessments</div></div>'
+        : '<div class="stat-tile" style="--stat-wash:rgba(13,148,136,0.09); --stat-badge:rgba(13,148,136,0.17)"><div class="icon-badge">📈</div><div class="label">Consistency Score</div><div class="value">' + s.consistency + '<span style="font-size:14px;color:var(--text-muted);">/100</span></div><div class="delta up">Very consistent test-to-test</div></div>');
+
+    /* --- trend pill + narrative --- */
+    var pillWrap = document.getElementById('trendPillWrap');
+    pillWrap.innerHTML = s.trendState === 'gathering'
+      ? '<span class="trend-pill gathering">● ' + s.trendText + '</span>'
+      : '<span class="trend-pill up">▲ ' + s.trendText + '</span>';
+    document.getElementById('narrativeText').innerHTML = '<b>In plain terms:</b> ' + d.narrative;
+    document.getElementById('parentNoteText').textContent = d.parentNote;
+
+    /* --- strengths --- */
+    var sg = document.getElementById('strengthsGrid');
+    clear(sg);
+    d.strengths.forEach(function (st) {
+      var card = document.createElement('div');
+      card.className = 'strength-card';
+      card.innerHTML =
+        '<div class="st-top"><div class="st-icon">⭐</div><div class="st-heading"><div class="st-name">' + st.name + '</div>' +
+          (st.kind ? '<div class="st-kind">' + st.kind + '</div>' : '') + '</div><div class="st-value">' + st.value + '</div></div>' +
+        '<div class="st-note">' + st.note + '</div>';
+      sg.appendChild(card);
+    });
+
+    /* --- problems --- */
+    var pc = document.getElementById('problemsContainer');
+    clear(pc);
+    if (d.problems.length === 0) {
+      var np = document.createElement('div');
+      np.className = 'no-problems';
+      np.textContent = '✅ No subject or topic is currently below class average — nothing flagged this period.';
+      pc.appendChild(np);
+    } else {
+      d.problems.forEach(function (p, i) {
+        var card = document.createElement('div');
+        card.className = 'problem-card';
+        var subList = p.subEvidence.map(function (se) {
+          return '<li><span class="se-name">' + se.name + '</span><div class="meter-row meter-mini"><div class="meter-track"><div class="meter-fill" style="width:' + se.mastery + '%;background:' + meterColor(se.mastery) + ';"></div></div><div class="meter-val">' + se.mastery + '%</div></div></li>';
+        }).join('');
+        var solList = p.solutions.map(function (sol) { return '<li>' + sol + '</li>'; }).join('');
+        var sev = p.severity || 'warning';
+        var prioClass = (p.priority || 'medium').toLowerCase();
+        card.innerHTML =
+          '<div class="problem-head">' +
+            '<div class="problem-main">' +
+              '<div class="problem-title-row"><div class="problem-num sev-' + sev + '">' + (i + 1) + '</div><div class="problem-title">' + p.title + ' <span class="badge badge-' + sev + '"><span class="dot"></span>' + p.badge + '</span></div></div>' +
+              '<div class="problem-evidence">' + p.evidence + '</div>' +
+              '<ul class="sub-evidence">' + subList + '</ul>' +
+            '</div>' +
+            '<div class="problem-side">' +
+              '<div class="side-stat"><div class="side-label">Priority</div><div class="side-stars">' + starsHtml(p.priorityStars || 3) + '</div><div class="side-tag ' + prioClass + '">' + (p.priority || 'Medium').toUpperCase() + '</div></div>' +
+              '<div class="side-stat"><div class="side-label">⏱ Est. Focus Time</div><div class="side-value">' + (p.estTime || '—') + '</div></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="solution-box"><div class="solution-label">✅ Suggested Next Steps</div><ul>' + solList + '</ul></div>';
+        pc.appendChild(card);
+      });
+    }
+    document.getElementById('problemsNote').textContent = d.problemsNote || '';
+
+    /* --- trend section sub + chart --- */
+    document.getElementById('trendSectionSub').textContent = d.trend.length < 3
+      ? 'Only ' + d.trend.length + ' assessment' + (d.trend.length === 1 ? '' : 's') + ' so far — shown below as-is; a trend line becomes meaningful after 3+.'
+      : 'Every assessment so far this year, in order, compared against the class average on the same test.';
+    renderTrendChart(d.trend);
+
+    /* --- standing --- */
+    document.getElementById('percentileValue').textContent = d.snapshot.percentile + 'th percentile';
+    document.getElementById('percentileNote').textContent = d.percentileNote;
+    document.getElementById('topperGapValue').textContent = d.topperGap;
+    document.getElementById('topperGapNote').textContent = d.topperNote;
+    renderDistChart(d.distribution);
+
+    /* --- subjects --- */
+    renderSubjectBars(d.subjects);
+    var stBody = document.getElementById('subjectsTableBody');
+    clear(stBody);
+    d.subjects.slice().sort(function (a, b) { return (a.student - a.classAvg) - (b.student - b.classAvg); }).forEach(function (s2) {
+      var gap = +(s2.student - s2.classAvg).toFixed(1);
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + s2.name + '</td><td class="num">' + s2.student.toFixed(1) + '%</td><td class="num">' + s2.classAvg.toFixed(1) + '%</td>' +
+        '<td class="num ' + (gap >= 0 ? 'gap-pos' : 'gap-neg') + '">' + (gap >= 0 ? '+' : '') + gap + ' pp</td>' +
+        '<td class="num muted-cell">' + s2.topper + '%</td><td>' + statusBadgeHtml(s2.status, s2.statusLabel) + '</td>';
+      stBody.appendChild(tr);
+    });
+
+    /* --- topics --- */
+    var tBody = document.getElementById('topicsTableBody');
+    clear(tBody);
+    d.topics.slice().sort(function (a, b) { return a.mastery - b.mastery; }).forEach(function (t) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="muted-cell">' + t.subject + '</td><td>' + t.topic + '</td>' +
+        '<td><div class="meter-row"><div class="meter-track"><div class="meter-fill" style="width:' + t.mastery + '%;background:' + meterColor(t.mastery) + ';"></div></div><div class="meter-val">' + t.mastery + '%</div></div></td>' +
+        '<td>' + trendArrowHtml(t.trend) + '</td><td class="num muted-cell">' + t.qs + '</td>';
+      tBody.appendChild(tr);
+    });
+
+    /* --- efficiency --- */
+    document.getElementById('efficiencySub').textContent = d.efficiency.sub;
+    var ew = document.getElementById('efficiencyWrap');
+    clear(ew);
+    var chartDiv = document.createElement('div'); chartDiv.id = 'quadrantChart';
+    var noteDiv = document.createElement('div'); noteDiv.className = 'narrative'; noteDiv.style.borderLeftColor = COLOR.topper;
+    noteDiv.innerHTML = d.efficiency.note;
+    ew.appendChild(chartDiv); ew.appendChild(noteDiv);
+    renderQuadrant(d.efficiency);
+
+    /* --- exam log --- */
+    var eBody = document.getElementById('examLogBody');
+    clear(eBody);
+    d.examLog.forEach(function (e) {
+      var t = d.trend.find(function (x) { return x.code === e.code; });
+      var gap = +(t.accuracy - t.classAvg).toFixed(1);
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + e.name + '</td><td class="muted-cell">' + e.subject + '</td><td class="muted-cell">' + e.date + '</td>' +
+        '<td class="num">' + t.accuracy.toFixed(1) + '%</td><td class="num muted-cell">' + t.classAvg.toFixed(1) + '%</td>' +
+        '<td class="num ' + (gap >= 0 ? 'gap-pos' : 'gap-neg') + '">' + (gap >= 0 ? '+' : '') + gap + ' pp</td>' +
+        '<td class="num muted-cell">' + e.rank + ' / ' + d.snapshot.classSize + '</td>';
+      eBody.appendChild(tr);
+    });
+
+    /* --- passport --- */
+    document.getElementById('passportLevel').textContent = d.passport.level;
+    var pb = document.getElementById('passportBadges');
+    clear(pb);
+    d.passport.badges.forEach(function (b) {
+      var chip = document.createElement('div');
+      chip.className = 'passport-chip';
+      chip.innerHTML = '<span class="ic">' + b[0] + '</span>' + b[1];
+      pb.appendChild(chip);
+    });
+  }
+
+  /* --- chart builders --- */
+  function renderTrendChart(trend) {
+    var container = document.getElementById('trendChart');
+    clear(container);
+    var w = 660, h = 250, m = { top: 14, right: 14, bottom: 34, left: 32 };
+    var n = Math.max(trend.length - 1, 1);
+    var x = scaleFn([0, n], [m.left, w - m.right]);
+    var y = scaleFn([0, 100], [h - m.bottom, m.top]);
+    var svg = svgRoot(w, h);
+
+    [0, 25, 50, 75, 100].forEach(function (v) {
+      svg.appendChild(el('line', { x1: m.left, x2: w - m.right, y1: y(v), y2: y(v), stroke: COLOR.grid, 'stroke-width': 1 }));
+      svg.appendChild(el('text', { x: m.left - 8, y: y(v) + 3, 'text-anchor': 'end', 'font-size': 9.5, fill: COLOR.inkMuted }, [document.createTextNode(v)]));
+    });
+    trend.forEach(function (dpt, i) {
+      svg.appendChild(el('text', { x: x(i), y: h - 12, 'text-anchor': 'middle', 'font-size': 8.5, fill: COLOR.inkMuted }, [document.createTextNode(dpt.code)]));
+    });
+
+    if (trend.length > 1) {
+      function pathFor(key) { return trend.map(function (dpt, i) { return (i === 0 ? 'M' : 'L') + x(i) + ',' + y(dpt[key]); }).join(' '); }
+      svg.appendChild(el('path', { d: pathFor('classAvg'), fill: 'none', stroke: COLOR.classAvg, 'stroke-width': 2, 'stroke-dasharray': '5,4' }));
+      svg.appendChild(el('path', { d: pathFor('accuracy'), fill: 'none', stroke: COLOR.student, 'stroke-width': 2.25 }));
+    }
+    trend.forEach(function (dpt, i) {
+      svg.appendChild(el('circle', { cx: x(i), cy: y(dpt.classAvg), r: 3, fill: COLOR.classAvg }));
+      svg.appendChild(el('circle', { cx: x(i), cy: y(dpt.accuracy), r: 4.5, fill: '#fff', stroke: COLOR.student, 'stroke-width': 2 }));
+    });
+
+    var last = trend.length - 1;
+    var yA = y(trend[last].accuracy), yC = y(trend[last].classAvg);
+    var minGap = 15;
+    if (Math.abs(yA - yC) < minGap) {
+      var mid = (yA + yC) / 2;
+      if (yA <= yC) { yA = mid - minGap / 2; yC = mid + minGap / 2; } else { yA = mid + minGap / 2; yC = mid - minGap / 2; }
+    }
+    svg.appendChild(el('text', { x: x(last) + 8, y: yA + 3, 'font-size': 10.5, 'font-weight': 700, fill: COLOR.student }, [document.createTextNode(trend[last].accuracy + '%')]));
+    svg.appendChild(el('text', { x: x(last) + 8, y: yC + 3, 'font-size': 10, fill: COLOR.inkMuted }, [document.createTextNode(trend[last].classAvg + '%')]));
+    container.appendChild(svg);
+  }
+
+  function renderDistChart(dist) {
+    var container = document.getElementById('distChart');
+    clear(container);
+    var bins = dist.bins.map(function (b) { return { label: b[0], count: b[1] }; });
+    var w = 660, h = 210, m = { top: 46, right: 14, bottom: 30, left: 26 };
+    var maxCount = Math.max.apply(null, bins.map(function (b) { return b.count; }));
+    var x = scaleFn([0, bins.length], [m.left, w - m.right]);
+    var y = scaleFn([0, maxCount], [h - m.bottom, m.top]);
+    var bandW = (w - m.left - m.right) / bins.length;
+    var svg = svgRoot(w, h);
+    [0, Math.ceil(maxCount / 2), maxCount].forEach(function (v) {
+      svg.appendChild(el('line', { x1: m.left, x2: w - m.right, y1: y(v), y2: y(v), stroke: COLOR.grid, 'stroke-width': 1 }));
+    });
+    bins.forEach(function (b, i) {
+      var isStudent = i === dist.studentBinIdx;
+      var bx = x(i) + 6, bw = bandW - 12;
+      var by = y(b.count), bh = (h - m.bottom) - by;
+      svg.appendChild(el('rect', { x: bx, y: by, width: bw, height: bh, rx: 4, fill: isStudent ? COLOR.student : '#d9d7d0' }));
+      svg.appendChild(el('text', { x: bx + bw / 2, y: h - 10, 'text-anchor': 'middle', 'font-size': 9.5, fill: COLOR.inkMuted }, [document.createTextNode(b.label + '%')]));
+      if (isStudent) {
+        svg.appendChild(el('text', { x: bx + bw / 2, y: 14, 'text-anchor': 'middle', 'font-size': 9.5, 'font-weight': 700, fill: COLOR.student }, [document.createTextNode('▼ Aditi is here (' + dist.studentLabel + ')')]));
+        svg.appendChild(el('text', { x: bx + bw / 2, y: by - 6, 'text-anchor': 'middle', 'font-size': 10.5, 'font-weight': 700, fill: COLOR.student }, [document.createTextNode(b.count + ' students')]));
+      } else {
+        svg.appendChild(el('text', { x: bx + bw / 2, y: by - 6, 'text-anchor': 'middle', 'font-size': 10.5, 'font-weight': 700, fill: COLOR.inkMuted }, [document.createTextNode(b.count + ' students')]));
+      }
+    });
+    container.appendChild(svg);
+  }
+
+  function renderSubjectBars(subjects) {
+    var container = document.getElementById('subjectBarChart');
+    clear(container);
+    var sorted = subjects.slice().sort(function (a, b) { return (a.student - a.classAvg) - (b.student - b.classAvg); });
+    var w = 660, rowH = 44, labelW = 168, chartW = w - labelW - 60;
+    var h = sorted.length * rowH + 10;
+    var x = scaleFn([0, 100], [0, chartW]);
+    var svg = svgRoot(w, h);
+    sorted.forEach(function (s, i) {
+      var rowY = i * rowH + 6;
+      svg.appendChild(el('text', { x: 0, y: rowY + 22, 'font-size': 11, 'font-weight': 600, fill: COLOR.ink }, [document.createTextNode(s.name)]));
+      var barX = labelW, barH = 12;
+      svg.appendChild(el('rect', { x: barX, y: rowY, width: x(s.student), height: barH, rx: 3, fill: COLOR.student }));
+      svg.appendChild(el('text', { x: barX + x(s.student) + 6, y: rowY + barH - 2, 'font-size': 10, 'font-weight': 700, fill: COLOR.student }, [document.createTextNode(s.student.toFixed(0) + '%')]));
+      svg.appendChild(el('rect', { x: barX, y: rowY + barH + 3, width: x(s.classAvg), height: barH, rx: 3, fill: COLOR.classAvg }));
+      svg.appendChild(el('text', { x: barX + x(s.classAvg) + 6, y: rowY + 2 * barH + 1, 'font-size': 9.5, fill: COLOR.inkMuted }, [document.createTextNode(s.classAvg.toFixed(0) + '%')]));
+    });
+    container.appendChild(svg);
+  }
+
+  function renderQuadrant(eff) {
+    var container = document.getElementById('quadrantChart');
+    clear(container);
+    var w = 300, h = 270, m = { top: 20, right: 16, bottom: 34, left: 40 };
+    var xDom = [40, 120], yDom = [40, 100];
+    var x = scaleFn(xDom, [m.left, w - m.right]);
+    var y = scaleFn(yDom, [h - m.bottom, m.top]);
+    var svg = svgRoot(w, h);
+    var classPt = { time: eff.classTime, acc: eff.classAcc };
+    var studentPt = { time: eff.studentTime, acc: eff.studentAcc };
+    svg.appendChild(el('line', { x1: x(classPt.time), x2: x(classPt.time), y1: m.top, y2: h - m.bottom, stroke: COLOR.grid, 'stroke-width': 1.5 }));
+    svg.appendChild(el('line', { x1: m.left, x2: w - m.right, y1: y(classPt.acc), y2: y(classPt.acc), stroke: COLOR.grid, 'stroke-width': 1.5 }));
+    svg.appendChild(el('text', { x: (m.left + w - m.right) / 2, y: h - 6, 'text-anchor': 'middle', 'font-size': 9, fill: COLOR.inkMuted }, [document.createTextNode('Avg time / question (sec) →')]));
+    svg.appendChild(el('text', { x: 12, y: (m.top + h - m.bottom) / 2, 'text-anchor': 'middle', 'font-size': 9, fill: COLOR.inkMuted, transform: 'rotate(-90 12 ' + ((m.top + h - m.bottom) / 2) + ')' }, [document.createTextNode('Accuracy % →')]));
+    var qs = [
+      { x: m.left + 4, y: m.top + 12, t: 'Faster & more accurate', anchor: 'start' },
+      { x: w - m.right - 4, y: m.top + 12, t: 'Slower, holding accuracy', anchor: 'end' },
+      { x: m.left + 4, y: h - m.bottom - 6, t: 'Faster, less accurate', anchor: 'start' },
+      { x: w - m.right - 4, y: h - m.bottom - 6, t: 'Slower & less accurate', anchor: 'end' }
+    ];
+    qs.forEach(function (q) { svg.appendChild(el('text', { x: q.x, y: q.y, 'text-anchor': q.anchor, 'font-size': 8, fill: COLOR.inkMuted, opacity: 0.85 }, [document.createTextNode(q.t)])); });
+    svg.appendChild(el('circle', { cx: x(classPt.time), cy: y(classPt.acc), r: 5, fill: '#fff', stroke: COLOR.classAvg, 'stroke-width': 2.5 }));
+    svg.appendChild(el('text', { x: x(classPt.time) + 8, y: y(classPt.acc) - 8, 'font-size': 9, fill: COLOR.inkSecondary, 'font-weight': 600 }, [document.createTextNode('Class Avg')]));
+    svg.appendChild(el('circle', { cx: x(studentPt.time), cy: y(studentPt.acc), r: 6, fill: COLOR.student, stroke: '#fff', 'stroke-width': 2 }));
+    svg.appendChild(el('text', { x: x(studentPt.time) + 9, y: y(studentPt.acc) + 4, 'font-size': 9.5, fill: COLOR.student, 'font-weight': 700 }, [document.createTextNode('Aditi')]));
+    container.appendChild(svg);
+  }
+
+  /* --- toggle --- */
+  window.setMode = function (mode) {
+    document.getElementById('btnFull').classList.toggle('active', mode === 'full');
+    document.getElementById('btnEarly').classList.toggle('active', mode === 'early');
+    document.getElementById('toolbarHint').textContent = mode === 'early'
+      ? 'Same template, week 3 of the academic year — proving it still reads well with almost no data'
+      : 'This is the PDF a student/parent gets when they hit "Download Report"';
+    render(mode === 'early' ? EARLY_DATA : FULL_DATA);
+  };
+
+  render(FULL_DATA);
+})();
+</script>
+</body>
+</html>

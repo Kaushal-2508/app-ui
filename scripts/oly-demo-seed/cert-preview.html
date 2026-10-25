@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html,body { margin:0; padding:0; background:#888; }
+  svg { display:block; }
+  text { font-family: Helvetica, Arial, sans-serif; }
+  .serif { font-family: "Times New Roman", Times, serif; }
+</style>
+</head>
+<body>
+<!-- 842x595 canvas; svg y = 595 - pdfY. All geometry mirrors pdf-lib calls 1:1 -->
+<svg id="cert" width="842" height="595" viewBox="0 0 842 595" xmlns="http://www.w3.org/2000/svg">
+  <!-- page: white -->
+  <rect x="0" y="0" width="842" height="595" fill="#FFFFFF"/>
+  <!-- teal band 18..30 -->
+  <rect x="18" y="18" width="806" height="559" fill="#249CA2"/>
+  <!-- white interior -->
+  <rect x="30" y="30" width="782" height="535" fill="#FFFFFF"/>
+  <!-- lace scallops: white discs biting the band inner rim -->
+  <g id="lace" fill="#FFFFFF"></g>
+  <!-- beads centred in band -->
+  <g id="beads" fill="#FFFFFF" opacity="0.85"></g>
+
+  <!-- thin echo line inside the lace -->
+  <rect x="46" y="46" width="750" height="503" fill="none" stroke="#249CA2" stroke-width="0.6"/>
+
+  <!-- orange diamond nodes on band: corners + side midpoints -->
+  <g fill="#FA920E">
+    <path d="M 0 0 L 6 6 L 0 12 L -6 6 Z" transform="translate(24,566) scale(0.85)"/>
+    <path d="M 0 0 L 6 6 L 0 12 L -6 6 Z" transform="translate(818,566) scale(0.85)"/>
+    <path d="M 0 0 L 6 6 L 0 12 L -6 6 Z" transform="translate(24,24) scale(0.85)"/>
+    <path d="M 0 0 L 6 6 L 0 12 L -6 6 Z" transform="translate(818,24) scale(0.85)"/>
+    <path d="M 0 0 L 6 6 L 0 12 L -6 6 Z" transform="translate(24,292.5) scale(0.85)"/>
+    <path d="M 0 0 L 6 6 L 0 12 L -6 6 Z" transform="translate(818,292.5) scale(0.85)"/>
+  </g>
+
+  <!-- a few sparkles in the corners only -->
+  <g id="sparkles"></g>
+
+  <!-- ──── CONTENT (unchanged middle) ──── -->
+  <image href="../../public/Logo-trim.png" x="347" y="60" height="42" width="148"/>
+  <text x="421" y="122" text-anchor="middle" font-size="10" font-weight="bold" fill="#249CA2" letter-spacing="3">OLYMPIAD 2026</text>
+  <text x="421" y="162" text-anchor="middle" font-size="33" font-weight="bold" fill="#B8870A" class="serif">Certificate of Achievement</text>
+  <line x1="271" y1="180" x2="407" y2="180" stroke="#B8870A" stroke-width="0.8"/>
+  <line x1="435" y1="180" x2="571" y2="180" stroke="#B8870A" stroke-width="0.8"/>
+  <path d="M 0 0 L 6 6 L 0 12 L -6 6 Z" transform="translate(421,174)" fill="#B8870A"/>
+  <text x="421" y="212" text-anchor="middle" font-size="13" font-style="italic" fill="#595966" class="serif">This is to certify that</text>
+  <text x="421" y="248" text-anchor="middle" font-size="32" font-weight="bold" fill="#1A1A26" class="serif">Aarav Sharma</text>
+  <path d="M 0 0 Q 140 9 280 0" transform="translate(281,256)" fill="none" stroke="#B8870A" stroke-width="1"/>
+  <text x="421" y="282" text-anchor="middle" font-size="12.5" fill="#595966">of New Flow Demo&#160;&#160;&#183;&#160;&#160;Class 9 &#8212; Section A</text>
+  <text x="421" y="312" text-anchor="middle" font-size="15" font-style="italic" fill="#1A1A26" class="serif">has achieved the Gold tier in the SALCI Olympiad 2026</text>
+  <text x="421" y="342" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#1A1A26">Score&#160;&#160;28 / 30&#160;&#160;&#160;&#183;&#160;&#160;&#160;93.33%</text>
+  <text x="421" y="362" text-anchor="middle" font-size="11.5" fill="#595966">Rank in Class: 1 of 12</text>
+
+  <!-- seal at pdf(421,146) -> svg cy=449 -->
+  <g id="seal"></g>
+  <g fill="#8A6603">
+    <path d="M 0 0 L 22 6 L 14 52 L -6 42 Z" transform="translate(401,475)"/>
+    <path d="M 0 6 L 22 0 L 28 42 L 8 52 Z" transform="translate(419,475)"/>
+  </g>
+
+  <!-- signature blocks; line pdf y=108 -> svg 487 -->
+  <text x="215" y="481" text-anchor="middle" font-size="11" fill="#1A1A26">10 June 2026</text>
+  <line x1="130" y1="487" x2="300" y2="487" stroke="#999AA6" stroke-width="0.7"/>
+  <text x="215" y="501" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#999AA6" letter-spacing="1">DATE</text>
+  <text x="627" y="482" text-anchor="middle" font-size="17" font-style="italic" fill="#1A1A26" class="serif">Gaurav Garg</text>
+  <line x1="542" y1="487" x2="712" y2="487" stroke="#999AA6" stroke-width="0.7"/>
+  <text x="627" y="501" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#999AA6" letter-spacing="1">AUTHORISED SIGNATORY</text>
+
+  <!-- cert id centered, pdf y=50 -> svg 545 (between echo line 549 and ... inside it) -->
+  <text x="421" y="538" text-anchor="middle" font-size="8" fill="#999AA6">Certificate ID: CERT-2026-0000002&#160;&#160;&#160;&#183;&#160;&#160;&#160;Verify with SALCI</text>
+</svg>
+<script>
+  const NS = "http://www.w3.org/2000/svg";
+  const lace = document.getElementById("lace");
+  for (let x = 38; x <= 804; x += 16) {
+    for (const cy of [30, 565]) {
+      const c = document.createElementNS(NS, "circle");
+      c.setAttribute("cx", x); c.setAttribute("cy", cy); c.setAttribute("r", 6.5);
+      lace.appendChild(c);
+    }
+  }
+  for (let y = 38; y <= 557; y += 16) {
+    for (const cx of [30, 812]) {
+      const c = document.createElementNS(NS, "circle");
+      c.setAttribute("cx", cx); c.setAttribute("cy", y); c.setAttribute("r", 6.5);
+      lace.appendChild(c);
+    }
+  }
+  const beads = document.getElementById("beads");
+  const bead = (x, y) => {
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", 1.1);
+    beads.appendChild(c);
+  };
+  for (let x = 46; x <= 796; x += 16) { bead(x, 24); bead(x, 571); }
+  for (let y = 46; y <= 549; y += 16) { bead(24, y); bead(818, y); }
+
+  const sparkPath = "M 0 -9 Q 1.8 -1.8 9 0 Q 1.8 1.8 0 9 Q -1.8 1.8 -9 0 Q -1.8 -1.8 0 -9 Z";
+  const sparkles = [
+    [76, 80, 0.9, "#FA920E"], [100, 106, 0.5, "#249CA2"],
+    [766, 80, 0.9, "#FA920E"], [742, 106, 0.5, "#249CA2"],
+    [76, 515, 0.6, "#249CA2"], [100, 492, 0.4, "#FA920E"],
+    [766, 515, 0.6, "#249CA2"], [742, 492, 0.4, "#FA920E"],
+  ];
+  const sg = document.getElementById("sparkles");
+  for (const [x, y, s, col] of sparkles) {
+    const p = document.createElementNS(NS, "path");
+    p.setAttribute("d", sparkPath);
+    p.setAttribute("transform", `translate(${x},${y}) scale(${s})`);
+    p.setAttribute("fill", col);
+    sg.appendChild(p);
+  }
+  const seal = document.getElementById("seal");
+  const GOLD = "#B8870A";
+  for (let i = 0; i < 20; i++) {
+    const a = (i / 20) * Math.PI * 2;
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", 421 + Math.cos(a) * 40); c.setAttribute("cy", 449 + Math.sin(a) * 40);
+    c.setAttribute("r", 5.5); c.setAttribute("fill", GOLD);
+    seal.appendChild(c);
+  }
+  const disc = document.createElementNS(NS, "circle");
+  disc.setAttribute("cx", 421); disc.setAttribute("cy", 449); disc.setAttribute("r", 42); disc.setAttribute("fill", GOLD);
+  seal.appendChild(disc);
+  const ring = document.createElementNS(NS, "circle");
+  ring.setAttribute("cx", 421); ring.setAttribute("cy", 449); ring.setAttribute("r", 33);
+  ring.setAttribute("fill", "none"); ring.setAttribute("stroke", "#FFFFFF"); ring.setAttribute("stroke-width", "1.2");
+  seal.appendChild(ring);
+  const texts = [["SALCI OLYMPIAD", 435, 6.5], ["GOLD", 453, 13], ["2026", 467, 8]];
+  for (const [t, y, s] of texts) {
+    const e = document.createElementNS(NS, "text");
+    e.setAttribute("x", 421); e.setAttribute("y", y); e.setAttribute("text-anchor", "middle");
+    e.setAttribute("font-size", s); e.setAttribute("font-weight", "bold"); e.setAttribute("fill", "#fff");
+    e.textContent = t;
+    seal.appendChild(e);
+  }
+</script>
+</body>
+</html>

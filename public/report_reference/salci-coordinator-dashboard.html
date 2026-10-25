@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Coordinator Dashboard — Senior Secondary Wing — SALCI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    /* ---- brand tokens (same system as admin/teacher mockups — PRD §26.1, reconstructed) ---- */
+    --surface-base: #F7F4EC;
+    --surface-card: #FFFFFF;
+    --teal: #0D9488;
+    --teal-ink: #08655C;
+    --violet: #5B3FA6;
+    --violet-ink: #45307E;
+    --gold: #B8860B;
+
+    /* ---- status palette (fixed, never themed) ---- */
+    --status-critical: #d03b3b;
+    --status-warning:  #E29A0E;
+    --status-good:     #0ca30c;
+    --status-excellent:#B8860B;
+
+    /* ---- ink / chrome ---- */
+    --ink-900: #1C1B17;
+    --ink-700: #3C3A34;
+    --ink-500: #6B695F;
+    --ink-400: #8C8A7E;
+    --border: rgba(28,27,23,0.11);
+    --border-strong: rgba(28,27,23,0.16);
+    --grid-line: #E7E3D6;
+    --shadow-sm: 0 1px 2px rgba(28,27,23,0.06);
+    --shadow-lg: 0 10px 28px rgba(28,27,23,0.08);
+    --radius-card: 20px;
+    --radius-sm: 12px;
+    --radius-pill: 999px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--surface-base);
+    color: var(--ink-900);
+    -webkit-font-smoothing: antialiased;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  .wrap{ max-width: 1320px; margin: 0 auto; padding: 28px 32px 80px; }
+
+  /* ---------------- header ---------------- */
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 16px; }
+  .brandline{ display:flex; align-items:center; gap:14px; }
+  .mark{
+    width:44px; height:44px; border-radius: 12px; flex:none;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--violet) 100%);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:800; font-size:14px; letter-spacing:.02em;
+    box-shadow: var(--shadow-sm);
+  }
+  .eyebrow{ text-transform:uppercase; letter-spacing:.08em; font-size:11px; font-weight:700; color: var(--ink-500); margin:0 0 2px; display:flex; align-items:center; gap:8px; }
+  .role-pill{ font-size:9.5px; font-weight:800; letter-spacing:.03em; text-transform:uppercase; background:var(--violet); color:#fff; padding:2px 8px; border-radius:var(--radius-pill); }
+  h1.school-name{ font-size:22px; font-weight:800; margin:0; letter-spacing:-0.01em; }
+  .school-sub{ font-size:13px; color:var(--ink-500); margin-top:2px; }
+  .topbar-actions{ display:flex; align-items:center; gap:10px; }
+  .btn{
+    font-size:13px; font-weight:600; cursor:pointer;
+    border-radius: var(--radius-pill); padding:9px 16px; border:1px solid var(--border-strong);
+    background:var(--surface-card); color:var(--ink-700);
+    display:inline-flex; align-items:center; gap:6px;
+    transition: background .15s, border-color .15s;
+  }
+  .btn:hover{ background:#FBFAF6; border-color: var(--ink-400); }
+  .btn.primary{ background: var(--teal); border-color: var(--teal); color:#fff; }
+  .btn.primary:hover{ background: var(--teal-ink); border-color: var(--teal-ink); }
+  .btn svg{ width:14px; height:14px; }
+
+  /* ---------------- scope lock band ---------------- */
+  .scopeband{ display:flex; gap:10px; align-items:flex-start; background:rgba(13,148,136,0.07); border:1px solid rgba(13,148,136,0.22);
+    border-radius:14px; padding:12px 16px; margin-bottom:18px; font-size:12px; color:var(--teal-ink); line-height:1.55; }
+  .scopeband .ic{ flex:none; font-size:14px; line-height:1.5; }
+
+  /* ---------------- wing ranking strip ---------------- */
+  .rankstrip{ display:flex; align-items:center; gap:14px; background:var(--surface-card); border:1px solid var(--border);
+    border-radius:16px; padding:13px 18px; margin-bottom:18px; box-shadow:var(--shadow-sm); cursor:pointer;
+    transition:transform .15s ease, border-color .15s ease; }
+  .rankstrip:hover{ transform:translateY(-1px); border-color:var(--gold); }
+  .rankstrip-badge{ width:40px;height:40px;border-radius:50%;background:#FBF3DC;display:flex;align-items:center;justify-content:center;
+    font-size:18px; flex:none; }
+  .rankstrip-body{ flex:1; min-width:0; }
+  .rankstrip-main{ font-size:14px; font-weight:800; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .rankstrip-sub{ font-size:12px; color:var(--ink-500); margin-top:2px; }
+  .rankstrip-move{ font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; }
+  .rankstrip-move.down{ color:#A32323; background:rgba(208,59,59,0.12); }
+  .rankstrip-move.up{ color:var(--teal-ink); background:rgba(13,148,136,0.12); }
+  .rankstrip-go{ font-size:18px; color:var(--ink-400); flex:none; }
+
+  /* ---------------- jump nav ---------------- */
+  .jumpnav{
+    position: sticky; top:0; z-index:20;
+    display:flex; gap:4px; padding:12px 2px; margin-bottom:18px;
+    background: var(--surface-base); border-bottom:1px solid var(--border);
+    flex-wrap:wrap;
+  }
+  .jumpnav a{ font-size:12px; font-weight:700; color:var(--ink-500); text-decoration:none; padding:7px 12px; border-radius:var(--radius-pill); white-space:nowrap; }
+  .jumpnav a:hover{ background:#EFEBDD; color:var(--ink-900); }
+  .jumpnav a.active{ background:var(--ink-900); color:#fff; }
+  #section-overview, .group{ scroll-margin-top: 60px; }
+
+  /* ---------------- section headers ---------------- */
+  .group{ margin-top:40px; }
+  .group-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+  .group-title-row{ display:flex; align-items:center; gap:10px; }
+  .group-icon{ width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center; background:#EFEBDD; color:var(--ink-700); flex:none; }
+  .group-icon svg{ width:16px;height:16px; }
+  h2.group-title{ font-size:17px; font-weight:800; margin:0; letter-spacing:-0.01em;}
+  .group-desc{ font-size:12.5px; color:var(--ink-500); }
+  .group-link{ font-size:12.5px; font-weight:700; color:var(--teal-ink); text-decoration:none; white-space:nowrap; background:none; border:none; cursor:pointer; padding:0; }
+  .group-link:hover{ text-decoration:underline; }
+
+  /* ---------------- generic card ---------------- */
+  .card{ background: var(--surface-card); border:1px solid var(--border); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding: 20px 22px; }
+  .card-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:14px;}
+  .card-title{ font-size:14px; font-weight:700; margin:0 0 2px; }
+  .card-caption{ font-size:12px; color:var(--ink-500); margin:0; }
+  .table-toggle{
+    font-size:11.5px; font-weight:700; color:var(--ink-500); background:#F1EFE6;
+    border:1px solid var(--border); border-radius:var(--radius-pill); padding:5px 10px; cursor:pointer; white-space:nowrap;
+  }
+  .table-toggle:hover{ color:var(--ink-900); border-color:var(--ink-400); }
+  .table-toggle.active{ background:var(--ink-900); color:#fff; border-color:var(--ink-900); }
+  .toggle-group{ display:flex; gap:6px; }
+
+  /* ---------------- KPI strip ---------------- */
+  .kpi-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px; }
+  .kpi-tile{ background: var(--surface-card); border:1px solid var(--border); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding:16px 16px 14px; position:relative; overflow:hidden; }
+  .kpi-tile::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; background: var(--accent, var(--teal)); }
+  .kpi-label{ font-size:11.5px; font-weight:600; color:var(--ink-500); margin-bottom:8px; }
+  .kpi-value{ font-size:26px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
+  .kpi-value .unit{ font-size:15px; font-weight:700; color:var(--ink-500); margin-left:2px;}
+  .kpi-delta{ font-size:11.5px; font-weight:700; margin-top:8px; display:inline-flex; align-items:center; gap:3px;}
+  .kpi-delta.up{ color: var(--status-good); }
+  .kpi-delta.down{ color: var(--status-critical); }
+  .kpi-delta.flat{ color: var(--ink-500); }
+  .kpi-sub{ font-size:11px; color:var(--ink-400); margin-top:6px; }
+
+  /* ---------------- badges / chips ---------------- */
+  .badge{ display:inline-flex; align-items:center; font-size:10.5px; font-weight:800; letter-spacing:.03em; text-transform:uppercase; padding:3px 8px; border-radius: var(--radius-pill); }
+  .badge.high{ background: rgba(208,59,59,0.12); color:#A32323; }
+  .badge.medium{ background: rgba(226,154,14,0.16); color:#8A5B00; }
+  .badge.low, .badge.watch{ background: rgba(107,105,95,0.12); color: var(--ink-500); }
+  .badge.good{ background: rgba(13,148,136,0.12); color:var(--teal-ink); }
+  .chip{ display:inline-flex; align-items:center; font-size:11px; font-weight:600; padding:4px 9px; border-radius: var(--radius-pill); background:#F1EFE6; color:var(--ink-700); border:1px solid var(--border); }
+  .chip.negative{ background: rgba(208,59,59,0.09); color:#A32323; border-color: rgba(208,59,59,0.18); }
+  .chip.warn{ background: rgba(226,154,14,0.12); color:#8A5B00; border-color: rgba(226,154,14,0.22); }
+
+  /* ---------------- AI Insights digest ---------------- */
+  .ai-card{
+    background: linear-gradient(155deg, #FFFFFF 0%, #F3F8F7 60%, #F1EEF8 100%);
+    border:1px solid var(--border); border-radius: var(--radius-card); box-shadow: var(--shadow-sm);
+    padding:20px 22px; margin-top:16px;
+  }
+  .ai-badge{
+    width:32px;height:32px;border-radius:10px; flex:none;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--violet) 100%);
+    display:flex; align-items:center; justify-content:center; color:#fff;
+  }
+  .ai-badge svg{ width:17px;height:17px; }
+  .ai-list{ list-style:none; margin:14px 0 0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .ai-list li{ display:flex; gap:10px; font-size:13px; line-height:1.5; color:var(--ink-700); }
+  .ai-list li .dot{ width:5px;height:5px;border-radius:50%; background:var(--violet); flex:none; margin-top:8px; }
+  .ai-list li b{ color:var(--ink-900); }
+  .ai-foot{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding-top:14px; border-top:1px solid var(--border); }
+  .ai-timestamp{ font-size:11px; color:var(--ink-400); }
+
+  /* ---------------- Academic performance card ---------------- */
+  .acad-card{ display:grid; grid-template-columns: auto 1fr auto; align-items:center; gap:28px; margin-top:16px; }
+  .acad-score .v{ font-size:40px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
+  .acad-score .l{ font-size:12px; font-weight:600; color:var(--ink-500); margin-top:6px; }
+  .acad-deltas{ display:flex; flex-direction:column; gap:8px; }
+  .acad-delta-row{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-700); }
+  .acad-delta-row b{ font-weight:800; }
+  .acad-delta-row b.up{ color:var(--status-good); }
+  .acad-delta-row b.down{ color:var(--status-critical); }
+  .acad-delta-row .lbl{ color:var(--ink-500); }
+  .acad-spark{ width:140px; }
+
+  /* ---------------- donut ---------------- */
+  .donut-wrap{ display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
+  .donut-svg{ flex:none; cursor:pointer; }
+  .donut-svg circle.seg{ transition: opacity .12s; }
+  .donut-legend{ display:flex; flex-direction:column; gap:10px; flex:1; min-width:180px; }
+  .donut-legend-row{ display:flex; align-items:center; gap:9px; font-size:13px; color:var(--ink-700); cursor:pointer; padding:6px 8px; margin:0 -8px; border-radius:10px; }
+  .donut-legend-row:hover{ background:#F6F4EC; }
+  .donut-legend-row .sw{ width:11px;height:11px;border-radius:3px; flex:none;}
+  .donut-legend-row b{ color:var(--ink-900); }
+  .donut-legend-row .pct{ margin-left:auto; color:var(--ink-500); font-weight:600; font-size:12px;}
+
+  /* ---------------- split bars (class breakdown within wing) ---------------- */
+  .wing-split{ margin-top:16px; padding-top:14px; border-top:1px solid var(--border); }
+  .wing-split-title{ font-size:12px; font-weight:700; color:var(--ink-700); margin-bottom:10px; }
+  .wing-row{ display:grid; grid-template-columns: 128px 1fr 50px auto; align-items:center; gap:10px; margin-bottom:9px; }
+  .wing-name{ font-size:12px; font-weight:600; color:var(--ink-700); }
+  .wing-track{ background:var(--grid-line); border-radius:5px; height:10px; }
+  .wing-fill{ height:100%; border-radius:5px; background:var(--violet); }
+  .wing-pct{ font-size:12px; font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
+  .wing-assign{ font-size:11px; font-weight:700; color:var(--teal-ink); background:none; border:1px solid var(--border); border-radius:var(--radius-pill); padding:4px 10px; cursor:pointer; white-space:nowrap; }
+  .wing-assign:hover{ background:#F1EFE6; }
+
+  .predict-box{ margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+  .predict-title{ font-size:12px; font-weight:700; color:var(--ink-700); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .predict-row{ display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--ink-700); margin-bottom:6px; line-height:1.5;}
+  .predict-row svg{ width:13px;height:13px; color:var(--status-critical); flex:none; margin-top:2px;}
+
+  .row-2{ display:grid; grid-template-columns: 1.15fr 0.85fr; gap:18px; align-items:start; }
+  .stack{ display:flex; flex-direction:column; gap:18px; }
+
+  .barchart{ display:flex; flex-direction:column; gap:11px; margin-top:6px; }
+  .bar-row{ display:grid; grid-template-columns: 172px 1fr 44px; align-items:center; gap:10px; }
+  .bar-row.clickable{ cursor:pointer; }
+  .bar-row.clickable:hover .bar-fill{ filter:brightness(0.92); }
+  .bar-label{ font-size:12.5px; font-weight:600; color:var(--ink-700); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-sub{ font-size:10.5px; color:var(--ink-500); font-weight:500; }
+  .bar-track{ background:var(--grid-line); border-radius:5px; height:14px; position:relative; }
+  .bar-fill{ height:100%; border-radius: 0 5px 5px 0; background: var(--teal); position:relative; cursor:default; }
+  .bar-val{ font-size:12px; font-weight:700; color:var(--ink-700); text-align:right; font-variant-numeric: tabular-nums;}
+
+  .legend-row{ display:flex; gap:18px; margin-bottom:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  .legend-swatches{ display:flex; gap:18px; }
+  .legend-item{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-700);}
+  .legend-dot{ width:9px;height:9px;border-radius:3px; flex:none;}
+
+  .plist{ display:flex; flex-direction:column; }
+  .prow{ display:flex; align-items:flex-start; gap:12px; padding:12px 2px; border-bottom:1px solid var(--border); }
+  .prow.clickable{ cursor:pointer; }
+  .prow.clickable:hover{ background:#FAF8F2; margin:0 -8px; padding:12px 8px; border-radius:10px; }
+  .prow:last-child{ border-bottom:none; padding-bottom:4px;}
+  .avatar{ width:34px;height:34px;border-radius:50%; flex:none; display:flex;align-items:center;justify-content:center; font-size:11.5px; font-weight:800; color:#fff; background: var(--violet); }
+  .prow-main{ flex:1; min-width:0; }
+  .prow-name{ font-size:13.5px; font-weight:700; }
+  .prow-meta{ font-size:11.5px; color:var(--ink-500); margin-top:1px;}
+  .prow-chips{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+  .prow-side{ flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:6px;}
+  .prow-actions{ font-size:11.5px; }
+  .prow-actions a, .prow-actions button{ color:var(--teal-ink); font-weight:700; text-decoration:none; background:none; border:none; padding:0; cursor:pointer; font-size:11.5px; font-family:inherit; }
+  .prow-actions a:hover, .prow-actions button:hover{ text-decoration:underline; }
+  .prow-actions .sep{ color:var(--ink-400); margin:0 4px; font-weight:400;}
+  .viewall{ display:block; text-align:center; font-size:12.5px; font-weight:700; color:var(--teal-ink); text-decoration:none; padding-top:12px; margin-top:6px; border-top:1px solid var(--border); background:none; border-left:none; border-right:none; border-bottom:none; width:100%; cursor:pointer; }
+  .viewall:hover{ text-decoration:underline; }
+
+  .tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+  .tab{ font-size:12px; font-weight:700; padding:6px 12px; border-radius:var(--radius-pill); background:#F1EFE6; color:var(--ink-500); cursor:pointer; border:1px solid transparent; }
+  .tab.active{ background: var(--ink-900); color:#fff; }
+
+  .statchip-row{ display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-bottom:16px;}
+  .statchip{ background:#FAF8F2; border:1px solid var(--border); border-radius:14px; padding:12px 14px; }
+  .statchip .v{ font-size:20px; font-weight:800; letter-spacing:-.01em; }
+  .statchip .l{ font-size:11px; color:var(--ink-500); font-weight:600; margin-top:2px;}
+
+  table.exceptions{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.exceptions th{ text-align:left; font-size:11px; color:var(--ink-500); font-weight:700; padding:0 8px 8px 8px; border-bottom:1px solid var(--border);}
+  table.exceptions td{ padding:11px 8px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  table.exceptions tr:last-child td{ border-bottom:none; }
+  table.exceptions tr.clickable{ cursor:pointer; }
+  table.exceptions tr.clickable:hover{ background:#FAF8F2; }
+  .staffname{ font-weight:700; }
+  .staffrole{ font-size:11.5px; color:var(--ink-500); }
+  .metric-bad{ color:#A32323; font-weight:700; }
+  .metric-ok{ color:var(--ink-700); font-weight:600; }
+  .metric-up{ color:var(--status-good); font-weight:700; }
+  .metric-down{ color:var(--status-critical); font-weight:700; }
+  .rank-badge{ display:inline-flex; align-items:center; justify-content:center; width:20px;height:20px; border-radius:50%; background:#F1EFE6; color:var(--ink-700); font-size:10.5px; font-weight:800; }
+
+  .queue{ display:flex; flex-direction:column; gap:10px; }
+  .queue-item{ display:flex; align-items:center; gap:14px; padding:13px 16px; border-radius:14px; background:#FAF8F2; border:1px solid var(--border); }
+  .queue-sev{ width:8px; height:8px; border-radius:50%; flex:none; }
+  .queue-sev.high{ background:var(--status-critical); }
+  .queue-sev.medium{ background:var(--status-warning); }
+  .queue-sev.low{ background:var(--ink-400); }
+  .queue-text{ flex:1; font-size:13px; font-weight:600; }
+  .queue-text span{ display:block; font-size:11.5px; font-weight:500; color:var(--ink-500); margin-top:1px;}
+  .queue-cta{ font-size:12px; font-weight:700; color:var(--teal-ink); text-decoration:none; white-space:nowrap; background:none; border:none; cursor:pointer;}
+  .queue-cta:hover{ text-decoration:underline; }
+
+  table.events{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.events th{ text-align:left; font-size:11px; color:var(--ink-500); font-weight:700; padding:0 8px 8px 0; border-bottom:1px solid var(--border);}
+  table.events td{ padding:10px 8px 10px 0; border-bottom:1px solid var(--border); color:var(--ink-700);}
+  table.events tr:last-child td{ border-bottom:none; }
+  table.events td.time{ color:var(--ink-400); white-space:nowrap; }
+
+  .data-table{ display:none; width:100%; border-collapse:collapse; font-size:12.5px; margin-top:6px;}
+  .data-table.show{ display:table; }
+  .data-table th{ text-align:left; font-size:11px; color:var(--ink-500); font-weight:700; padding:6px 8px; border-bottom:1px solid var(--border);}
+  .data-table td{ padding:8px; border-bottom:1px solid var(--border); }
+
+  /* ---------------- class-wise column chart ---------------- */
+  .colchart-area{ position:relative; height:186px; margin:16px 2px 0; border-bottom:1px solid var(--grid-line); }
+  .colchart-refline{ position:absolute; left:0; right:0; border-top:2px dashed var(--ink-400); z-index:1; }
+  .colchart-reflabel{ position:absolute; right:2px; top:-17px; font-size:10px; font-weight:700; color:var(--ink-500); background:var(--surface-card); padding:0 4px; white-space:nowrap; }
+  .colchart-bars{ position:absolute; inset:0; display:flex; align-items:flex-end; gap:9px; padding:0 4px; }
+  .colbar-col{ flex:1; height:100%; display:flex; align-items:flex-end; justify-content:center; position:relative; }
+  .colbar{ width:100%; max-width:34px; border-radius:5px 5px 0 0; position:relative; cursor:default; }
+  .colbar-val{ position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:10px; font-weight:800; color:var(--ink-700); white-space:nowrap; }
+  .colchart-xlabels{ display:flex; gap:9px; padding:8px 4px 0; }
+  .colchart-xlabel{ flex:1; max-width:58px; text-align:center; font-size:9.5px; font-weight:700; color:var(--ink-500); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:default; }
+
+  /* ---------------- adoption hero (students + teachers reuse this) ---------------- */
+  .alert-box{ display:flex; align-items:flex-start; gap:12px; background:rgba(208,59,59,0.07); border:1px solid rgba(208,59,59,0.22); border-radius:14px; padding:13px 16px; margin:14px 0 18px; }
+  .alert-box.amber{ background:rgba(226,154,14,0.09); border-color:rgba(226,154,14,0.28); }
+  .alert-icon{ color:var(--status-critical); flex:none; margin-top:1px; }
+  .alert-box.amber .alert-icon{ color:var(--status-warning); }
+  .alert-title{ font-size:13.5px; font-weight:800; color:#A32323; }
+  .alert-box.amber .alert-title{ color:#8A5B00; }
+  .alert-sub{ font-size:12px; color:var(--ink-700); margin-top:2px; }
+  .alert-cta{ font-size:12.5px; font-weight:700; color:#A32323; text-decoration:none; white-space:nowrap; align-self:center; background:none; border:none; cursor:pointer; }
+  .alert-box.amber .alert-cta{ color:#8A5B00; }
+  .alert-cta:hover{ text-decoration:underline; }
+
+  .adopt-stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+  .adopt-stat{ background:#FAF8F2; border:1px solid var(--border); border-radius:14px; padding:13px 15px; }
+  .adopt-stat.accent{ border-left:3px solid var(--status-warning); }
+  .adopt-stat .l{ font-size:11.5px; color:var(--ink-500); font-weight:600; }
+  .adopt-stat .v{ font-size:23px; font-weight:800; margin-top:5px; letter-spacing:-0.01em; }
+  .adopt-stat .s{ font-size:11px; color:var(--ink-500); margin-top:3px; }
+  .adopt-stat .d{ font-size:11px; font-weight:700; margin-top:6px; }
+  .adopt-stat .d.down{ color:var(--status-critical); }
+  .adopt-stat .d.up{ color:var(--status-good); }
+  .adopt-stat .note{ font-size:10.5px; font-weight:700; color:var(--ink-700); margin-top:6px; }
+
+  .progress-row{ display:flex; align-items:center; gap:14px; margin-top:11px; }
+  .progress-label{ width:210px; flex:none; font-size:12.5px; font-weight:700; color:var(--ink-700); }
+  .progress-track{ flex:1; height:10px; background:var(--grid-line); border-radius:6px; overflow:hidden; }
+  .progress-fill{ height:100%; border-radius:6px; }
+  .progress-val{ width:40px; flex:none; text-align:right; font-size:12.5px; font-weight:800; }
+
+  /* ---------------- modal ---------------- */
+  .modal-overlay{ display:none; position:fixed; inset:0; background:rgba(20,19,15,0.5); z-index:100; align-items:center; justify-content:center; padding:24px; }
+  .modal-overlay.show{ display:flex; }
+  .modal-box{ background:var(--surface-card); border-radius:20px; max-width:720px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 24px 60px rgba(0,0,0,0.25); }
+  .modal-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:20px 22px 16px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--surface-card); border-radius:20px 20px 0 0; }
+  .modal-title{ font-size:16px; font-weight:800; margin:0 0 3px; }
+  .modal-sub{ font-size:12px; color:var(--ink-500); margin:0; }
+  .modal-close{ background:#F1EFE6; border:none; width:30px;height:30px; border-radius:50%; cursor:pointer; font-size:16px; color:var(--ink-700); flex:none; line-height:1;}
+  .modal-close:hover{ background:#E7E3D6; }
+  .modal-body{ padding:20px 22px 22px; }
+  .modal-body table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  .modal-body th{ text-align:left; font-size:11px; color:var(--ink-500); font-weight:700; padding:0 8px 8px 0; border-bottom:1px solid var(--border);}
+  .modal-body td{ padding:10px 8px 10px 0; border-bottom:1px solid var(--border); vertical-align:middle; }
+  .modal-body tr:last-child td{ border-bottom:none; }
+
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:11.5px; font-weight:700; color:var(--ink-500); margin-bottom:6px; }
+  .field .readonly{ background:#F6F4EC; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:13px; color:var(--ink-700); }
+  .field input, .field textarea{ width:100%; border:1px solid var(--border-strong); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; color:var(--ink-900); background:var(--surface-card); }
+  .field textarea{ resize:vertical; min-height:64px; }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
+
+  /* ---------------- toast ---------------- */
+  #toast{ position:fixed; bottom:24px; right:24px; background:var(--ink-900); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600;
+    box-shadow:var(--shadow-lg); z-index:200; opacity:0; transform:translateY(8px); transition: opacity .2s, transform .2s; display:flex; align-items:center; gap:10px; }
+  #toast.show{ opacity:1; transform:translateY(0); }
+  #toast svg{ width:16px;height:16px; color:var(--status-good); flex:none; }
+
+  footer.note{ margin-top:48px; padding-top:18px; border-top:1px solid var(--border); font-size:11.5px; color:var(--ink-400); line-height:1.6; }
+
+  @media (max-width: 1180px){
+    .row-2{ grid-template-columns: 1fr; }
+    .statchip-row{ grid-template-columns: repeat(2,1fr); }
+    .adopt-stat-row{ grid-template-columns: repeat(2,1fr); }
+    .acad-card{ grid-template-columns: 1fr; gap:14px; }
+    .acad-spark{ width:100%; }
+  }
+  @media (max-width: 640px){
+    .wrap{ padding:20px 16px 60px; }
+    .kpi-grid{ grid-template-columns: repeat(2,1fr); }
+    .bar-row{ grid-template-columns: 108px 1fr 36px; }
+    .donut-wrap{ flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <div class="topbar">
+    <div class="brandline">
+      <div class="mark">AIS</div>
+      <div>
+        <p class="eyebrow">Coordinator overview <span class="role-pill">Senior Secondary Wing</span></p>
+        <h1 class="school-name">Alok Mehta</h1>
+        <div class="school-sub">Wing Coordinator · Alliance International School · Academic Year 2026–27 · Thursday, 20 Aug 2026</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Export wing report
+      </button>
+      <button class="btn primary" onclick="openAssignTaskModal({assignee:'', role:'Teacher · Senior Secondary Wing', context:'New task from Coordinator dashboard.', title:'', description:''})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+        Assign task
+      </button>
+    </div>
+  </div>
+
+  <div class="scopeband">
+    <span class="ic">🔒</span>
+    <span><b>Scope guarantee:</b> every number on this page is filtered server-side to Senior Secondary Wing — your own coordinated classes and teachers (<code>dash_scoped_*</code> RPCs, resolved from your <code>wings</code> assignment). No other wing's student or teacher data appears anywhere below, including in the ranking strip, which shows your wing's position and score only.</span>
+  </div>
+
+  <!-- ============ WING RANKING STRIP ============ -->
+  <div class="rankstrip" role="button" tabindex="0" onclick="openWingRankModal()">
+    <div class="rankstrip-badge">🥉</div>
+    <div class="rankstrip-body">
+      <div class="rankstrip-main">#3 of 3 wings this month <span class="rankstrip-move down">▼1</span></div>
+      <div class="rankstrip-sub">71 pts · weakest component: portal adoption · click for how this is scored</div>
+    </div>
+    <div class="rankstrip-go">›</div>
+  </div>
+
+  <!-- ============ JUMP NAV ============ -->
+  <nav class="jumpnav">
+    <a href="#section-overview">Overview</a>
+    <a href="#section-students">Students</a>
+    <a href="#section-teachers">Teachers &amp; SALCI Adoption</a>
+    <a href="#section-academics">Academics</a>
+    <a href="#section-attendance">Attendance</a>
+    <a href="#section-recheck">Recheck Management</a>
+    <a href="#section-tasks">Task Management</a>
+    <a href="#section-communication">Communication</a>
+    <a href="#section-queue">Needs Attention</a>
+  </nav>
+
+  <!-- ============ WING PULSE ============ -->
+  <div class="kpi-grid" id="section-overview">
+    <div class="kpi-tile" style="--accent:var(--teal)">
+      <div class="kpi-label">Students present today</div>
+      <div class="kpi-value">368</div>
+      <div class="kpi-sub">of 412 · 89.3%</div>
+    </div>
+    <div class="kpi-tile" style="--accent:var(--violet)">
+      <div class="kpi-label">Teachers present today</div>
+      <div class="kpi-value">31</div>
+      <div class="kpi-sub">of 34 · 91.2%</div>
+    </div>
+    <div class="kpi-tile" style="--accent:var(--ink-400)">
+      <div class="kpi-label">Classes in wing</div>
+      <div class="kpi-value">13</div>
+      <div class="kpi-sub">Grades 9–12</div>
+    </div>
+  </div>
+
+  <!-- ============ AI INSIGHTS DIGEST ============ -->
+  <div class="ai-card">
+    <div class="card-head">
+      <div style="display:flex; gap:12px; align-items:flex-start;">
+        <div class="ai-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2L12 3z" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <p class="card-title" style="font-size:15px;">This week's wing insights</p>
+          <p class="card-caption">Auto-generated every Monday from everything below, scoped to Senior Secondary Wing — the one thing worth reading before you open anything else</p>
+        </div>
+      </div>
+      <span class="badge good">New</span>
+    </div>
+    <ul class="ai-list">
+      <li><span class="dot"></span><span><b>Teacher portal adoption is your real gap, not academics</b> — the wing's own avg. score (67.4%) is above the school average, but 2 teachers haven't opened SALCI in over a week and only 71% of exams this term were created &amp; graded in-system.</span></li>
+      <li><span class="dot"></span><span>Student portal adoption fell to <b>68% (7-day avg)</b> — the lowest of any wing school-wide.</span></li>
+      <li><span class="dot"></span><span><b>3 recheck requests</b> are past the 5-day SLA — oldest is 6 days, Devansh Rao's History recheck.</span></li>
+      <li><span class="dot"></span><span><b>History</b> is the wing's weakest subject at 51%, dragged down mainly by Class 11 Humanities A (41%).</span></li>
+      <li><span class="dot"></span><span><b>Rakesh Verma</b> hasn't logged into SALCI in 9 days and is 21 days behind on syllabus logging — worth a check-in before it becomes a pattern.</span></li>
+    </ul>
+    <div class="ai-foot">
+      <span class="ai-timestamp">Generated Mon, 17 Aug 2026 · next refresh Monday</span>
+      <button class="group-link">Regenerate ↻</button>
+    </div>
+  </div>
+
+  <!-- ============ ACADEMIC PERFORMANCE ============ -->
+  <div class="card acad-card">
+    <div class="acad-score">
+      <div class="v">67.4%</div>
+      <div class="l">Wing avg. score ▲</div>
+    </div>
+    <div class="acad-deltas">
+      <div class="acad-delta-row"><b class="up">▲ 0.6pp</b><span class="lbl">vs last exam</span></div>
+      <div class="acad-delta-row"><b class="up">▲ 1.1pp</b><span class="lbl">vs last week's avg</span></div>
+      <div class="acad-delta-row"><b class="up">▲ 2.0pp</b><span class="lbl">vs last month's avg</span></div>
+      <div class="acad-delta-row"><b class="up" style="color:var(--teal-ink)">▲ 2.6pp</b><span class="lbl">vs school avg. (64.8%)</span></div>
+    </div>
+    <svg class="acad-spark" viewBox="0 0 140 46" preserveAspectRatio="none">
+      <polyline points="0,30 20,28 40,31 60,22 80,24 100,15 120,18 140,10" fill="none" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="140" cy="10" r="3.5" fill="#0D9488" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <!-- ============ STUDENTS ============ -->
+  <div class="group" id="section-students">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M17 8a4 4 0 1 0-8 0 4 4 0 0 0 8 0zM20 20v-1a3 3 0 0 0-2-2.83M15 4.17a3 3 0 0 1 0 5.66" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Students</h2>
+          <div class="group-desc">412 enrolled in Senior Secondary Wing · portal adoption, where they stand, who needs help</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- adoption hero card -->
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-head">
+        <div>
+          <p class="card-title" style="font-size:16px;">Are Senior Secondary students using SALCI?</p>
+          <p class="card-caption" style="max-width:620px;">Logins, plus what they're actually doing once they're in — homework, tests, assignments. Wing-scoped only.</p>
+        </div>
+        <span class="badge good" style="background:rgba(13,148,136,0.12); color:var(--teal-ink);">412 students</span>
+      </div>
+
+      <div class="alert-box">
+        <svg class="alert-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="flex:1;">
+          <div class="alert-title">5 students have never logged in to SALCI</div>
+          <div class="alert-sub">Priyanka Desai, and 4 others — accounts created, never opened</div>
+        </div>
+        <button class="alert-cta" onclick="openStudentCategoryModal('struggling')">View →</button>
+      </div>
+
+      <div class="adopt-stat-row">
+        <div class="adopt-stat">
+          <div class="l">Today</div>
+          <div class="v">64%</div>
+          <div class="s">264 of 412 logged in</div>
+        </div>
+        <div class="adopt-stat">
+          <div class="l">Yesterday</div>
+          <div class="v">70%</div>
+          <div class="s">288 of 412 logged in</div>
+        </div>
+        <div class="adopt-stat accent">
+          <div class="l">Last 7 days · daily avg</div>
+          <div class="v">68%</div>
+          <div class="s">280 of 412, avg/day</div>
+          <div class="d down">▼ 7pp vs last month · lowest of any wing</div>
+        </div>
+        <div class="adopt-stat accent">
+          <div class="l">Last 30 days · daily avg</div>
+          <div class="v">75%</div>
+          <div class="s">309 of 412, avg/day</div>
+          <div class="note">Healthy range starts ~85%</div>
+        </div>
+      </div>
+
+      <div class="card-head" style="margin-bottom:2px;">
+        <p class="card-caption" style="font-weight:700; color:var(--ink-700);">Daily active students · last 14 days</p>
+        <span style="font-size:11.5px; font-weight:700; color:var(--status-critical);">▼ Trending down</span>
+      </div>
+      <svg width="100%" height="70" viewBox="0 0 560 70" preserveAspectRatio="none" style="overflow:visible; margin-bottom:18px;">
+        <line x1="0" y1="17" x2="560" y2="17" stroke="#E7E3D6" stroke-width="1"/>
+        <line x1="0" y1="35" x2="560" y2="35" stroke="#E7E3D6" stroke-width="1"/>
+        <line x1="0" y1="53" x2="560" y2="53" stroke="#E7E3D6" stroke-width="1"/>
+        <polyline points="0,14 40,20 80,17 120,26 160,23 200,31 240,28 280,36 320,33 360,41 400,38 440,45 480,42 520,48 560,50"
+          fill="none" stroke="#0D9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="560" cy="50" r="4" fill="#0D9488" stroke="#fff" stroke-width="2"/>
+      </svg>
+
+      <div class="progress-row">
+        <div class="progress-label">Homework submitted</div>
+        <div class="progress-track"><div class="progress-fill" style="width:69%; background:var(--teal);"></div></div>
+        <div class="progress-val">69%</div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label">Tests / assignments attempted</div>
+        <div class="progress-track"><div class="progress-fill" style="width:81%; background:var(--violet);"></div></div>
+        <div class="progress-val">81%</div>
+      </div>
+
+      <div class="wing-split">
+        <div class="wing-split-title">Adoption by class (7-day avg) · weakest 3 of 13</div>
+        <div class="wing-row">
+          <div class="wing-name">11 Humanities A</div>
+          <div class="wing-track"><div class="wing-fill" style="width:58%; background:var(--status-critical);"></div></div>
+          <div class="wing-pct">58%</div>
+          <button class="wing-assign" onclick="openAssignTaskModal({assignee:'Sunita Rao', role:'Teacher · History · Class 11 Humanities A', context:'This class has the lowest portal adoption in the wing (58%, 7-day avg) — 6pp below Class 10 B, the next weakest.', title:'Encourage portal use — Class 11 Humanities A', description:'Portal adoption in this class has fallen to 58%. Please remind students at the start of period and check with any who report access issues.'})">Assign</button>
+        </div>
+        <div class="wing-row">
+          <div class="wing-name">10 B</div>
+          <div class="wing-track"><div class="wing-fill" style="width:64%; background:var(--status-warning);"></div></div>
+          <div class="wing-pct">64%</div>
+          <button class="wing-assign" onclick="openAssignTaskModal({assignee:'Manoj Tiwari', role:'Teacher · Class 10 B', context:'Class 10 B portal adoption is 64% (7-day avg), the second-weakest class in the wing.', title:'Encourage portal use — Class 10 B', description:'Portal adoption in this class is trailing the wing average. Please remind students and flag any recurring access issues.'})">Assign</button>
+        </div>
+        <div class="wing-row">
+          <div class="wing-name">9 B</div>
+          <div class="wing-track"><div class="wing-fill" style="width:69%; background:var(--status-warning);"></div></div>
+          <div class="wing-pct">69%</div>
+          <button class="wing-assign" onclick="openAssignTaskModal({assignee:'Kavita Bhatt', role:'Teacher · Class 9 B', context:'Class 9 B portal adoption is 69% (7-day avg), below the wing average of 68% by a narrow margin but trending down.', title:'Encourage portal use — Class 9 B', description:'Please remind students at the start of period this week.'})">Assign</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="stack">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <p class="card-title">Where students stand</p>
+              <p class="card-caption">By latest exam score · click a slice for the student list</p>
+            </div>
+          </div>
+          <div class="donut-wrap">
+            <svg class="donut-svg" width="180" height="180" viewBox="0 0 180 180" id="donut-chart"></svg>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <p class="card-title">Class-wise average performance</p>
+              <p class="card-caption">Avg. score per class, all subjects blended · dashed line = wing average · 13 of 13 classes, weakest first</p>
+            </div>
+            <button class="table-toggle" onclick="toggleView('classperf')">View as table</button>
+          </div>
+          <div id="classperf-chart"></div>
+          <table class="data-table" id="classperf-table">
+            <thead><tr><th>Class</th><th>Avg. score</th></tr></thead>
+            <tbody id="classperf-tbody"></tbody>
+          </table>
+          <div class="predict-box">
+            <div class="predict-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--ink-700);"><path d="M3 17l6-6 4 4 8-8M21 7v6h-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Predicted to slip next
+            </div>
+            <div class="predict-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><b>Class 11 Humanities A</b> — History trending down 3 checkpoints in a row</span>
+            </div>
+            <div class="predict-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span><b>Class 10 B</b> — portal-adoption decline correlates with a predicted dip next cycle</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Students who may need help</p>
+            <p class="card-caption">Ranked by severity · academic risk signals · wing-scoped</p>
+          </div>
+        </div>
+        <div class="plist" id="at-risk-list"></div>
+        <button class="viewall">View all 24 flagged students in this wing →</button>
+
+        <div class="wing-split">
+          <div class="wing-split-title">Where the 24 at-risk students are, by class</div>
+          <div class="wing-row">
+            <div class="wing-name">11 Humanities A</div>
+            <div class="wing-track"><div class="wing-fill" style="width:38%; background:var(--status-critical);"></div></div>
+            <div class="wing-pct">38%</div>
+            <button class="wing-assign" onclick="openAssignTaskModal({assignee:'Sunita Rao', role:'Teacher · History · Class 11 Humanities A', context:'9 of 24 wing-wide at-risk students (38%) are in this class — the largest share.', title:'Review at-risk students — Class 11 Humanities A', description:'9 students flagged this week for failing grades, attendance, or low engagement. Please review and plan follow-ups.'})">Assign</button>
+          </div>
+          <div class="wing-row">
+            <div class="wing-name">10 B</div>
+            <div class="wing-track"><div class="wing-fill" style="width:21%;"></div></div>
+            <div class="wing-pct">21%</div>
+            <button class="wing-assign" onclick="openAssignTaskModal({assignee:'Manoj Tiwari', role:'Teacher · Class 10 B', context:'5 of 24 wing-wide at-risk students (21%) are in Class 10 B.', title:'Review at-risk students — Class 10 B', description:'5 students flagged this week for failing grades, attendance, or low engagement. Please review and plan follow-ups.'})">Assign</button>
+          </div>
+          <div class="wing-row">
+            <div class="wing-name">12 Commerce A</div>
+            <div class="wing-track"><div class="wing-fill" style="width:17%;"></div></div>
+            <div class="wing-pct">17%</div>
+            <button class="wing-assign" onclick="openAssignTaskModal({assignee:'Manoj Tiwari', role:'Teacher · Economics · Class 12 Commerce A', context:'4 of 24 wing-wide at-risk students (17%) are in Class 12 Commerce A.', title:'Review at-risk students — Class 12 Commerce A', description:'4 students flagged this week for failing grades, attendance, or low engagement. Please review and plan follow-ups.'})">Assign</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- adoption list card -->
+    <div class="card" style="margin-top:18px;">
+      <div class="card-head">
+        <div>
+          <p class="card-title">Not using the portal <span style="font-weight:500;color:var(--ink-500);">— Senior Secondary Wing</span></p>
+          <p class="card-caption">Low logins and low submission/attempt rate together — a kid who's quiet on both fronts is the one still relying on paper or WhatsApp</p>
+        </div>
+        <span class="badge high">4 flagged</span>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="setClassTab(this,'all')">All (4)</div>
+        <div class="tab" onclick="setClassTab(this,'History · 11 Hum A')">History · 11 Hum A (3)</div>
+        <div class="tab" onclick="setClassTab(this,'English Core · 12 NMed A')">English Core · 12 NMed A (1)</div>
+      </div>
+      <div class="plist" id="adoption-list"></div>
+      <p class="card-caption" id="adoption-sample-note" style="margin-top:2px;">Sample shown — 4 of 4</p>
+    </div>
+  </div>
+
+  <!-- ============ TEACHERS & SALCI ADOPTION ============ -->
+  <div class="group" id="section-teachers">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Teachers &amp; SALCI adoption</h2>
+          <div class="group-desc">34 teachers · this wing's biggest lever — a teacher who isn't in the system is a teacher whose students probably aren't either</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px;">
+      <div class="statchip-row">
+        <div class="statchip"><div class="v">34</div><div class="l">Total teachers</div></div>
+        <div class="statchip"><div class="v">19</div><div class="l">Open tasks</div></div>
+        <div class="statchip"><div class="v" style="color:#A32323">6</div><div class="l">Overdue tasks</div></div>
+        <div class="statchip"><div class="v">79%</div><div class="l">Task completion rate</div></div>
+      </div>
+      <div class="card-head" style="margin-bottom:8px;">
+        <div>
+          <p class="card-title">Needs a look</p>
+          <p class="card-caption">Worst-first: most overdue tasks, longest inactive. Leave days already excluded.</p>
+        </div>
+      </div>
+      <table class="exceptions">
+        <thead><tr><th>Teacher</th><th>Subject · classes</th><th>Overdue tasks</th><th>Last active</th></tr></thead>
+        <tbody id="teacher-exceptions-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Teacher SALCI adoption hero card — the headline ask -->
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-head">
+        <div>
+          <p class="card-title" style="font-size:16px;">Are your teachers using SALCI the way they're supposed to?</p>
+          <p class="card-caption" style="max-width:660px;">Per the adoption playbook, a teacher counts as adopted only once the old channel is closed — creating &amp; grading every exam in-system, marking attendance digitally, logging syllabus progress on schedule. A login alone isn't the metric.</p>
+        </div>
+        <span class="badge high" style="background:rgba(226,154,14,0.16); color:#8A5B00;">5 not fully adopted</span>
+      </div>
+
+      <div class="alert-box amber">
+        <svg class="alert-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="flex:1;">
+          <div class="alert-title">2 teachers haven't opened SALCI in over a week</div>
+          <div class="alert-sub">Rakesh Verma (9 days) and Kavita Bhatt — new hire, account created 8 days ago, never opened</div>
+        </div>
+        <button class="alert-cta" onclick="document.getElementById('teacher-adoption-list').scrollIntoView({behavior:'smooth'})">View →</button>
+      </div>
+
+      <div class="adopt-stat-row">
+        <div class="adopt-stat">
+          <div class="l">Logged in today</div>
+          <div class="v">26</div>
+          <div class="s">of 34 teachers · 76%</div>
+        </div>
+        <div class="adopt-stat accent">
+          <div class="l">Exams created &amp; graded in-system</div>
+          <div class="v">71%</div>
+          <div class="s">of exams this term, fully in SALCI</div>
+        </div>
+        <div class="adopt-stat accent">
+          <div class="l">Digital attendance compliance</div>
+          <div class="v">79%</div>
+          <div class="s">of periods marked digitally, last 7 days</div>
+        </div>
+        <div class="adopt-stat accent">
+          <div class="l">Syllabus logged in last 7 days</div>
+          <div class="v">71%</div>
+          <div class="s">24 of 34 teachers</div>
+          <div class="d down">▼ vs 84% last month</div>
+        </div>
+      </div>
+
+      <p class="card-caption" style="font-weight:700; color:var(--ink-700); margin-bottom:10px;">Not fully adopted — worst pattern first</p>
+      <div class="plist" id="teacher-adoption-list"></div>
+    </div>
+
+    <div class="row-2">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Teachers ranked by performance</p>
+            <p class="card-caption">By class · section · subject, wing-scoped — pick the fair lens</p>
+          </div>
+          <div class="toggle-group">
+            <button class="table-toggle active" id="teacher-sort-score" onclick="setTeacherSort('score')">Score</button>
+            <button class="table-toggle" id="teacher-sort-trend" onclick="setTeacherSort('trend')">Improvement</button>
+          </div>
+        </div>
+        <table class="exceptions">
+          <thead><tr><th>Teacher</th><th>Class · subject</th><th>Score</th><th>vs last month</th></tr></thead>
+          <tbody id="teacher-rank-tbody"></tbody>
+        </table>
+        <div class="predict-box" style="border-top:1px solid var(--border);">
+          <div class="predict-row" style="margin-bottom:0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--status-good);"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span><b>Kavita Bhatt</b> (Computer Science) is this wing's biggest mover this month — +5pp, despite being newly onboarded to SALCI itself.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Syllabus logging by teacher</p>
+            <p class="card-caption">Days since last chapter logged · reused by the wing's own pacing tracker</p>
+          </div>
+        </div>
+        <div class="barchart" id="syllabus-log-chart"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ACADEMICS ============ -->
+  <div class="group" id="section-academics">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14M4 19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2M4 19h16M8 7h8M8 11h8M8 15h5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Academics</h2>
+          <div class="group-desc">Subject performance, trend over time, syllabus pacing — Senior Secondary Wing</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Subjects by performance</p>
+            <p class="card-caption">Wing-wide avg. score, weakest first</p>
+          </div>
+          <button class="table-toggle" onclick="toggleView('bars')">View as table</button>
+        </div>
+        <div class="barchart" id="bars-chart"></div>
+        <table class="data-table" id="bars-table">
+          <thead><tr><th>Subject</th><th>Avg. score</th></tr></thead>
+          <tbody id="bars-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Exam performance over time</p>
+            <p class="card-caption">Wing avg. score vs. school avg. — last 8 checkpoints</p>
+          </div>
+        </div>
+        <div class="legend-row">
+          <div class="legend-swatches">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--teal)"></span>Senior Secondary Wing</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--violet); opacity:.55"></span>School avg. (benchmark)</div>
+          </div>
+        </div>
+        <svg width="100%" height="200" viewBox="0 0 560 200" preserveAspectRatio="none" style="overflow:visible;">
+          <line x1="0" y1="40" x2="560" y2="40" stroke="#E7E3D6" stroke-width="1"/>
+          <line x1="0" y1="90" x2="560" y2="90" stroke="#E7E3D6" stroke-width="1"/>
+          <line x1="0" y1="140" x2="560" y2="140" stroke="#E7E3D6" stroke-width="1"/>
+          <polyline points="0,120 80,110 160,116 240,98 320,102 400,80 480,86 560,66"
+            fill="none" stroke="#5B3FA6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+          <polyline points="0,108 80,96 160,102 240,80 320,86 400,58 480,66 560,44"
+            fill="none" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="560" cy="44" r="4.5" fill="#0D9488" stroke="#fff" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="card-head">
+        <div>
+          <p class="card-title">Weakest class · section · subject</p>
+          <p class="card-caption">Worst combinations in the wing · click a row to assign the teacher a task</p>
+        </div>
+      </div>
+      <div class="barchart" id="weakest-chart"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="card-head">
+        <div>
+          <p class="card-title">Syllabus coverage</p>
+          <p class="card-caption">Overall pacing across the wing's 13 classes and their subjects</p>
+        </div>
+        <button class="group-link" onclick="openSyllabusModal()">Review behind-schedule classes →</button>
+      </div>
+      <div class="statchip-row" style="margin-bottom:0;">
+        <div class="statchip"><div class="v">58%</div><div class="l">Overall coverage <span style="color:var(--status-warning);font-weight:700;">▲1pp</span></div></div>
+        <div class="statchip"><div class="v">10 / 13</div><div class="l">Classes on track</div></div>
+        <div class="statchip"><div class="v" style="color:#A32323">2 / 13</div><div class="l">Classes behind schedule</div></div>
+        <div class="statchip"><div class="v">2</div><div class="l">Subjects with no upload &gt;2 weeks</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ATTENDANCE ============ -->
+  <div class="group" id="section-attendance">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Attendance</h2>
+          <div class="group-desc">Senior Secondary Wing, today and over time</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Attendance trend</p>
+            <p class="card-caption">Students vs. staff, last 14 days — Senior Secondary Wing</p>
+          </div>
+        </div>
+        <div class="legend-row">
+          <div class="legend-swatches">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--teal)"></span>Students</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--violet)"></span>Staff</div>
+          </div>
+        </div>
+        <svg width="100%" height="190" viewBox="0 0 560 190" preserveAspectRatio="none" style="overflow:visible;">
+          <line x1="0" y1="47" x2="560" y2="47" stroke="#E7E3D6" stroke-width="1"/>
+          <line x1="0" y1="95" x2="560" y2="95" stroke="#E7E3D6" stroke-width="1"/>
+          <line x1="0" y1="143" x2="560" y2="143" stroke="#E7E3D6" stroke-width="1"/>
+          <polyline points="0,52 80,44 160,58 240,32 320,38 400,20 480,30 560,16"
+            fill="none" stroke="#5B3FA6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+          <polyline points="0,70 80,60 160,76 240,46 320,52 400,30 480,42 560,26"
+            fill="none" stroke="#0D9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="560" cy="26" r="4" fill="#0D9488" stroke="#fff" stroke-width="2"/>
+        </svg>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Attendance logging compliance</p>
+            <p class="card-caption">Classes in this wing that haven't logged today's attendance yet</p>
+          </div>
+        </div>
+        <div class="statchip-row" style="grid-template-columns:1fr; margin-bottom:12px;">
+          <div class="statchip">
+            <div class="v" style="color:#A32323;">3 of 13</div>
+            <div class="l">classes have not logged attendance today</div>
+          </div>
+        </div>
+        <p class="card-caption" style="margin-bottom:10px;">This is also compliance risk, not just a data gap — flagged in Needs Attention below.</p>
+        <a href="#section-queue" class="group-link">See in Needs Attention →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ RECHECK MANAGEMENT ============ -->
+  <div class="group" id="section-recheck">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Recheck management</h2>
+          <div class="group-desc">Approve or deny student recheck requests for exams in this wing — a core coordinator duty, per the PRD</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="statchip-row">
+        <div class="statchip"><div class="v" style="color:#A32323">7</div><div class="l">Pending</div></div>
+        <div class="statchip"><div class="v">34</div><div class="l">Completed this month</div></div>
+        <div class="statchip"><div class="v">5</div><div class="l">Rejected this month</div></div>
+        <div class="statchip"><div class="v">2.1 <span style="font-size:12px;font-weight:600;color:var(--ink-500);">days</span></div><div class="l">Avg. resolution time</div></div>
+      </div>
+      <div class="card-head" style="margin-bottom:8px;">
+        <div>
+          <p class="card-title">Pending requests</p>
+          <p class="card-caption">Oldest first · 3 are already past the 5-day SLA</p>
+        </div>
+      </div>
+      <div class="plist" id="recheck-list"></div>
+    </div>
+  </div>
+
+  <!-- ============ TASK MANAGEMENT ============ -->
+  <div class="group" id="section-tasks">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Task management</h2>
+          <div class="group-desc">Tasks you've assigned to teachers in this wing — evidence-based approval, per the TMS</div>
+        </div>
+        <div></div>
+      </div>
+      <button class="btn primary" onclick="openAssignTaskModal({assignee:'', role:'Teacher · Senior Secondary Wing', context:'New task from Coordinator dashboard.', title:'', description:''})">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+        New task
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="statchip-row">
+        <div class="statchip"><div class="v">19</div><div class="l">Open</div></div>
+        <div class="statchip"><div class="v" style="color:#A32323">6</div><div class="l">Overdue</div></div>
+        <div class="statchip"><div class="v">79%</div><div class="l">Completion rate</div></div>
+        <div class="statchip"><div class="v">3.4 <span style="font-size:12px;font-weight:600;color:var(--ink-500);">days</span></div><div class="l">Avg. closure time</div></div>
+      </div>
+      <div class="card-head" style="margin-bottom:8px;">
+        <div>
+          <p class="card-title">Open &amp; overdue tasks</p>
+          <p class="card-caption">Worst-first: overdue, then due soonest</p>
+        </div>
+      </div>
+      <div class="queue" id="task-list"></div>
+    </div>
+  </div>
+
+  <!-- ============ COMMUNICATION ============ -->
+  <div class="group" id="section-communication">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Communication</h2>
+          <div class="group-desc">Notices sent to Senior Secondary Wing parents — and whether they actually opened them</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="statchip-row">
+        <div class="statchip"><div class="v">4</div><div class="l">Circulars sent to this wing this month</div></div>
+        <div class="statchip"><div class="v">59%</div><div class="l">Avg. open rate</div></div>
+        <div class="statchip"><div class="v">1</div><div class="l">PTM scheduled</div></div>
+        <div class="statchip"><div class="v">58%</div><div class="l">Wing parents opening ≥1 comm monthly</div></div>
+      </div>
+      <div class="card-head" style="margin-bottom:8px;">
+        <div><p class="card-title">Recent circulars to this wing</p></div>
+      </div>
+      <table class="exceptions">
+        <thead><tr><th>Title</th><th>Sent</th><th>Opened</th></tr></thead>
+        <tbody>
+          <tr><td class="staffname">Fee payment reminder — Senior Wing</td><td class="staffrole">3 days ago</td><td class="metric-ok">78%</td></tr>
+          <tr><td class="staffname">PTM schedule — Class 11 &amp; 12</td><td class="staffrole">5 days ago</td><td class="metric-ok">61%</td></tr>
+          <tr><td class="staffname">Sports day circular</td><td class="staffrole">1 week ago</td><td class="metric-bad">55%</td></tr>
+          <tr><td class="staffname">Syllabus completion update — History</td><td class="staffrole">2 weeks ago</td><td class="metric-bad">49%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ NEEDS ATTENTION ============ -->
+  <div class="group" id="section-queue">
+    <div class="group-head">
+      <div class="group-title-row">
+        <div class="group-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h2 class="group-title">Needs your attention</h2>
+          <div class="group-desc">One unified queue for the wing, sorted by severity — pulls from every section above</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="card">
+        <div class="queue">
+          <div class="queue-item">
+            <span class="queue-sev high"></span>
+            <div class="queue-text">2 teachers haven't opened SALCI in over a week <span>Teacher adoption · High</span></div>
+            <button class="queue-cta" onclick="document.getElementById('section-teachers').scrollIntoView({behavior:'smooth'})">Review →</button>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev high"></span>
+            <div class="queue-text">3 recheck requests are past the 5-day SLA <span>Recheck management · High</span></div>
+            <button class="queue-cta" onclick="document.getElementById('section-recheck').scrollIntoView({behavior:'smooth'})">Review →</button>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev high"></span>
+            <div class="queue-text">3 of 13 classes have not logged attendance today <span>Attendance sync · High</span></div>
+            <button class="queue-cta" onclick="document.getElementById('section-attendance').scrollIntoView({behavior:'smooth'})">Review →</button>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev medium"></span>
+            <div class="queue-text">Student portal adoption is the lowest of any wing — 68% (7-day avg) <span>Portal adoption · Medium</span></div>
+            <button class="queue-cta" onclick="document.getElementById('section-students').scrollIntoView({behavior:'smooth'})">Review →</button>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev medium"></span>
+            <div class="queue-text">6 teacher tasks overdue <span>Task management · Medium</span></div>
+            <button class="queue-cta" onclick="document.getElementById('section-tasks').scrollIntoView({behavior:'smooth'})">Review →</button>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev medium"></span>
+            <div class="queue-text">History is 2+ weeks behind syllabus pacing in 2 classes <span>Syllabus · Medium</span></div>
+            <button class="queue-cta" onclick="document.getElementById('section-academics').scrollIntoView({behavior:'smooth'})">Review →</button>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev low"></span>
+            <div class="queue-text">1 new teacher hire has never logged in — Kavita Bhatt <span>Teacher adoption · Low</span></div>
+            <button class="queue-cta" onclick="document.getElementById('section-teachers').scrollIntoView({behavior:'smooth'})">Review →</button>
+          </div>
+          <div class="queue-item">
+            <span class="queue-sev low"></span>
+            <div class="queue-text">Syllabus material not uploaded for 2 subjects this week <span>Syllabus · Low</span></div>
+            <button class="queue-cta" onclick="document.getElementById('section-academics').scrollIntoView({behavior:'smooth'})">Review →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <p class="card-title">Recent events</p>
+            <p class="card-caption">Latest actions in this wing</p>
+          </div>
+        </div>
+        <table class="events">
+          <thead><tr><th>Type</th><th>Event</th><th class="time">When</th></tr></thead>
+          <tbody>
+            <tr><td>Recheck</td><td>Class 11 Hum A History recheck approved</td><td class="time">2h ago</td></tr>
+            <tr><td>Syllabus</td><td>Kavita Bhatt logged syllabus progress — Computer Science</td><td class="time">4h ago</td></tr>
+            <tr><td>Communication</td><td>PTM schedule sent — Class 11 &amp; 12</td><td class="time">Yesterday</td></tr>
+            <tr><td>Exam</td><td>Sunita Rao's Unit Test 2 finalized — Class 11 Hum B</td><td class="time">2 days ago</td></tr>
+            <tr><td>Task</td><td>Task assigned: review Class 11 Hum A pacing plan</td><td class="time">2 days ago</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer class="note">
+    Mockup for internal review — data shown is illustrative, not live. Colors: teal = this wing's own data, violet = benchmark/reference series (school-wide or prior period), red/amber/green/gold = fixed status bands (PRD §12.3), never reused as series colors. Names, figures, and flagged students/teachers are kept consistent with the admin and teacher dashboard mockups already in this project (Rakesh Verma, Sunita Rao, "Priya" → Priya Krishnan, Class 11 Humanities A, Priyanka Desai and others recur deliberately) so the three role views read as one coherent system, not three unrelated demos. The wing-ranking strip intentionally shows only this wing's own position and score — never another wing's underlying student or teacher data, per the scope doctrine already established in the teacher-dashboard spec. Every "Assign task", "Approve" and "Reject" button in this mockup opens a working modal and shows a confirmation toast, but nothing is actually saved or sent — this is a front-end demo, not the live product. Brand hex values are reconstructed from PRD §26.1 token references — swap for real <code>--primary</code>/<code>--brand-*</code> CSS variable values before shipping.
+  </footer>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <p class="modal-title" id="modal-title"></p>
+        <p class="modal-sub" id="modal-sub"></p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toast-text">Task created</span>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Shared helpers (same conventions as the admin/teacher mockups)
+// ---------------------------------------------------------------------------
+const statusColor = (v) => v < 50 ? 'var(--status-critical)' : v < 65 ? 'var(--status-warning)' : v < 85 ? 'var(--status-good)' : 'var(--status-excellent)';
+const statusLabel = (v) => v < 50 ? 'Needs Attention' : v < 65 ? 'Developing' : v < 85 ? 'Stable' : 'Excellent';
+const initials = n => n.split(' ').map(w=>w[0]).slice(0,2).join('');
+
+function showToast(text){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = text;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=> t.classList.remove('show'), 3200);
+}
+function openModal(title, sub, bodyHtml){
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-sub').textContent = sub || '';
+  document.getElementById('modal-body').innerHTML = bodyHtml;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+function toggleView(id){
+  const chartEl = document.getElementById(id+'-chart');
+  const tableEl = document.getElementById(id+'-table');
+  const btn = event.target;
+  const showingTable = tableEl.classList.toggle('show');
+  chartEl.style.display = showingTable ? 'none' : '';
+  btn.textContent = showingTable ? 'View as chart' : 'View as table';
+  btn.classList.toggle('active', showingTable);
+}
+
+// -------- Assign Task modal --------
+function openAssignTaskModal({assignee, role, context, title, description}){
+  const body = `
+    <div class="field"><label>Assignee</label><div class="readonly"><b>${assignee || 'Select a teacher'}</b> — ${role}</div></div>
+    <div class="field"><label>Context (auto-filled from this dashboard)</label><div class="readonly">${context}</div></div>
+    <div class="field"><label>Task title</label><input type="text" value="${title}" /></div>
+    <div class="field"><label>Description</label><textarea>${description}</textarea></div>
+    <div class="field" style="max-width:200px;"><label>Due date</label><input type="date" /></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="submitAssignTask('${(assignee||'the teacher').replace(/'/g,"")}')">Create task</button>
+    </div>`;
+  openModal('Assign task', 'Sent as a task, not a public flag — only the assignee sees this', body);
+}
+function submitAssignTask(assignee){
+  closeModal();
+  showToast(`Task created and assigned to ${assignee}`);
+}
+
+// -------- Wing ranking modal (position + score only, no peer-wing data) --------
+function openWingRankModal(){
+  const body = `
+    <p class="card-caption" style="margin-bottom:14px;">Score is five equally-weighted components, computed for your wing only. No other wing's student or teacher data is shown here — just how your own components add up.</p>
+    <table>
+      <thead><tr><th>Component</th><th>Your score</th></tr></thead>
+      <tbody>
+        <tr><td>Exam completion in-system</td><td class="metric-ok">18 / 20</td></tr>
+        <tr><td>Attendance logging compliance</td><td class="metric-ok">16 / 20</td></tr>
+        <tr><td>Recheck turnaround (within SLA)</td><td class="metric-bad">12 / 20</td></tr>
+        <tr><td>Syllabus pacing compliance</td><td class="metric-ok">14 / 20</td></tr>
+        <tr><td>Portal adoption (students + teachers)</td><td class="metric-bad">11 / 20</td></tr>
+      </tbody>
+    </table>
+    <p class="card-caption" style="margin-top:14px;"><b style="color:var(--ink-900);">Total: 71 / 100 · #3 of 3 wings this month.</b> Portal adoption and recheck turnaround are dragging the total — both are addressable this week from the sections above.</p>
+    <div class="modal-actions">
+      <button class="btn primary" onclick="closeModal()">Got it</button>
+    </div>`;
+  openModal('How your wing is scored', 'Senior Secondary Wing · this month', body);
+}
+
+// -------- Recheck decision modal --------
+function openRecheckModal(r){
+  const body = `
+    <div class="field"><label>Student</label><div class="readonly"><b>${r.student}</b> — ${r.cls}</div></div>
+    <div class="field"><label>Exam / question</label><div class="readonly">${r.exam} — ${r.q}</div></div>
+    <div class="field"><label>Student's reason</label><div class="readonly">${r.reason}</div></div>
+    <div class="field"><label>Previous marks</label><div class="readonly">${r.prev}</div></div>
+    <div class="field"><label>New marks (if approving)</label><input type="text" placeholder="e.g. 8/10" /></div>
+    <div class="field"><label>Resolution notes</label><textarea placeholder="Visible to the teacher and, on approval, the student"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal(); showToast('Recheck rejected — teacher notified')">Reject</button>
+      <button class="btn primary" onclick="closeModal(); showToast('Recheck approved — marks updated')">Approve</button>
+    </div>`;
+  openModal('Resolve recheck request', `${r.days} days pending · ${r.sev.toUpperCase()}`, body);
+}
+
+// -------- Syllabus behind-schedule modal --------
+function openSyllabusModal(){
+  const body = `
+    <table>
+      <thead><tr><th>Class · subject</th><th>Teacher</th><th>Coverage</th><th>Last logged</th></tr></thead>
+      <tbody>
+        <tr><td>11 Humanities A · History</td><td>Sunita Rao</td><td class="metric-bad">34%</td><td class="metric-bad">16 days ago</td></tr>
+        <tr><td>11 NMed A · Physics</td><td>Rakesh Verma</td><td class="metric-bad">29%</td><td class="metric-bad">21 days ago</td></tr>
+        <tr><td>11 Humanities B · History</td><td>Sunita Rao</td><td class="metric-ok">41%</td><td>3 days ago</td></tr>
+        <tr><td>12 Comm A · Economics</td><td>Manoj Tiwari</td><td class="metric-ok">48%</td><td>9 days ago</td></tr>
+      </tbody>
+    </table>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Close</button>
+      <button class="btn primary" onclick="closeModal(); showToast('Reminder sent to 4 teachers')">Nudge all 4 →</button>
+    </div>`;
+  openModal('Classes behind schedule', 'Senior Secondary Wing · 2 classes are 2+ weeks behind', body);
+}
+
+// ---------------------------------------------------------------------------
+// Where students stand — donut (wing-scoped)
+// ---------------------------------------------------------------------------
+const distribution = [
+  {key:'struggling', label:'Struggling', count:163, color:'#d03b3b', hex:'#d03b3b'},
+  {key:'fine', label:'Fine', count:180, color:'#0ca30c', hex:'#0ca30c'},
+  {key:'excelling', label:'Excelling', count:69, color:'#B8860B', hex:'#B8860B'},
+];
+const distTotal = distribution.reduce((a,b)=>a+b.count,0);
+(function(){
+  const svg = document.getElementById('donut-chart');
+  const r = 70, cx = 90, cy = 90, sw = 26;
+  const circ = 2 * Math.PI * r;
+  let offsetAcc = 0;
+  const NS = 'http://www.w3.org/2000/svg';
+  const g = document.createElementNS(NS,'g');
+  g.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+  distribution.forEach(d=>{
+    const frac = d.count / distTotal;
+    const len = frac * circ;
+    const circle = document.createElementNS(NS,'circle');
+    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
+    circle.setAttribute('fill','none'); circle.setAttribute('stroke', d.hex);
+    circle.setAttribute('stroke-width', sw);
+    circle.setAttribute('stroke-dasharray', `${len} ${circ - len}`);
+    circle.setAttribute('stroke-dashoffset', -offsetAcc);
+    circle.classList.add('seg');
+    circle.style.cursor = 'pointer';
+    circle.addEventListener('click', ()=> openStudentCategoryModal(d.key));
+    const title = document.createElementNS(NS,'title');
+    title.textContent = `${d.label}: ${d.count} students (${(frac*100).toFixed(1)}%)`;
+    circle.appendChild(title);
+    g.appendChild(circle);
+    offsetAcc += len;
+  });
+  svg.appendChild(g);
+  const t1 = document.createElementNS(NS,'text');
+  t1.setAttribute('x',cx); t1.setAttribute('y',cy-4); t1.setAttribute('text-anchor','middle');
+  t1.setAttribute('font-size','22'); t1.setAttribute('font-weight','800'); t1.setAttribute('fill','#1C1B17');
+  t1.setAttribute('font-family','Inter, sans-serif'); t1.textContent = distTotal.toLocaleString();
+  svg.appendChild(t1);
+  const t2 = document.createElementNS(NS,'text');
+  t2.setAttribute('x',cx); t2.setAttribute('y',cy+16); t2.setAttribute('text-anchor','middle');
+  t2.setAttribute('font-size','11'); t2.setAttribute('fill','#6B695F');
+  t2.setAttribute('font-family','Inter, sans-serif'); t2.textContent = 'students';
+  svg.appendChild(t2);
+
+  const legend = document.getElementById('donut-legend');
+  distribution.forEach(d=>{
+    const row = document.createElement('div'); row.className='donut-legend-row';
+    row.onclick = ()=> openStudentCategoryModal(d.key);
+    row.innerHTML = `<span class="sw" style="background:${d.hex}"></span><span>${d.label} — <b>${d.count}</b></span><span class="pct">${((d.count/distTotal)*100).toFixed(1)}%</span>`;
+    legend.appendChild(row);
+  });
+})();
+
+const studentSamples = {
+  struggling: [
+    {name:'Priyanka Desai', cls:'11 Humanities A', acc:35}, {name:'Devansh Rao', cls:'11 Humanities A', acc:44},
+    {name:'Kabir Singh', cls:'11 Humanities A', acc:46}, {name:'Kabir Nanda', cls:'11 Humanities A', acc:49},
+    {name:'Aarav Mehta', cls:'10 B', acc:38}, {name:'Rohan Verma', cls:'10 A', acc:43},
+  ],
+  fine: [
+    {name:'Meher Chatterjee', cls:'12 Non-Medical A', acc:69}, {name:'Simran Kaur', cls:'12 Commerce A', acc:80},
+    {name:'Yusuf Khan', cls:'12 Non-Medical B', acc:72}, {name:'Tanvi Shah', cls:'12 Commerce B', acc:78},
+  ],
+  excelling: [
+    {name:'Aditi Rao', cls:'12 Non-Medical A', acc:92}, {name:'Karan Malhotra', cls:'11 Humanities A', acc:88},
+    {name:'Rehan Siddiqui', cls:'9 A', acc:93},
+  ],
+};
+let currentCategory = 'struggling';
+function openStudentCategoryModal(cat){
+  currentCategory = cat;
+  const d = distribution.find(x=>x.key===cat);
+  const tabsHtml = distribution.map(x=>`<div class="tab ${x.key===cat?'active':''}" onclick="switchCategoryTab('${x.key}')">${x.label} (${x.count})</div>`).join('');
+  const body = `
+    <div class="tabs">${tabsHtml}</div>
+    <div style="margin-bottom:12px;">
+      <select id="cat-class-filter" onchange="renderCategoryList()" style="font-size:12.5px;font-weight:600;padding:7px 10px;border-radius:8px;border:1px solid var(--border-strong);color:var(--ink-700);background:var(--surface-card);">
+        <option value="">All classes</option>
+      </select>
+    </div>
+    <div id="cat-list" class="plist"></div>`;
+  openModal(`${d.label} students`, `${d.count} students in Senior Secondary Wing (sample shown) · click a student to open their profile`, body);
+  populateClassFilter();
+  renderCategoryList();
+}
+function switchCategoryTab(cat){ openStudentCategoryModal(cat); }
+function populateClassFilter(){
+  const sel = document.getElementById('cat-class-filter');
+  const classes = [...new Set(studentSamples[currentCategory].map(s=>s.cls))];
+  sel.innerHTML = '<option value="">All classes</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+function renderCategoryList(){
+  const filter = document.getElementById('cat-class-filter').value;
+  const list = document.getElementById('cat-list');
+  const rows = studentSamples[currentCategory].filter(s => !filter || s.cls === filter);
+  list.innerHTML = rows.map(s => `
+    <div class="prow clickable" onclick="openStudentProfile('${s.name.replace(/'/g,"")}','${s.cls}',${s.acc})">
+      <div class="avatar" style="background:${statusColor(s.acc)}">${initials(s.name)}</div>
+      <div class="prow-main"><div class="prow-name">${s.name}</div><div class="prow-meta">${s.cls}</div></div>
+      <div class="prow-side"><span class="badge ${s.acc<50?'high':s.acc<65?'medium':'good'}">${s.acc}%</span></div>
+    </div>`).join('') || '<p class="card-caption">No students match this filter.</p>';
+}
+function openStudentProfile(name, cls, acc){
+  const body = `
+    <button class="group-link" onclick="switchCategoryTab(currentCategory)">← Back to list</button>
+    <div style="display:flex; align-items:center; gap:14px; margin:16px 0;">
+      <div class="avatar" style="width:52px;height:52px;font-size:16px;background:${statusColor(acc)}">${initials(name)}</div>
+      <div><div style="font-size:16px;font-weight:800;">${name}</div><div class="card-caption">${cls} · ${statusLabel(acc)}</div></div>
+    </div>
+    <div class="statchip-row">
+      <div class="statchip"><div class="v">${acc}%</div><div class="l">Latest score</div></div>
+      <div class="statchip"><div class="v">${Math.max(60, acc+15)}%</div><div class="l">Attendance</div></div>
+      <div class="statchip"><div class="v">${acc<50?'4 of 5':'5 of 5'}</div><div class="l">Homework submitted</div></div>
+      <div class="statchip"><div class="v">${acc<50?'9 days ago':'Today'}</div><div class="l">Last portal login</div></div>
+    </div>
+    <div class="modal-actions" style="justify-content:flex-start;">
+      <button class="btn primary" onclick="closeModal(); showToast('Message sent to parent')">Message parent</button>
+      <button class="btn" onclick="closeModal(); showToast('Remedial task assigned')">Assign remedial task</button>
+    </div>`;
+  openModal(name, `${cls} · student profile`, body);
+}
+
+// ---------------------------------------------------------------------------
+// Class-wise average performance (wing, 13 classes) + subjects bars
+// ---------------------------------------------------------------------------
+const classPerf = [
+  {name:'Class 10 A', short:'10 A', v:58.0},
+  {name:'Class 10 B', short:'10 B', v:60.4},
+  {name:'Class 11 Humanities B', short:'11 Hum B', v:63.5},
+  {name:'Class 11 Humanities A', short:'11 Hum A', v:65.0},
+  {name:'Class 12 Humanities A', short:'12 Hum A', v:66.0},
+  {name:'Class 12 Commerce B', short:'12 Comm B', v:67.0},
+  {name:'Class 9 B', short:'9 B', v:68.0},
+  {name:'Class 12 Commerce A', short:'12 Comm A', v:69.2},
+  {name:'Class 11 Non-Medical B', short:'11 NMed B', v:70.5},
+  {name:'Class 9 A', short:'9 A', v:71.2},
+  {name:'Class 12 Non-Medical A', short:'12 NMed A', v:71.4},
+  {name:'Class 11 Non-Medical A', short:'11 NMed A', v:72.0},
+  {name:'Class 12 Non-Medical B', short:'12 NMed B', v:74.0},
+];
+const wingAvg = 67.4;
+const cpMin = 40, cpMax = 90;
+const cpPct = v => ((v - cpMin) / (cpMax - cpMin)) * 100;
+const cpChart = document.getElementById('classperf-chart');
+cpChart.innerHTML = `
+  <div class="colchart-area">
+    <div class="colchart-refline" style="bottom:${cpPct(wingAvg)}%"><span class="colchart-reflabel">Wing avg ${wingAvg}%</span></div>
+    <div class="colchart-bars">${classPerf.map(c => `<div class="colbar-col"><div class="colbar" style="height:${cpPct(c.v)}%; background:${statusColor(c.v)};" title="${c.name}: ${c.v.toFixed(1)}% — ${statusLabel(c.v)}"><span class="colbar-val">${c.v.toFixed(1)}%</span></div></div>`).join('')}</div>
+  </div>
+  <div class="colchart-xlabels">${classPerf.map(c => `<div class="colchart-xlabel" title="${c.name}">${c.short}</div>`).join('')}</div>
+`;
+const cpBody = document.getElementById('classperf-tbody');
+classPerf.forEach(c => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${c.name}</td><td>${c.v.toFixed(1)}% — ${statusLabel(c.v)}</td>`; cpBody.appendChild(tr); });
+
+const subjects = [
+  {name:'History', v:51}, {name:'Mathematics', v:55}, {name:'Physics', v:59}, {name:'Chemistry', v:63},
+  {name:'English Core', v:68}, {name:'Economics', v:71}, {name:'Accountancy', v:74}, {name:'Computer Science', v:82},
+];
+const barsEl = document.getElementById('bars-chart');
+const barsBody = document.getElementById('bars-tbody');
+subjects.forEach(s=>{
+  const row = document.createElement('div'); row.className='bar-row';
+  row.innerHTML = `<div class="bar-label">${s.name}</div><div class="bar-track"><div class="bar-fill" style="width:${s.v}%; background:${statusColor(s.v)};" title="${s.name}: ${s.v}% — ${statusLabel(s.v)}"></div></div><div class="bar-val">${s.v}%</div>`;
+  barsEl.appendChild(row);
+  const tr = document.createElement('tr'); tr.innerHTML = `<td>${s.name}</td><td>${s.v}% — ${statusLabel(s.v)}</td>`;
+  barsBody.appendChild(tr);
+});
+
+const weakestCombos = [
+  {label:'11 Humanities A · History', teacher:'Sunita Rao', v:41},
+  {label:'10 A · Mathematics', teacher:'Neha Bose', v:46},
+  {label:'11 Humanities B · History', teacher:'Sunita Rao', v:48},
+  {label:'10 B · Physics', teacher:'Rakesh Verma', v:50},
+  {label:'9 B · Mathematics', teacher:'Neha Bose', v:53},
+  {label:'12 Commerce A · Economics', teacher:'Manoj Tiwari', v:57},
+];
+const weakestEl = document.getElementById('weakest-chart');
+weakestCombos.forEach(w=>{
+  const row = document.createElement('div'); row.className='bar-row clickable';
+  row.onclick = ()=> openAssignTaskModal({assignee:w.teacher, role:'Teacher · Senior Secondary Wing', context:`${w.label} is averaging ${w.v}% — one of the wing's 6 weakest class-subject combinations.`, title:`Support plan — ${w.label}`, description:`This combination is underperforming at ${w.v}%. Please share a remediation plan and flag any resourcing gaps.`});
+  row.innerHTML = `<div class="bar-label">${w.label}<div class="bar-sub">${w.teacher}</div></div><div class="bar-track"><div class="bar-fill" style="width:${w.v}%; background:${statusColor(w.v)};"></div></div><div class="bar-val">${w.v}%</div>`;
+  weakestEl.appendChild(row);
+});
+
+// ---------------------------------------------------------------------------
+// Students who may need help (wing-scoped)
+// ---------------------------------------------------------------------------
+const atRisk = [
+  {name:'Priyanka Desai', cls:'Class 11 Humanities A', chips:['Never logged in','Failing grades'], sev:'high'},
+  {name:'Devansh Rao', cls:'Class 11 Humanities A', chips:['Low attendance','Partial submit'], sev:'high'},
+  {name:'Aarav Mehta', cls:'Class 10 B', chips:['Highest fail %'], sev:'high'},
+  {name:'Kabir Singh', cls:'Class 11 Humanities A', chips:['Partial submit'], sev:'medium'},
+  {name:'Sara Iqbal', cls:'Class 12 Commerce A', chips:['Low engagement'], sev:'medium'},
+];
+const riskList = document.getElementById('at-risk-list');
+atRisk.forEach(s=>{
+  const row = document.createElement('div'); row.className='prow';
+  row.innerHTML = `
+    <div class="avatar" style="background:${s.sev==='high'?'var(--status-critical)':s.sev==='medium'?'var(--status-warning)':'var(--ink-400)'}">${initials(s.name)}</div>
+    <div class="prow-main">
+      <div class="prow-name">${s.name}</div>
+      <div class="prow-meta">${s.cls}</div>
+      <div class="prow-chips">${s.chips.map(c=>`<span class="chip negative">${c}</span>`).join('')}</div>
+    </div>
+    <div class="prow-side">
+      <span class="badge ${s.sev}">${s.sev}</span>
+      <div class="prow-actions"><a href="#" onclick="event.preventDefault(); showToast('Message sent to parent')">Message parent</a></div>
+    </div>`;
+  riskList.appendChild(row);
+});
+
+// ---------------------------------------------------------------------------
+// Not using the portal — Senior Secondary Wing (class-tabbed)
+// ---------------------------------------------------------------------------
+const notUsingPortal = [
+  {name:'Priyanka Desai', cls:'History · Class 11 Humanities A', tabkey:'History · 11 Hum A', last:'14 days', hw:'0 of 5', tests:'1 of 3', sev:'high'},
+  {name:'Devansh Rao', cls:'History · Class 11 Humanities A', tabkey:'History · 11 Hum A', last:'11 days', hw:'1 of 5', tests:'1 of 3', sev:'high'},
+  {name:'Kabir Nanda', cls:'History · Class 11 Humanities A', tabkey:'History · 11 Hum A', last:'6 days', hw:'2 of 5', tests:'2 of 3', sev:'medium'},
+  {name:'Meher Chatterjee', cls:'English Core · Class 12 Non-Medical A', tabkey:'English Core · 12 NMed A', last:'5 days', hw:'—', tests:'—', sev:'watch', note:'Logs in rarely — work is otherwise fine'},
+];
+const adoptEl = document.getElementById('adoption-list');
+function renderAdoption(tabkey){
+  tabkey = tabkey || 'all';
+  const rows = tabkey==='all' ? notUsingPortal : notUsingPortal.filter(s=>s.tabkey===tabkey);
+  adoptEl.innerHTML = '';
+  rows.forEach(s=>{
+    const row = document.createElement('div'); row.className='prow';
+    row.innerHTML = `
+      <div class="avatar" style="background:var(--violet)">${initials(s.name)}</div>
+      <div class="prow-main">
+        <div class="prow-name">${s.name}</div>
+        <div class="prow-meta">${s.cls} · Last seen ${s.last} ago</div>
+        <div class="prow-chips">
+          ${s.note ? `<span class="chip">${s.note}</span>` : `<span class="chip negative">Homework ${s.hw} submitted</span><span class="chip negative">Tests ${s.tests} attempted</span>`}
+        </div>
+      </div>
+      <div class="prow-side">
+        <span class="badge ${s.sev}">${s.sev}</span>
+        <div class="prow-actions"><a href="#" onclick="event.preventDefault(); showToast('Nudge sent')">Nudge</a><span class="sep">·</span><a href="#" onclick="event.preventDefault(); showToast('Message sent to parent')">Message parent</a></div>
+      </div>`;
+    adoptEl.appendChild(row);
+  });
+  const note = document.getElementById('adoption-sample-note');
+  if(note) note.textContent = `Sample shown — ${rows.length} of ${tabkey==='all'?4:rows.length}`;
+}
+renderAdoption('all');
+function setClassTab(el, tabkey){
+  document.querySelectorAll('#section-students .tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderAdoption(tabkey);
+}
+
+// ---------------------------------------------------------------------------
+// Teachers — exceptions table, SALCI adoption list, ranking, syllabus log chart
+// ---------------------------------------------------------------------------
+const teacherRoster = [
+  {name:'Rakesh Verma', role:'Physics · 11 NMed A, 12 NMed A', overdue:6, active:'9 days ago'},
+  {name:'Sunita Rao', role:'History · 11 Hum A, 11 Hum B', overdue:4, active:'3 days ago'},
+  {name:'Manoj Tiwari', role:'Economics · 12 Comm A', overdue:2, active:'5 days ago'},
+  {name:'Kavita Bhatt', role:'Computer Science · 12 NMed B', overdue:1, active:'Never — new hire'},
+  {name:'Priya Krishnan', role:'English Core, History · 12 NMed A, 11 Hum A', overdue:0, active:'Today'},
+];
+const teacherTbody = document.getElementById('teacher-exceptions-tbody');
+teacherRoster.forEach(t=>{
+  const tr = document.createElement('tr'); tr.className='clickable';
+  tr.onclick = ()=> openAssignTaskModal({assignee:t.name, role:t.role, context:`${t.name} has ${t.overdue} overdue task(s), last active ${t.active}.`, title:`Check in — ${t.name}`, description:'Please provide a status update on your open tasks.'});
+  tr.innerHTML = `<td><div class="staffname">${t.name}</div><div class="staffrole">${t.role}</div></td><td class="staffrole">${t.role}</td><td class="${t.overdue>=4?'metric-bad':t.overdue>0?'metric-ok':'metric-ok'}">${t.overdue}</td><td class="${t.active.includes('days')||t.active.includes('Never')?'metric-bad':'metric-ok'}">${t.active}</td>`;
+  teacherTbody.appendChild(tr);
+});
+
+const teacherAdoption = [
+  {name:'Rakesh Verma', role:'Physics · 11 NMed A, 12 NMed A', sev:'high', chips:[
+    {t:'Last login 9 days ago', c:'red'}, {t:'Syllabus not logged in 21 days', c:'red'}, {t:'3 of 9 exams created in SALCI this term', c:'amber'}]},
+  {name:'Kavita Bhatt', role:'Computer Science · 12 NMed B', sev:'high', chips:[
+    {t:'Never logged in — account created 8 days ago', c:'red'}]},
+  {name:'Manoj Tiwari', role:'Economics · 12 Comm A', sev:'medium', chips:[
+    {t:'2 of 6 exams created in SALCI this term', c:'amber'}, {t:'Last login 5 days ago', c:'amber'}]},
+  {name:'Sunita Rao', role:'History · 11 Hum A, 11 Hum B', sev:'medium', chips:[
+    {t:'Digital attendance 54% of periods', c:'amber'}]},
+  {name:'Priya Krishnan', role:'English Core, History · 12 NMed A, 11 Hum A', sev:'watch', chips:[
+    {t:'History syllabus not logged in 16 days', c:'watch'}]},
+];
+const teacherAdoptEl = document.getElementById('teacher-adoption-list');
+teacherAdoption.forEach(t=>{
+  const row = document.createElement('div'); row.className='prow';
+  row.innerHTML = `
+    <div class="avatar" style="background:${t.sev==='high'?'var(--status-critical)':t.sev==='medium'?'var(--status-warning)':'var(--ink-500)'}">${initials(t.name)}</div>
+    <div class="prow-main">
+      <div class="prow-name">${t.name}</div>
+      <div class="prow-meta">${t.role}</div>
+      <div class="prow-chips">${t.chips.map(c=>`<span class="chip ${c.c==='red'?'negative':c.c==='amber'?'warn':''}">${c.t}</span>`).join('')}</div>
+    </div>
+    <div class="prow-side">
+      <span class="badge ${t.sev}">${t.sev}</span>
+      <div class="prow-actions"><a href="#" onclick="event.preventDefault(); showToast('Nudge sent to '+'${t.name}')">Nudge</a><span class="sep">·</span><a href="#" onclick="event.preventDefault(); openAssignTaskModal({assignee:'${t.name}', role:'${t.role.replace(/'/g,"")}', context:'Flagged in Teacher SALCI Adoption for incomplete platform usage.', title:'Coaching check-in — ${t.name}', description:'Please walk through the flagged gaps with your Customer Success / champion contact this week.'})">Assign coaching task</a></div>
+    </div>`;
+  teacherAdoptEl.appendChild(row);
+});
+
+const teacherRank = [
+  {name:'Kavita Bhatt', cs:'Computer Science · 12 NMed B', score:82, trend:5},
+  {name:'Priya Krishnan', cs:'English Core · 12 NMed A', score:78, trend:3},
+  {name:'Aditi Menon', cs:'Accountancy · 12 Comm B', score:75, trend:1},
+  {name:'Manoj Tiwari', cs:'Economics · 12 Comm A', score:71, trend:-2},
+  {name:'Farhan Ali', cs:'Chemistry · 11 NMed B', score:70, trend:-1},
+  {name:'Sunita Rao', cs:'History · 11 Hum B', score:66, trend:1},
+  {name:'Neha Bose', cs:'Mathematics · 9 B', score:61, trend:-1},
+  {name:'Rakesh Verma', cs:'Physics · 11 NMed A', score:59, trend:-4},
+];
+const teacherRankTbody = document.getElementById('teacher-rank-tbody');
+function renderTeacherRank(mode){
+  const rows = [...teacherRank].sort((a,b)=> mode==='trend' ? b.trend-a.trend : b.score-a.score);
+  teacherRankTbody.innerHTML = rows.map(t=>`
+    <tr><td class="staffname">${t.name}</td><td class="staffrole">${t.cs}</td><td class="metric-ok">${t.score}%</td>
+    <td class="${t.trend>=0?'metric-up':'metric-down'}">${t.trend>=0?'▲':'▼'} ${Math.abs(t.trend)}pp</td></tr>`).join('');
+}
+renderTeacherRank('score');
+function setTeacherSort(mode){
+  document.getElementById('teacher-sort-score').classList.toggle('active', mode==='score');
+  document.getElementById('teacher-sort-trend').classList.toggle('active', mode==='trend');
+  renderTeacherRank(mode);
+}
+
+const syllabusLog = [
+  {name:'Aditi Menon', days:2}, {name:'Farhan Ali', days:5}, {name:'Sunita Rao', days:3},
+  {name:'Neha Bose', days:12}, {name:'Manoj Tiwari', days:9}, {name:'Priya Krishnan', days:16},
+  {name:'Rakesh Verma', days:21},
+];
+const syllabusLogEl = document.getElementById('syllabus-log-chart');
+syllabusLog.sort((a,b)=>b.days-a.days).forEach(t=>{
+  const pct = Math.min(100, (t.days/25)*100);
+  const color = t.days>14 ? 'var(--status-critical)' : t.days>7 ? 'var(--status-warning)' : 'var(--status-good)';
+  const row = document.createElement('div'); row.className='bar-row';
+  row.innerHTML = `<div class="bar-label">${t.name}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${color};"></div></div><div class="bar-val">${t.days}d</div>`;
+  syllabusLogEl.appendChild(row);
+});
+
+// ---------------------------------------------------------------------------
+// Recheck management
+// ---------------------------------------------------------------------------
+const recheckQueue = [
+  {student:'Devansh Rao', cls:'History · Class 11 Humanities A', exam:'The Rise of Nationalism — Unit Test', q:'Q4 (analysis question)', reason:'Marking seems harsh on the analysis question', prev:'6 / 10', days:6, sev:'high'},
+  {student:'Aarav Mehta', cls:'History · Class 11 Humanities A', exam:'Unit Test 2', q:'Q7', reason:'Answer matches the model answer', prev:'4 / 8', days:6, sev:'high'},
+  {student:'Kabir Singh', cls:'History · Class 11 Humanities A', exam:'Unit Test 2', q:'Q2 (diagram)', reason:'Requesting re-check of diagram marks', prev:'3 / 5', days:5, sev:'high'},
+  {student:'Simran Kaur', cls:'English Core · Class 12 Non-Medical A', exam:'Unit Test 3', q:'Essay question', reason:'Requesting re-evaluation of essay structure marks', prev:'12 / 20', days:3, sev:'medium'},
+  {student:'Rohan Verma', cls:'Physics · Class 11 Non-Medical A', exam:'Unit Test 1', q:'Q5', reason:'Numerical answer correct, marks not awarded', prev:'2 / 6', days:2, sev:'medium'},
+  {student:'Tanvi Shah', cls:'Accountancy · Class 12 Commerce B', exam:'Unit Test 2', q:'Q3', reason:'Method marks not given', prev:'5 / 10', days:1, sev:'watch'},
+  {student:'Yusuf Khan', cls:'Computer Science · Class 12 Non-Medical B', exam:'Unit Test 1', q:'Q1 (code)', reason:'Code logic correct, syntax penalty too high', prev:'4 / 10', days:1, sev:'watch'},
+];
+const recheckEl = document.getElementById('recheck-list');
+recheckQueue.forEach(r=>{
+  const row = document.createElement('div'); row.className='prow';
+  row.innerHTML = `
+    <div class="avatar" style="background:${r.sev==='high'?'var(--status-critical)':r.sev==='medium'?'var(--status-warning)':'var(--ink-500)'}">${initials(r.student)}</div>
+    <div class="prow-main">
+      <div class="prow-name">${r.student} <span style="font-weight:500;color:var(--ink-500);">— ${r.cls}</span></div>
+      <div class="prow-meta">${r.exam} · ${r.q} · previous marks ${r.prev}</div>
+      <div class="prow-chips"><span class="chip ${r.days>5?'negative':r.days>2?'warn':''}">${r.days} day${r.days===1?'':'s'} pending</span>${r.days>5?'<span class="chip negative">Past 5-day SLA</span>':''}</div>
+    </div>
+    <div class="prow-side">
+      <span class="badge ${r.sev}">${r.sev}</span>
+      <div class="prow-actions"><button onclick='openRecheckModal(${JSON.stringify(r)})'>Resolve →</button></div>
+    </div>`;
+  recheckEl.appendChild(row);
+});
+
+// ---------------------------------------------------------------------------
+// Task management
+// ---------------------------------------------------------------------------
+const taskQueue = [
+  {text:'Submit missing Unit Test 2 marks', who:'Rakesh Verma', when:'Overdue 4 days', sev:'high'},
+  {text:'Log syllabus progress — Physics', who:'Rakesh Verma', when:'Overdue 2 days', sev:'high'},
+  {text:'Review Class 11 Humanities A pacing plan', who:'Sunita Rao', when:'Due tomorrow', sev:'medium'},
+  {text:'Complete SALCI activation walkthrough', who:'Kavita Bhatt', when:'Due today', sev:'medium'},
+  {text:'Submit remedial plan for Devansh Rao', who:'Sunita Rao', when:'Due in 2 days', sev:'medium'},
+  {text:'Upload Economics question bank additions', who:'Manoj Tiwari', when:'Due in 5 days', sev:'low'},
+  {text:'Confirm PTM slot availability — Class 12', who:'Priya Krishnan', when:'Due in 6 days', sev:'low'},
+];
+const taskEl = document.getElementById('task-list');
+taskQueue.forEach(t=>{
+  const row = document.createElement('div'); row.className='queue-item';
+  row.innerHTML = `<span class="queue-sev ${t.sev}"></span><div class="queue-text">${t.text} <span>${t.who} · ${t.when}</span></div><button class="queue-cta" onclick="showToast('Reminder sent to ${t.who}')">Nudge →</button>`;
+  taskEl.appendChild(row);
+});
+
+// ---------------------------------------------------------------------------
+// Jump-nav active-section highlight
+// ---------------------------------------------------------------------------
+const navLinks = [...document.querySelectorAll('.jumpnav a')];
+const sections = navLinks.map(a => document.querySelector(a.getAttribute('href')));
+window.addEventListener('scroll', ()=>{
+  let idx = 0;
+  sections.forEach((s,i)=>{ if(s && window.scrollY >= s.offsetTop - 90) idx = i; });
+  navLinks.forEach((a,i)=> a.classList.toggle('active', i===idx));
+}, {passive:true});
+</script>
+</body>
+</html>

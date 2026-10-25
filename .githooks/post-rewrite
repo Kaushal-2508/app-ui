@@ -1,0 +1,3 @@
+#!/bin/sh
+# git pull --rebase -> post-merge does not run, this does. See _stop-banner.
+. "$(dirname "$0")/_stop-banner"

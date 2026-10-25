@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Banner Engine Harness</title>
+<link rel="icon" href="data:," />
+<style>
+  /* Magenta behind the canvas: a frame that never drew shows up at once in the shots. */
+  html, body { margin: 0; background: #808080; }
+  #host { position: absolute; left: 0; top: 0; overflow: hidden; background: #ff00ff; }
+  #host canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="host" aria-hidden="true"></div>
+<script type="module">
+// Test page for the BUILT banner engine chunk, driven by scripts/test-banner3d.mjs
+// (npm run test:banner). No framework and no bundler: the runner serves dist/ beside
+// this page and hands over the chunk's URL, which it discovered from dist/ (the chunk
+// has zero static imports, so it imports cleanly on its own). This page plays the part
+// of Banner3DLayer: it creates a fresh canvas per scene, sizes it, builds, reports
+// itself visible and asks the scene to start (a no-op for "still", the loop for "live").
+
+const host = document.getElementById("host");
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const msg = (e) => String((e && e.message) || e);
+
+// Count requestAnimationFrame calls: a still banner must request none.
+const counters = { raf: 0 };
+const nativeRaf = window.requestAnimationFrame.bind(window);
+window.requestAnimationFrame = (cb) => {
+  counters.raf++;
+  return nativeRaf(cb);
+};
+
+// Track every WebGL context the page creates, so disposal is checked on the real
+// context without calling getContext() ourselves (which would CREATE one when the
+// engine never did). Lost entries are dropped once checked; a LIVE one is kept on
+// purpose: holding it stops the GC quietly reclaiming a leaked context, so a leak
+// shows up in liveContexts() and drives Chrome into its context-limit warning.
+const contexts = [];
+const nativeGetContext = HTMLCanvasElement.prototype.getContext;
+HTMLCanvasElement.prototype.getContext = function (type, attrs) {
+  const ctx = nativeGetContext.call(this, type, attrs);
+  if (ctx && /webgl/.test(String(type)) && !contexts.some((c) => c.ctx === ctx)) contexts.push({ canvas: this, ctx });
+  return ctx;
+};
+const contextsOf = (canvas) => contexts.filter((c) => c.canvas === canvas);
+
+// Wait until every context created on `canvas` is lost, then forget them.
+// Returns { created, lostMs }: lostMs -1 when one was still live after maxMs.
+async function settleContexts(canvas, maxMs) {
+  const mine = contextsOf(canvas);
+  const t0 = performance.now();
+  let lostMs = 0;
+  while (mine.some((c) => !c.ctx.isContextLost())) {
+    if (performance.now() - t0 > maxMs) {
+      lostMs = -1;
+      break;
+    }
+    await sleep(20);
+    lostMs = Math.round(performance.now() - t0);
+  }
+  for (const c of mine) if (c.ctx.isContextLost()) contexts.splice(contexts.indexOf(c), 1);
+  return { created: mine.length, lostMs };
+}
+
+function gpuString(ctx) {
+  try {
+    const ext = ctx.getExtension("WEBGL_debug_renderer_info");
+    return String(ctx.getParameter(ext ? ext.UNMASKED_RENDERER_WEBGL : ctx.RENDERER));
+  } catch {
+    return "unknown";
+  }
+}
+
+// A still scene redraws once a minute for the tower clock, up to about 1.05 s after
+// the minute turns. Keep a measuring window clear of that, or the clock tick would
+// read as a stray frame.
+async function clearOfClockTick(windowMs) {
+  const m = Date.now() % 60000;
+  if (m < 1200) await sleep(1200 - m);
+  else if (m + windowMs > 59800) await sleep(60000 - m + 1200);
+}
+
+function newCanvas(w, h) {
+  host.style.width = `${w}px`;
+  host.style.height = `${h}px`;
+  host.replaceChildren();
+  const canvas = document.createElement("canvas");
+  host.appendChild(canvas);
+  return canvas;
+}
+
+let mod = null;
+let current = null;
+
+// Pixels of a data URL (a capture()) at CSS points; the capture is 1 image px per CSS px.
+function samplePoints(dataUrl, pts) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas");
+      c.width = img.width;
+      c.height = img.height;
+      const g = c.getContext("2d");
+      g.drawImage(img, 0, 0);
+      resolve(pts.map(([x, y]) => Array.from(g.getImageData(Math.min(img.width - 1, Math.round(x)), Math.min(img.height - 1, Math.round(y)), 1, 1).data.slice(0, 3))));
+    };
+    img.onerror = () => reject(new Error("capture did not decode"));
+    img.src = dataUrl;
+  });
+}
+async function sampleScene(scene, pts) {
+  const url = scene.capture(1400);
+  return url ? samplePoints(url, pts) : null;
+}
+
+function make(tod, w, h, ev, motion = "still", governorMs = 1000) {
+  const canvas = newCanvas(w, h);
+  const scene = mod.createSchoolScene(canvas, {
+    tod,
+    motion,
+    governorMs,
+    onFirstFrame: () => { ev.firstFrame++; },
+    onContextLost: () => { ev.lost++; },
+    onContextRestored: () => { ev.restored++; },
+    onGovernor: (level, medianMs) => { ev.governor.push([level, medianMs]); },
+  });
+  scene.resize(w, h, window.devicePixelRatio);
+  return { scene, canvas };
+}
+const newEvents = () => ({ firstFrame: 0, lost: 0, restored: 0, governor: [] });
+
+window.harness = {
+  async load(url) {
+    mod = await import(url);
+    return { exports: Object.keys(mod).sort(), hasCreate: typeof mod.createSchoolScene === "function" };
+  },
+
+  // resize, build, then behave like the host of a visible still banner
+  async open({ tod, w, h }) {
+    const ev = newEvents();
+    const { scene, canvas } = make(tod, w, h, ev);
+    current = { scene, canvas, ev };
+    const t0 = performance.now();
+    await scene.build(new AbortController().signal);
+    const buildMs = Math.round(performance.now() - t0);
+    const framesAfterBuild = scene.stats().frames;
+    const firstFrameAfterBuild = ev.firstFrame;
+    scene.setVisible(true);
+    scene.start();
+    const mine = contextsOf(canvas);
+    return {
+      buildMs,
+      framesAfterBuild,
+      firstFrameAfterBuild,
+      tod: scene.tod,
+      contexts: mine.length,
+      live: mine.filter((c) => !c.ctx.isContextLost()).length,
+      gpu: mine.length ? gpuString(mine[0].ctx) : "none",
+      dpr: window.devicePixelRatio,
+    };
+  },
+
+  // T-still: nothing may render or request a frame for windowMs
+  async still(windowMs) {
+    await clearOfClockTick(windowMs);
+    const { scene, ev } = current;
+    const f0 = scene.stats().frames;
+    const r0 = counters.raf;
+    await sleep(windowMs);
+    return { frames: scene.stats().frames - f0, raf: counters.raf - r0, firstFrame: ev.firstFrame, running: scene.running };
+  },
+
+  measure() {
+    const { scene } = current;
+    return { probe: scene.probe(), stats: scene.stats() };
+  },
+
+  // The still with the shadow map switched off, for the lit-to-shadow lawn ratio
+  // (T-colour); the same pose, so only the shadows differ between the two shots.
+  async noShadow() {
+    const { scene } = current;
+    scene.setQuality({ shadows: false });
+    scene.renderStill();
+    await sleep(100);
+    return scene.stats().frames;
+  },
+
+  // A live banner, as Banner3DLayer runs it on a full-tier device: build, visible, start.
+  async openLive({ tod, w, h, governorMs = 1000 }) {
+    const ev = newEvents();
+    const { scene, canvas } = make(tod, w, h, ev, "live", governorMs);
+    current = { scene, canvas, ev };
+    await scene.build(new AbortController().signal);
+    scene.setVisible(true);
+    scene.start();
+    return { tod: scene.tod, running: scene.running };
+  },
+
+  // T-live: the loop keeps rendering for ms
+  async runFor(ms) {
+    const { scene } = current;
+    const f0 = scene.stats().frames;
+    const r0 = counters.raf;
+    await sleep(ms);
+    const s = scene.stats();
+    return { frames: s.frames - f0, raf: counters.raf - r0, running: scene.running, programs: s.programs, tod: s.tod };
+  },
+
+  setTod(tod, fadeMs) {
+    current.scene.setTod(tod, fadeMs);
+  },
+
+  // Pixels of the current frame at CSS points (a capture renders the base camera).
+  sample(pts) {
+    return sampleScene(current.scene, pts);
+  },
+
+  // setTod() while build() is still running, after `turns` setTimeout(0) turns (the
+  // build's own phases resume through scheduler.yield, ahead of every timer, so the
+  // first few timer turns land in compileAsync's polling). The frame build() renders
+  // and the frames the loop renders must both show the NEW moment.
+  async setTodMidBuild({ from, to, w, h, turns, pts }) {
+    const ev = newEvents();
+    const { scene, canvas } = make(from, w, h, ev, "live");
+    let done = false;
+    const p = scene.build(new AbortController().signal).then(() => { done = true; });
+    for (let i = 0; i < turns; i++) await sleep(0);
+    const switchedBeforeDone = !done;
+    scene.setTod(to, 0);
+    await p;
+    const built = await sampleScene(scene, pts);
+    scene.setVisible(true);
+    scene.start();
+    await sleep(800);
+    const running = await sampleScene(scene, pts);
+    const tod = scene.tod;
+    scene.dispose();
+    await settleContexts(canvas, 2000);
+    canvas.remove();
+    return { switchedBeforeDone, tod, built, running };
+  },
+
+  // T-governor: a governorMs no frame can meet steps down twice, then stops the loop
+  async governor({ tod, w, h, maxMs }) {
+    const ev = newEvents();
+    const { scene, canvas } = make(tod, w, h, ev, "live", 1);
+    await scene.build(new AbortController().signal);
+    scene.setVisible(true);
+    scene.start();
+    const t0 = performance.now();
+    while (ev.governor.length < 2 && performance.now() - t0 < maxMs) await sleep(100);
+    await sleep(100);
+    const s = scene.stats();
+    const out = { levels: ev.governor.map((g) => g[0]), running: scene.running, governor: s.governor, dpr: s.dpr, frames: s.frames, ms: Math.round(performance.now() - t0) };
+    scene.dispose();
+    await settleContexts(canvas, 2000);
+    canvas.remove();
+    return out;
+  },
+
+  // T-context: a lost context is reported and stops the running loop; a restore
+  // renders again with the shadow map refreshed
+  async contextLoss() {
+    const { scene, canvas, ev } = current;
+    const mine = contextsOf(canvas);
+    const ext = mine.length ? mine[0].ctx.getExtension("WEBGL_lose_context") : null;
+    if (!ext) return { skipped: "WEBGL_lose_context unavailable" };
+    const runningBefore = scene.running;
+    const before = scene.stats();
+    ext.loseContext();
+    const t0 = performance.now();
+    while (ev.lost === 0 && performance.now() - t0 < 2000) await sleep(20);
+    const lostSeen = ev.lost;
+    const runningWhileLost = scene.running;
+    ext.restoreContext();
+    const t1 = performance.now();
+    while (ev.restored === 0 && performance.now() - t1 < 10000) await sleep(20);
+    await sleep(100);
+    const after = scene.stats();
+    return {
+      runningBefore,
+      lostSeen,
+      runningWhileLost,
+      restoredSeen: ev.restored,
+      framesAdded: after.frames - before.frames,
+      shadowRefreshesAdded: after.shadowRefreshes - before.shadowRefreshes,
+    };
+  },
+
+  // dispose, check the context is lost, dispose again (must be idempotent)
+  async close() {
+    if (!current) return { none: true };
+    const { scene, canvas } = current;
+    current = null;
+    let threw = null;
+    try { scene.dispose(); } catch (e) { threw = msg(e); }
+    const settled = await settleContexts(canvas, 1000);
+    let again = null;
+    try { scene.dispose(); } catch (e) { again = msg(e); }
+    canvas.remove();
+    return { threw, again, ...settled };
+  },
+
+  // T-dispose: n full create/build/dispose cycles on fresh canvases
+  async cycles({ n, tod, w, h }) {
+    const out = { n, done: 0, notLost: 0, errors: [], buildMs: [] };
+    for (let i = 0; i < n; i++) {
+      const ev = newEvents();
+      let canvas = null;
+      try {
+        const made = make(tod, w, h, ev);
+        canvas = made.canvas;
+        const t0 = performance.now();
+        await made.scene.build(new AbortController().signal);
+        out.buildMs.push(Math.round(performance.now() - t0));
+        made.scene.dispose();
+        const s = await settleContexts(canvas, 1000);
+        if (s.created === 0 || s.lostMs < 0) out.notLost++;
+        out.done++;
+      } catch (e) {
+        out.errors.push(msg(e));
+        if (canvas) await settleContexts(canvas, 0);
+      }
+      if (canvas) canvas.remove();
+    }
+    return out;
+  },
+
+  // The build contract (types.ts): "an abort disposes". A wall-clock delay cannot aim
+  // inside the build: its phases resume through scheduler.yield(), whose continuations
+  // run ahead of every timer. So the abort point is counted in turns instead:
+  //   kind "none"   abort before the build's first yield
+  //   kind "yield"  after n scheduler.yield() turns, interleaved with the build's own
+  //   kind "timer"  after n setTimeout(0) turns (the first lands in compileAsync polling)
+  async abortMidBuild({ tod, w, h, kind, turns }) {
+    const ev = newEvents();
+    const { scene, canvas } = make(tod, w, h, ev);
+    const ac = new AbortController();
+    let settledEarly = false;
+    const p = scene.build(ac.signal);
+    p.then(() => { settledEarly = true; }, () => { settledEarly = true; });
+    const canYield = typeof globalThis.scheduler !== "undefined" && typeof globalThis.scheduler.yield === "function";
+    for (let i = 0; i < turns; i++) {
+      if (kind === "yield" && canYield) await globalThis.scheduler.yield();
+      else if (kind !== "none") await sleep(0);
+    }
+    const finishedBeforeAbort = settledEarly;
+    ac.abort();
+    let rejected = null;
+    try { await p; } catch (e) { rejected = msg(e); }
+    // a dispose during compileAsync waits for three's readiness polling to finish
+    let settled;
+    if (finishedBeforeAbort) {
+      scene.dispose();
+      settled = await settleContexts(canvas, 5000);
+    } else {
+      settled = await settleContexts(canvas, 5000);
+    }
+    let disposeThrew = null;
+    try { scene.dispose(); } catch (e) { disposeThrew = msg(e); }
+    canvas.remove();
+    return { finishedBeforeAbort, rejected, disposeThrew, running: scene.running, firstFrame: ev.firstFrame, ...settled };
+  },
+
+  // dispose() before build(): build must not leave a live context behind
+  async disposeBeforeBuild({ tod, w, h }) {
+    const ev = newEvents();
+    const { scene, canvas } = make(tod, w, h, ev);
+    scene.dispose();
+    let rejected = null;
+    try { await scene.build(new AbortController().signal); } catch (e) { rejected = msg(e); }
+    const settled = await settleContexts(canvas, 1000);
+    canvas.remove();
+    return { rejected, firstFrame: ev.firstFrame, ...settled };
+  },
+
+  // Canary for the context-limit detector: create more raw contexts than Chrome keeps
+  // alive, so the runner can prove it would have seen the warning.
+  async contextCanary(n) {
+    const held = [];
+    for (let i = 0; i < n; i++) {
+      const c = document.createElement("canvas");
+      c.width = c.height = 4;
+      held.push(nativeGetContext.call(c, "webgl2"));
+    }
+    await sleep(300);
+    const lost = held.filter((g) => g && g.isContextLost()).length;
+    for (const g of held) {
+      const ext = g && !g.isContextLost() ? g.getExtension("WEBGL_lose_context") : null;
+      if (ext) ext.loseContext();
+    }
+    return { created: held.filter(Boolean).length, lostByBrowser: lost };
+  },
+
+  liveContexts() {
+    return contexts.filter((c) => !c.ctx.isContextLost()).length;
+  },
+};
+window.__harnessReady = true;
+</script>
+</body>
+</html>

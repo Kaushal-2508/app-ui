@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SALCI — Teacher Dashboard (Redesign Mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#0D9488; --teal-dark:#0b7a70; --teal-wash:rgba(13,148,136,.09);
+    --violet:#5B3FA6; --violet-wash:rgba(91,63,166,.09);
+    --cream:#F7F4EC; --page:#E9E6DD; --white:#FFFFFF;
+    --ink:#1C2128; --muted:#6B7280; --faint:#9AA1AC;
+    --border:rgba(28,33,40,.12); --border-strong:rgba(28,33,40,.18);
+    --red:#DC2626; --red-wash:#FDECEC;
+    --amber:#D97706; --amber-wash:#FDF3E3;
+    --green:#16A34A; --green-wash:#EAF7EE;
+    --gold:#B8860B; --gold-wash:#FBF3DC;
+    --watch:#64748B; --watch-wash:#EEF1F4;
+    --shadow: 0 1px 2px rgba(28,33,40,.06), 0 8px 24px -12px rgba(28,33,40,.18);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--page); font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    color:var(--ink); padding:32px 12px 80px; display:flex; justify-content:center;
+  }
+  .frame{ width:100%; max-width:440px; }
+  .banner{
+    background:linear-gradient(120deg,#0D9488 0%, #2f8f9e 45%, #5B3FA6 100%);
+    border-radius:18px; padding:16px 18px 18px; color:#fff; margin-bottom:14px;
+    box-shadow:var(--shadow);
+  }
+  .banner .eyebrow{ font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; opacity:.85;}
+  .banner h1{ margin:4px 0 2px; font-size:20px; font-weight:800;}
+  .banner .sub{ font-size:12.5px; opacity:.92; line-height:1.5;}
+  .chipRow{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
+  .chip{ background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35); color:#fff;
+    font-size:11.5px; font-weight:600; padding:5px 10px; border-radius:999px; }
+  .chip.active{ background:#fff; color:var(--teal-dark); border-color:#fff; }
+  .scopeNote{ margin-top:10px; font-size:11px; opacity:.85; display:flex; gap:6px; align-items:flex-start; }
+
+  .card{
+    background:var(--white); border:1px solid var(--border); border-radius:16px;
+    padding:16px; margin-bottom:12px; box-shadow:var(--shadow);
+  }
+  .cardHead{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:2px; }
+  .cardHead h2{ font-size:14.5px; font-weight:700; margin:0; }
+  .cardHead .tag{ font-size:10.5px; font-weight:700; color:var(--teal-dark); background:var(--teal-wash);
+    padding:2px 8px; border-radius:999px; }
+  .cardSub{ font-size:11.5px; color:var(--muted); margin:2px 0 12px; line-height:1.5; }
+
+  /* Action queue */
+  .actionRow{ display:flex; align-items:center; gap:10px; padding:10px 0;
+    border-top:1px solid var(--border); }
+  .actionRow:first-of-type{ border-top:none; padding-top:2px; }
+  .countBubble{ min-width:26px; height:26px; border-radius:8px; background:var(--teal); color:#fff;
+    font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .countBubble.amber{ background:var(--amber); }
+  .countBubble.violet{ background:var(--violet); }
+  .actionText{ flex:1; min-width:0; }
+  .actionText .t1{ font-size:12.5px; font-weight:600; }
+  .actionText .t2{ font-size:11px; color:var(--muted); }
+  .actionGo{ font-size:11px; font-weight:700; color:var(--teal-dark); white-space:nowrap; }
+
+  /* Classes & subjects */
+  .subjRow{ border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:8px; }
+  .subjRow:last-child{ margin-bottom:0; }
+  .subjTop{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .subjName{ font-size:13px; font-weight:700; }
+  .subjMeta{ font-size:11px; color:var(--muted); margin-top:1px;}
+  .band{ font-size:10px; font-weight:800; padding:3px 8px; border-radius:999px; white-space:nowrap; letter-spacing:.02em;}
+  .band.attention{ background:var(--red-wash); color:var(--red); }
+  .band.developing{ background:var(--amber-wash); color:var(--amber); }
+  .band.stable{ background:var(--green-wash); color:var(--green); }
+  .band.excellent{ background:var(--gold-wash); color:var(--gold); }
+  .barTrack{ height:10px; background:#EEF0EE; border-radius:6px; margin-top:10px; position:relative; overflow:hidden;}
+  .barFill{ height:100%; border-radius:6px 0 0 6px; background:var(--teal); }
+  .subjFoot{ display:flex; justify-content:space-between; margin-top:6px; font-size:11px; color:var(--muted);}
+  .delta{ font-weight:700; }
+  .delta.up{ color:var(--green); } .delta.down{ color:var(--red); }
+  .syllabusMini{ font-size:11px; color:var(--muted); margin-top:8px; display:flex; align-items:center; gap:6px;}
+  .syllabusMini .track{ flex:1; height:6px; background:#EEF0EE; border-radius:4px; overflow:hidden;}
+  .syllabusMini .fill{ height:100%; background:var(--violet); }
+
+  /* Weak chapters — unified across every subject the teacher teaches */
+  .chapRow{ display:grid; grid-template-columns:1fr auto; gap:2px 10px; padding:9px 0; border-top:1px solid var(--border);}
+  .chapRow:first-of-type{ border-top:none; padding-top:0; }
+  .chapHead{ grid-column:1/2; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  .chapName{ font-size:12.5px; font-weight:600; }
+  .chapSubj{ font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--violet); background:var(--violet-wash); padding:2px 6px; border-radius:5px; }
+  .chapTrend{ font-size:10.5px; font-weight:700; grid-column:2/3; text-align:right; }
+  .chapTrend.declining{ color:var(--red); } .chapTrend.stable{ color:var(--watch); }
+  .chapBarRow{ grid-column:1/3; display:flex; align-items:center; gap:8px; margin-top:4px;}
+  .chapBarRow .track{ flex:1; height:8px; border-radius:5px; background:#EEF0EE; position:relative; overflow:visible;}
+  .chapBarRow .fill{ height:100%; border-radius:5px; }
+  .chapBarRow .thresh{ position:absolute; left:50%; top:-2px; bottom:-2px; width:1px; background:var(--faint); }
+  .chapBarRow .pct{ font-size:11px; font-weight:700; width:34px; text-align:right; }
+  .chapNote{ font-size:10.5px; color:var(--muted); grid-column:1/3; margin-top:2px;}
+
+  /* Students — one unified, cross-class-and-subject list */
+  .studentRow{ display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-top:1px solid var(--border);}
+  .studentRow:first-of-type{ border-top:none; padding-top:0; }
+  .avatar{ width:30px; height:30px; border-radius:999px; background:var(--violet-wash); color:var(--violet);
+    font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .studentBody{ flex:1; min-width:0; }
+  .studentTop{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .studentName{ font-size:12.5px; font-weight:700; }
+  .studentMeta{ font-size:10.5px; color:var(--muted); margin-top:1px; }
+  .sev{ font-size:9.5px; font-weight:800; padding:3px 7px; border-radius:6px; white-space:nowrap; flex:0 0 auto; }
+  .sev.HIGH{ background:var(--red-wash); color:var(--red); }
+  .sev.MEDIUM{ background:var(--amber-wash); color:var(--amber); }
+  .sev.WATCH{ background:var(--watch-wash); color:var(--watch); }
+  .reasonChips{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+  .reasonChip{ font-size:10px; font-weight:700; padding:3px 7px; border-radius:6px; }
+  .reasonChip.red{ background:var(--red-wash); color:var(--red); }
+  .reasonChip.amber{ background:var(--amber-wash); color:var(--amber); }
+  .reasonChip.watch{ background:var(--watch-wash); color:var(--watch); }
+  .studentAction{ font-size:10.5px; font-weight:700; color:var(--teal-dark); margin-top:7px; }
+  .attnFilter{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+  .filterPill{ font-size:11px; font-weight:600; padding:5px 10px; border-radius:999px; border:1px solid var(--border);
+    color:var(--muted); background:var(--white); }
+  .filterPill.on{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+  /* Pacing */
+  .pacingRow{ display:flex; gap:12px; }
+  .pacingCol{ flex:1; border:1px solid var(--border); border-radius:12px; padding:12px; cursor:pointer;
+    transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+  .pacingCol:hover{ border-color:var(--teal); box-shadow:0 4px 14px -6px rgba(13,148,136,.35); transform:translateY(-1px); }
+  .pacingPct{ font-size:22px; font-weight:800; }
+  .pacingLbl{ font-size:11px; color:var(--muted); margin-bottom:8px; }
+  .pacingBar{ height:8px; background:#EEF0EE; border-radius:5px; overflow:hidden; margin-bottom:8px;}
+  .pacingBar .fill{ height:100%; background:var(--violet); }
+  .pacingStat{ font-size:10.5px; color:var(--muted); }
+  .pacingStat b{ color:var(--ink); }
+  .behindTag{ display:inline-block; margin-top:6px; font-size:10px; font-weight:700; color:var(--red);
+    background:var(--red-wash); padding:2px 7px; border-radius:6px;}
+  .pacingAction{ display:flex; align-items:center; justify-content:space-between; gap:6px; margin-top:10px;
+    padding-top:9px; border-top:1px solid var(--border); font-size:11px; font-weight:700; color:var(--teal-dark); }
+
+  /* Attendance sparkline */
+  .attnTop{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
+  .attnPct{ font-size:20px; font-weight:800; }
+  .attnRange{ font-size:11px; color:var(--muted); }
+  .legend{ display:flex; gap:14px; font-size:10.5px; color:var(--muted); margin-top:6px;}
+  .legend span{ display:flex; align-items:center; gap:5px; }
+  .dot{ width:8px; height:8px; border-radius:999px; display:inline-block; }
+
+  /* Teacher leaderboard — compact strip, not a full card */
+  .lbStrip{ display:flex; align-items:center; gap:10px; background:var(--white); border:1px solid var(--border);
+    border-radius:14px; padding:10px 12px; margin-bottom:12px; box-shadow:var(--shadow); cursor:pointer;
+    transition:transform .15s ease, border-color .15s ease; }
+  .lbStrip:hover{ transform:translateY(-1px); border-color:var(--gold); }
+  .lbStripRank{ width:32px; height:32px; border-radius:999px; background:var(--gold-wash); display:flex;
+    align-items:center; justify-content:center; font-size:16px; flex:0 0 auto; }
+  .lbStripBody{ flex:1; min-width:0; }
+  .lbStripMain{ font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .lbStripSub{ font-size:10.5px; color:var(--muted); margin-top:1px; }
+  .lbMove{ font-size:9.5px; font-weight:800; padding:1px 5px; border-radius:5px; color:var(--green); background:var(--green-wash); }
+  .lbStripGo{ font-size:16px; color:var(--faint); flex:0 0 auto; }
+
+  /* Portal adoption */
+  .neverBanner{ display:flex; align-items:center; gap:10px; background:var(--red-wash); border:1px solid rgba(220,38,38,.25);
+    border-radius:12px; padding:11px 13px; margin-bottom:14px; cursor:pointer; transition:transform .15s ease; }
+  .neverBanner:hover{ transform:translateY(-1px); }
+  .neverBanner .ic{ font-size:16px; flex:0 0 auto; }
+  .neverBanner .tx{ flex:1; font-size:12px; font-weight:700; color:var(--red); }
+  .neverBanner .tx small{ display:block; font-weight:500; color:#7a2323; font-size:10.5px; margin-top:1px; }
+  .neverBanner .go{ font-size:11px; font-weight:700; color:var(--red); }
+
+  .statGrid2{ display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:14px; }
+  .statTile{ border:1px solid var(--border); border-left:3px solid var(--border); border-radius:10px; padding:10px 12px; }
+  .statTile.green{ border-left-color:var(--green); }
+  .statTile.amber{ border-left-color:var(--amber); }
+  .statTile.red{ border-left-color:var(--red); }
+  .statTile .lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+  .statTile .val{ font-size:19px; font-weight:800; margin-top:2px; }
+  .statTile .of{ font-size:10.5px; color:var(--muted); }
+  .statTile .trend{ font-size:10px; font-weight:700; margin-top:3px; }
+  .statTile .trend.down{ color:var(--red); } .statTile .trend.up{ color:var(--green); }
+
+  .sparkWrap{ margin-bottom:14px; }
+  .sparkLbl{ font-size:10.5px; color:var(--muted); margin-bottom:4px; display:flex; justify-content:space-between;}
+
+  .engageRow{ display:flex; align-items:center; gap:10px; margin-bottom:9px; }
+  .engageRow:last-child{ margin-bottom:0; }
+  .engageLbl{ font-size:11.5px; font-weight:600; width:132px; flex:0 0 auto; }
+  .engageTrack{ flex:1; height:9px; border-radius:5px; background:#EEF0EE; overflow:hidden; }
+  .engageTrack .fill{ height:100%; border-radius:5px; }
+  .engagePct{ font-size:12px; font-weight:800; width:38px; text-align:right; flex:0 0 auto; }
+
+  .lastSeen{ font-size:10.5px; color:var(--muted); margin-top:2px; }
+  .lastSeen b{ color:var(--ink); }
+
+  .footNote{ display:flex; gap:10px; align-items:flex-start; background:var(--teal-wash);
+    border:1px solid rgba(13,148,136,.25); border-radius:14px; padding:13px 14px; font-size:11.5px;
+    color:#0b5a53; line-height:1.55; margin-top:4px; }
+  .footNote b{ color:var(--teal-dark); }
+  .lockIcon{ flex:0 0 auto; font-size:15px; line-height:1.4; }
+
+  .sectionLabel{ font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--faint); margin:20px 4px 8px; }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <div class="banner">
+    <div class="eyebrow">Teacher Dashboard · Salci National School</div>
+    <h1>Good morning, Priya</h1>
+    <div class="sub">Senior Secondary · Academic Year 2026&ndash;27</div>
+    <div class="chipRow">
+      <span class="chip active">All my classes</span>
+      <span class="chip">English Core · Class 12 Non&#8209;Medical A</span>
+      <span class="chip">History · Class 11 Humanities A</span>
+    </div>
+    <div class="scopeNote">🔒 <span>This page only ever shows your own assigned classes, subjects and students &mdash; nothing school&#8209;wide, no other teacher's data.</span></div>
+  </div>
+
+  <div class="lbStrip" role="button" tabindex="0" aria-label="Open portal engagement leaderboard">
+    <div class="lbStripRank">🥉</div>
+    <div class="lbStripBody">
+      <div class="lbStripMain">#3 of 14 this month <span class="lbMove">▲2</span></div>
+      <div class="lbStripSub">88 pts · 🏅 #1 in syllabus logging</div>
+    </div>
+    <div class="lbStripGo">›</div>
+  </div>
+
+  <div class="sectionLabel">Do this today</div>
+  <div class="card">
+    <div class="cardHead"><h2>Action queue</h2><span class="tag">4 open</span></div>
+    <div class="cardSub">Everything below is yours to act on &mdash; tap to jump straight in.</div>
+
+    <div class="actionRow">
+      <div class="countBubble">14</div>
+      <div class="actionText">
+        <div class="t1">Submissions awaiting grading</div>
+        <div class="t2">English Core · Unit Test 3 · Class 12 Non&#8209;Medical A</div>
+      </div>
+      <div class="actionGo">Grade →</div>
+    </div>
+    <div class="actionRow">
+      <div class="countBubble violet">6</div>
+      <div class="actionText">
+        <div class="t1">Homework awaiting marking</div>
+        <div class="t2">History · Ch.4 Worksheet · Class 11 Humanities A</div>
+      </div>
+      <div class="actionGo">Mark →</div>
+    </div>
+    <div class="actionRow">
+      <div class="countBubble amber">1</div>
+      <div class="actionText">
+        <div class="t1">Attendance not marked today</div>
+        <div class="t2">History · Period 4 · Class 11 Humanities A</div>
+      </div>
+      <div class="actionGo">Mark →</div>
+    </div>
+    <div class="actionRow">
+      <div class="countBubble amber">2</div>
+      <div class="actionText">
+        <div class="t1">Lesson plan gaps this week</div>
+        <div class="t2">English Core · 2 slots unlogged</div>
+      </div>
+      <div class="actionGo">Log →</div>
+    </div>
+  </div>
+
+  <div class="sectionLabel">Where you stand</div>
+  <div class="card">
+    <div class="cardHead"><h2>My classes &amp; subjects</h2><span class="tag">Weakest first</span></div>
+    <div class="cardSub">Only the class&ndash;subject pairs assigned to you. No other subject, no school average.</div>
+
+    <div class="subjRow">
+      <div class="subjTop">
+        <div>
+          <div class="subjName">History · Class 11 Humanities A</div>
+          <div class="subjMeta">28 students · 24 chapters</div>
+        </div>
+        <span class="band attention">NEEDS ATTENTION</span>
+      </div>
+      <div class="barTrack"><div class="barFill" style="width:41%; background:var(--red);"></div></div>
+      <div class="subjFoot">
+        <span>41% class average this term</span>
+        <span class="delta down">▼ 6pp vs last term</span>
+      </div>
+      <div class="syllabusMini">
+        <span>Syllabus 38%</span>
+        <div class="track"><div class="fill" style="width:38%"></div></div>
+      </div>
+    </div>
+
+    <div class="subjRow">
+      <div class="subjTop">
+        <div>
+          <div class="subjName">English Core · Class 12 Non&#8209;Medical A</div>
+          <div class="subjMeta">32 students · 30 chapters</div>
+        </div>
+        <span class="band stable">STABLE</span>
+      </div>
+      <div class="barTrack"><div class="barFill" style="width:72%;"></div></div>
+      <div class="subjFoot">
+        <span>72% class average this term</span>
+        <span class="delta up">▲ 4pp vs last term</span>
+      </div>
+      <div class="syllabusMini">
+        <span>Syllabus 57%</span>
+        <div class="track"><div class="fill" style="width:57%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardHead"><h2>Weak chapters</h2><span class="tag">By topic mastery</span></div>
+    <div class="cardSub">What to re&#8209;teach next &mdash; every subject you teach, one ranked list, weakest first.</div>
+
+    <div class="chapRow">
+      <div class="chapHead">
+        <span class="chapName">The Rise of Nationalism in Europe</span>
+        <span class="chapSubj">History</span>
+      </div>
+      <div class="chapTrend declining">▼ declining</div>
+      <div class="chapBarRow">
+        <div class="track"><div class="fill" style="width:31%; background:var(--red);"></div><div class="thresh"></div></div>
+        <div class="pct">31%</div>
+      </div>
+      <div class="chapNote">9 of 28 students below 50% mastery</div>
+    </div>
+    <div class="chapRow">
+      <div class="chapHead">
+        <span class="chapName">Print Culture and the Modern World</span>
+        <span class="chapSubj">History</span>
+      </div>
+      <div class="chapTrend declining">▼ declining</div>
+      <div class="chapBarRow">
+        <div class="track"><div class="fill" style="width:38%; background:var(--red);"></div><div class="thresh"></div></div>
+        <div class="pct">38%</div>
+      </div>
+      <div class="chapNote">7 of 28 students below 50% mastery</div>
+    </div>
+    <div class="chapRow">
+      <div class="chapHead">
+        <span class="chapName">Peasants and Farmers</span>
+        <span class="chapSubj">History</span>
+      </div>
+      <div class="chapTrend stable">&middot; stable</div>
+      <div class="chapBarRow">
+        <div class="track"><div class="fill" style="width:44%; background:var(--amber);"></div><div class="thresh"></div></div>
+        <div class="pct">44%</div>
+      </div>
+      <div class="chapNote">5 of 28 students below 50% mastery</div>
+    </div>
+    <div class="chapRow">
+      <div class="chapHead">
+        <span class="chapName">The Poem of the Weaver &mdash; Poetry</span>
+        <span class="chapSubj">English Core</span>
+      </div>
+      <div class="chapTrend stable">&middot; stable</div>
+      <div class="chapBarRow">
+        <div class="track"><div class="fill" style="width:52%; background:var(--amber);"></div><div class="thresh"></div></div>
+        <div class="pct">52%</div>
+      </div>
+      <div class="chapNote">6 of 32 students below 50% mastery</div>
+    </div>
+  </div>
+
+  <div class="sectionLabel">Who needs you</div>
+  <div class="card">
+    <div class="cardHead"><h2>Students who need attention</h2><span class="tag">6 flagged</span></div>
+    <div class="cardSub">One list across every class and subject you teach &mdash; performance, attendance, homework and test participation combined. Worst first.</div>
+
+    <div class="attnFilter">
+      <span class="filterPill on">All students (6)</span>
+      <span class="filterPill">History (4)</span>
+      <span class="filterPill">English Core (2)</span>
+    </div>
+
+    <div class="studentRow">
+      <div class="avatar">DR</div>
+      <div class="studentBody">
+        <div class="studentTop">
+          <div>
+            <div class="studentName">Devansh Rao</div>
+            <div class="studentMeta">History · Class 11 Humanities A</div>
+          </div>
+          <span class="sev HIGH">HIGH</span>
+        </div>
+        <div class="reasonChips">
+          <span class="reasonChip red">Missed 3 of 5 homework</span>
+          <span class="reasonChip amber">Skipped 1 of 3 tests</span>
+        </div>
+        <div class="studentAction">Assign remedial task · Message parent →</div>
+      </div>
+    </div>
+    <div class="studentRow">
+      <div class="avatar">AM</div>
+      <div class="studentBody">
+        <div class="studentTop">
+          <div>
+            <div class="studentName">Aarav Mehta</div>
+            <div class="studentMeta">History · Class 11 Humanities A</div>
+          </div>
+          <span class="sev HIGH">HIGH</span>
+        </div>
+        <div class="reasonChips">
+          <span class="reasonChip red">Needs Attention band</span>
+          <span class="reasonChip red">Declining trend</span>
+          <span class="reasonChip amber">Missed 2 of 3 tests</span>
+        </div>
+        <div class="studentAction">Assign remedial task · Message parent →</div>
+      </div>
+    </div>
+    <div class="studentRow">
+      <div class="avatar">SK</div>
+      <div class="studentBody">
+        <div class="studentTop">
+          <div>
+            <div class="studentName">Simran Kaur</div>
+            <div class="studentMeta">English Core · Class 12 Non&#8209;Medical A</div>
+          </div>
+          <span class="sev HIGH">HIGH</span>
+        </div>
+        <div class="reasonChips">
+          <span class="reasonChip amber">Attendance 68% in your periods</span>
+          <span class="reasonChip amber">Missed 3 of 5 homework</span>
+        </div>
+        <div class="studentAction">Assign remedial task · Message parent →</div>
+      </div>
+    </div>
+    <div class="studentRow">
+      <div class="avatar">KN</div>
+      <div class="studentBody">
+        <div class="studentTop">
+          <div>
+            <div class="studentName">Kabir Nanda</div>
+            <div class="studentMeta">History · Class 11 Humanities A</div>
+          </div>
+          <span class="sev MEDIUM">MEDIUM</span>
+        </div>
+        <div class="reasonChips">
+          <span class="reasonChip amber">Missed 2 of 5 homework</span>
+          <span class="reasonChip amber">Skipped 1 of 3 tests</span>
+        </div>
+        <div class="studentAction">Assign remedial task · Message parent →</div>
+      </div>
+    </div>
+    <div class="studentRow">
+      <div class="avatar">RI</div>
+      <div class="studentBody">
+        <div class="studentTop">
+          <div>
+            <div class="studentName">Rohan Iyer</div>
+            <div class="studentMeta">History · Class 11 Humanities A</div>
+          </div>
+          <span class="sev WATCH">WATCH</span>
+        </div>
+        <div class="reasonChips">
+          <span class="reasonChip watch">Mastery gap in 3 topics</span>
+        </div>
+        <div class="studentAction">Assign remedial task · Message parent →</div>
+      </div>
+    </div>
+    <div class="studentRow">
+      <div class="avatar">AJ</div>
+      <div class="studentBody">
+        <div class="studentTop">
+          <div>
+            <div class="studentName">Ananya Joshi</div>
+            <div class="studentMeta">English Core · Class 12 Non&#8209;Medical A</div>
+          </div>
+          <span class="sev WATCH">WATCH</span>
+        </div>
+        <div class="reasonChips">
+          <span class="reasonChip watch">Skipped 1 of 3 tests</span>
+        </div>
+        <div class="studentAction">Assign remedial task · Message parent →</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sectionLabel">Pacing</div>
+  <div class="card">
+    <div class="cardHead"><h2>Syllabus coverage</h2><span class="tag">Your subjects only</span></div>
+    <div class="cardSub">Chapters you've marked complete vs. total. We don't have a per&#8209;chapter due date to compare against, so this shows coverage and how recently you last logged progress &mdash; not a schedule verdict.</div>
+    <div class="pacingRow">
+      <div class="pacingCol" role="button" tabindex="0" aria-label="Log syllabus progress for History">
+        <div class="pacingPct">38%</div>
+        <div class="pacingLbl">History</div>
+        <div class="pacingBar"><div class="fill" style="width:38%"></div></div>
+        <div class="pacingStat"><b>9</b> of 24 chapters done</div>
+        <div class="behindTag">⚠ Not logged in 16 days</div>
+        <div class="pacingAction"><span>Log chapter progress</span><span>→</span></div>
+      </div>
+      <div class="pacingCol" role="button" tabindex="0" aria-label="Log syllabus progress for English Core">
+        <div class="pacingPct">57%</div>
+        <div class="pacingLbl">English Core</div>
+        <div class="pacingBar"><div class="fill" style="width:57%"></div></div>
+        <div class="pacingStat"><b>17</b> of 30 chapters done</div>
+        <div class="behindTag" style="background:var(--green-wash); color:var(--green);">Logged today</div>
+        <div class="pacingAction"><span>Log chapter progress</span><span>→</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sectionLabel">Portal adoption</div>
+  <div class="card">
+    <div class="cardHead"><h2>Are your students using SALCI?</h2><span class="tag">60 students</span></div>
+    <div class="cardSub">Logins, plus what they're actually doing once they're in &mdash; homework, tests, assignments. This is what tells parents to stop asking for results over the phone.</div>
+
+    <div class="neverBanner" role="button" tabindex="0">
+      <span class="ic">⚠</span>
+      <span class="tx">3 students have never logged in to SALCI
+        <small>Priyanka Desai, and 2 others &mdash; accounts created, never opened</small>
+      </span>
+      <span class="go">View →</span>
+    </div>
+
+    <div class="statGrid2">
+      <div class="statTile">
+        <div class="lbl">Today</div>
+        <div class="val">68%</div>
+        <div class="of">41 of 60 logged in</div>
+      </div>
+      <div class="statTile">
+        <div class="lbl">Yesterday</div>
+        <div class="val">75%</div>
+        <div class="of">45 of 60 logged in</div>
+      </div>
+      <div class="statTile amber">
+        <div class="lbl">Last 7 days · daily avg</div>
+        <div class="val">73%</div>
+        <div class="of">44 of 60, avg/day</div>
+        <div class="trend down">▼ 7pp vs last month</div>
+      </div>
+      <div class="statTile amber">
+        <div class="lbl">Last 30 days · daily avg</div>
+        <div class="val">80%</div>
+        <div class="of">48 of 60, avg/day</div>
+        <div class="trend">Healthy range starts ~85%</div>
+      </div>
+    </div>
+
+    <div class="sparkWrap">
+      <div class="sparkLbl"><span>Daily active students &middot; last 14 days</span><span>Trending down</span></div>
+      <svg width="100%" height="52" viewBox="0 0 400 52" preserveAspectRatio="none" style="overflow:visible;">
+        <line x1="0" y1="13" x2="400" y2="13" stroke="#EEF0EE" stroke-width="1"/>
+        <line x1="0" y1="30" x2="400" y2="30" stroke="#EEF0EE" stroke-width="1"/>
+        <polyline points="0,10 30,14 60,12 90,18 120,16 150,22 180,20 210,26 240,24 270,29 300,27 330,32 360,30 400,34"
+          fill="none" stroke="#0D9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="400" cy="34" r="4" fill="#0D9488" stroke="#fff" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <div class="engageRow">
+      <div class="engageLbl">Homework submitted</div>
+      <div class="engageTrack"><div class="fill" style="width:76%; background:var(--teal);"></div></div>
+      <div class="engagePct">76%</div>
+    </div>
+    <div class="engageRow">
+      <div class="engageLbl">Tests/assignments attempted</div>
+      <div class="engageTrack"><div class="fill" style="width:88%; background:var(--violet);"></div></div>
+      <div class="engagePct">88%</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardHead"><h2>Not using the portal</h2><span class="tag">4 flagged</span></div>
+    <div class="cardSub">Low logins and low submission/attempt rate, together &mdash; a kid who's quiet on both fronts is the one still relying on paper or WhatsApp.</div>
+
+    <div class="attnFilter">
+      <span class="filterPill on">All (4)</span>
+      <span class="filterPill">History (3)</span>
+      <span class="filterPill">English Core (1)</span>
+    </div>
+
+    <div class="studentRow">
+      <div class="avatar">PD</div>
+      <div class="studentBody">
+        <div class="studentTop">
+          <div>
+            <div class="studentName">Priyanka Desai</div>
+            <div class="studentMeta">History · Class 11 Humanities A</div>
+          </div>
+          <span class="sev HIGH">HIGH</span>
+        </div>
+        <div class="lastSeen">Last seen <b>14 days ago</b></div>
+        <div class="reasonChips">
+          <span class="reasonChip red">Homework 0 of 5 submitted</span>
+          <span class="reasonChip red">Tests 1 of 3 attempted</span>
+        </div>
+        <div class="studentAction">Nudge · Message parent →</div>
+      </div>
+    </div>
+    <div class="studentRow">
+      <div class="avatar">DR</div>
+      <div class="studentBody">
+        <div class="studentTop">
+          <div>
+            <div class="studentName">Devansh Rao</div>
+            <div class="studentMeta">History · Class 11 Humanities A</div>
+          </div>
+          <span class="sev HIGH">HIGH</span>
+        </div>
+        <div class="lastSeen">Last seen <b>11 days ago</b></div>
+        <div class="reasonChips">
+          <span class="reasonChip red">Homework 1 of 5 submitted</span>
+          <span class="reasonChip red">Tests 1 of 3 attempted</span>
+        </div>
+        <div class="studentAction">Nudge · Message parent →</div>
+      </div>
+    </div>
+    <div class="studentRow">
+      <div class="avatar">KN</div>
+      <div class="studentBody">
+        <div class="studentTop">
+          <div>
+            <div class="studentName">Kabir Nanda</div>
+            <div class="studentMeta">History · Class 11 Humanities A</div>
+          </div>
+          <span class="sev MEDIUM">MEDIUM</span>
+        </div>
+        <div class="lastSeen">Last seen <b>6 days ago</b></div>
+        <div class="reasonChips">
+          <span class="reasonChip amber">Homework 2 of 5 submitted</span>
+          <span class="reasonChip amber">Tests 2 of 3 attempted</span>
+        </div>
+        <div class="studentAction">Nudge · Message parent →</div>
+      </div>
+    </div>
+    <div class="studentRow">
+      <div class="avatar">MC</div>
+      <div class="studentBody">
+        <div class="studentTop">
+          <div>
+            <div class="studentName">Meher Chatterjee</div>
+            <div class="studentMeta">English Core · Class 12 Non&#8209;Medical A</div>
+          </div>
+          <span class="sev WATCH">WATCH</span>
+        </div>
+        <div class="lastSeen">Last seen <b>5 days ago</b></div>
+        <div class="reasonChips">
+          <span class="reasonChip watch">Logs in rarely &mdash; work is otherwise fine</span>
+        </div>
+        <div class="studentAction">Nudge · Message parent →</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardHead"><h2>Attendance trend</h2><span class="tag">30d</span></div>
+    <div class="attnTop">
+      <div class="attnPct">89.6%</div>
+      <div class="attnRange">last 30 school days</div>
+    </div>
+    <svg width="100%" height="70" viewBox="0 0 400 70" preserveAspectRatio="none" style="overflow:visible;">
+      <line x1="0" y1="17" x2="400" y2="17" stroke="#EEF0EE" stroke-width="1"/>
+      <line x1="0" y1="35" x2="400" y2="35" stroke="#EEF0EE" stroke-width="1"/>
+      <line x1="0" y1="53" x2="400" y2="53" stroke="#EEF0EE" stroke-width="1"/>
+      <polyline points="0,30 40,26 80,32 120,20 160,24 200,15 240,22 280,18 320,12 360,16 400,10"
+        fill="none" stroke="#5B3FA6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+      <polyline points="0,38 40,34 80,40 120,28 160,30 200,22 240,26 280,20 320,18 360,14 400,12"
+        fill="none" stroke="#0D9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="400" cy="12" r="4" fill="#0D9488" stroke="#fff" stroke-width="2"/>
+    </svg>
+    <div class="legend">
+      <span><i class="dot" style="background:#0D9488"></i>Your classes</span>
+      <span><i class="dot" style="background:#5B3FA6; opacity:.55"></i>Your classes, prior 30d</span>
+    </div>
+  </div>
+
+  <div class="footNote">
+    <span class="lockIcon">🔒</span>
+    <span><b>Scope guarantee:</b> every number on this page is filtered server&#8209;side to your own <code>class_assignments</code> rows. No other class, subject, teacher or school&#8209;wide figure can appear here &mdash; even if a query is missed, RLS blocks it at the database.</span>
+  </div>
+
+</div>
+</body>
+</html>

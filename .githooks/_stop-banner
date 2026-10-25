@@ -1,0 +1,73 @@
+#!/bin/sh
+#
+# Shared body for post-merge and post-rewrite: print the open STOP-block tasks
+# right after main arrives, so the blocking list is the first thing on screen.
+#
+# Advisory only. It never fails the merge or the rebase, and it never decides
+# anything: the friction lives in pre-push. Sourced by both hooks because
+# `git pull` runs post-merge, while `git pull --rebase` runs post-rewrite and
+# would otherwise print nothing.
+
+set -u
+
+QUEUE="docs/superpowers/plans/2026-09-07-naman-work-queue.md"
+
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || exit 0
+[ "$branch" = "naman-erp" ] || exit 0
+[ -f "$QUEUE" ] || exit 0
+
+listed=$(awk '
+  /<!-- STOP-BLOCK:START -->/ { inside = 1; next }
+  /<!-- STOP-BLOCK:END -->/   { inside = 0; next }
+  inside {
+    line = $0
+    while (match(line, /Task[ _#:.-]*[0-9]+/)) {
+      tok = substr(line, RSTART, RLENGTH)
+      gsub(/[^0-9]/, "", tok)
+      print tok
+      line = substr(line, RSTART + RLENGTH)
+    }
+  }
+' "$QUEUE" 2>/dev/null | sort -un)
+
+# An explicitly cleared block still deserves the "nothing blocking" line.
+if [ -z "$listed" ]; then
+  if grep -q "STOP-BLOCK:EMPTY" "$QUEUE" 2>/dev/null; then
+    echo ""
+    echo "  STOP block is clear. Take the first task marked todo in $QUEUE."
+    echo ""
+  fi
+  exit 0
+fi
+
+open=""
+for n in $listed; do
+  if grep -qiE "^##[[:space:]]*Task[[:space:]]+$n[[:space:]]*[-_[:space:]].*status:[[:space:]]*todo" "$QUEUE"; then
+    open="$open $n"
+  fi
+done
+
+if [ -z "$open" ]; then
+  echo ""
+  echo "  STOP block is clear. Take the first task marked todo in $QUEUE."
+  echo ""
+  exit 0
+fi
+
+count=$(printf '%s\n' $open | wc -w | tr -d ' ')
+
+echo ""
+echo "  ================================================================"
+echo "  STOP: $count blocking task(s). These come before anything else."
+echo "  ================================================================"
+for n in $open; do
+  title=$(grep -iE "^##[[:space:]]*Task[[:space:]]+$n[[:space:]]*[-_[:space:]].*status:[[:space:]]*todo" "$QUEUE" | head -1 | sed 's/^##[[:space:]]*//')
+  echo "    - $title"
+done
+echo ""
+echo "  Do these first, in the order listed, without asking Naman."
+echo "  A push of unrelated work will be refused (.githooks/pre-push)."
+echo "  Details: $QUEUE"
+echo ""
+
+exit 0

@@ -1,0 +1,107 @@
+project_id = "gyymkgohcijeksmrzuyw"
+
+[storage]
+enabled = true
+# Project-wide upload size limit. Per-bucket caps in
+# storage.buckets.file_size_limit still apply on top of this — the actual
+# cap for any upload is min(bucket_limit, project_limit).
+file_size_limit = "50MiB"
+
+[functions.import-syllabus]
+verify_jwt = true
+
+[functions.generate-questions]
+verify_jwt = false
+
+[functions.admin-operations]
+verify_jwt = false
+
+[functions.generate-learning-actions]
+verify_jwt = false
+
+[functions.send-task-notifications]
+verify_jwt = false
+
+[functions.compute-aggregates]
+verify_jwt = false
+
+[functions.auto-grade-submission]
+verify_jwt = false
+
+[functions.process-ocr-upload]
+verify_jwt = false
+
+[functions.generate-exam-insights]
+verify_jwt = false
+
+[functions.mascot-chat]
+verify_jwt = false
+
+[functions.import-syllabus-csv]
+verify_jwt = false
+
+[functions.generate-principal-tasks]
+verify_jwt = false
+
+[functions.invite-admin]
+verify_jwt = false
+
+[functions.resolve-login-identifier]
+verify_jwt = false
+
+[functions.send-welcome-email]
+verify_jwt = false
+
+[functions.generate-principal-ai-insights]
+verify_jwt = false
+
+[functions.generate-predictions]
+verify_jwt = false
+
+[functions.send-web-push]
+verify_jwt = false
+
+# Called by the Database Webhook on notifications INSERT, which sends
+# `Bearer WEBHOOK_SECRET` rather than a user JWT. The function checks that
+# secret itself; leaving JWT verification on would reject the webhook before
+# any of its code ran.
+[functions.send-push]
+verify_jwt = false
+
+[functions.mark-biometric-attendance]
+verify_jwt = false
+
+[functions.snapshot-student-passport]
+verify_jwt = false
+
+[functions.promote-students]
+verify_jwt = false
+
+[functions.send-fee-reminder]
+verify_jwt = false
+
+[functions.submit-homework]
+verify_jwt = true
+
+[functions.homework-file-url]
+verify_jwt = true
+
+[functions.homework-notify-pass]
+verify_jwt = true
+
+[functions.support-notify-email]
+verify_jwt = true
+
+# Called by ptm_meet_create_kick() (pg_cron) with the Vault webhook_secret as
+# Bearer, which the function checks itself, as send-push does.
+[functions.ptm-meet-create]
+verify_jwt = false
+
+[functions.dua-file-url]
+verify_jwt = true
+
+[functions.admission-enquiry-intake]
+verify_jwt = false
+
+[functions.admission-docs-sweep]
+verify_jwt = false

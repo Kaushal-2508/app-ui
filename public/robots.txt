@@ -1,0 +1,11 @@
+# This deployment is the SALCI app portal (login-only). It must NOT appear
+# in search engines; the public marketing site is https://www.salci.ai.
+#
+# De-indexing is done via <meta name="robots" content="noindex"> in index.html
+# plus an X-Robots-Tag response header (vercel.json). Crawling must therefore
+# stay ALLOWED below: if bots are blocked here they can never see the noindex
+# directive, and the URLs would linger in results as link-only entries.
+# Do NOT add "Disallow: /" to this file.
+
+User-agent: *
+Allow: /

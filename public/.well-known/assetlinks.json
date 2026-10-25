@@ -1,0 +1,15 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.salci.app",
+      "sha256_cert_fingerprints": [
+        "57:A2:B5:1B:33:DA:27:16:D6:10:42:A9:18:CE:07:DA:89:2F:4F:0E:C9:49:66:CC:2B:D5:35:2B:9B:7B:1F:FD",
+        "2A:27:8D:DD:A9:73:22:1A:C0:CD:D5:02:99:3F:AB:CB:7A:D1:BF:06:A2:6C:A2:07:71:97:40:10:D2:A3:95:46",
+        "02:5F:8C:68:87:C2:A0:8F:D2:57:30:57:1B:FB:44:72:1A:D6:0E:3C:0D:AB:A3:FB:26:A5:41:C2:7C:09:5D:6F",
+        "93:51:18:4E:2F:5E:53:F9:39:EA:42:65:F5:FA:86:A2:D4:34:99:18:24:4D:61:1C:E8:33:6F:78:73:35:49:B6"
+      ]
+    }
+  }
+]

@@ -1,0 +1,9 @@
+# Optional Groups — Implementation Plan
+
+Spec: `docs/superpowers/specs/2026-07-29-optional-groups-design.md`. Branch: `feat/optional-groups`.
+
+1. **DB** — `supabase/migrations/20260729120000_optional_groups.sql`: tables `optional_groups` + `optional_group_subjects` (+FK indexes), `tt_slots.optional_group_id`, helpers `can_manage_optional_groups`/`can_view_optional_group`/`can_manage_optional_group`, RLS, 7 RPCs (upsert/delete group, set membership, get/set student choices, my_optional_slot_choices, my_teacher_optional_week), auth-guard legacy `student_band_resolution` + `band_slot_batches`. Apply to prod via `scripts/run-sql.ps1` (ledger is stale — never `db push`), verify via pg_proc, regen types.
+2. **Hooks** — new `src/hooks/useOptionalGroups.ts`: manager queries/mutations, `useOptionalGroupsForClass(classId)` (groups + subjects + teacher map, batched), `useStudentOptionalGroupAssignment`, `useSaveStudentOptionalGroupChoices`. Extend `useTimetableV2.ts`: `ResolvedSlotV2.optional_group_{id,name}`, workspace + student-week selects join `optional_groups(name)`, `SaveTtSlotInput.optional_group_id`, student-week group resolution via `my_optional_slot_choices`, teacher week merges `my_teacher_optional_week` (flag `isOptionalGroup`), status hook counts group slots.
+3. **UI** — `OptionalGroupsSheet` (syllabus page, 4th Add New item, gated `canAddSubjects`); `StudentSubjectsTab` redesign (group Selects + Save + ungrouped toggles); `SlotDrawerV2` (group slot-type entries + read-only subject/teacher list, remove band UI); `TimetableGridV2` + `TimetablePrintViewV2` group rendering (orange tint, group name); `TeacherMyWeekPageV2` gate lesson-plan affordance off for `isOptionalGroup` rows.
+4. **Edge fn** — `copy-timetable-template` carries `optional_group_id`; deploy.
+5. **Checks** — `npm run typecheck`, `npx eslint <touched>`, `npx vite build`, Scale Gate verdicts; commit on branch (no push/merge without ask).

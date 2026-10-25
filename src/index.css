@@ -1,0 +1,1836 @@
+/* Web fonts (Inter, Noto Sans Devanagari, Noto Sans Gurmukhi) are loaded by
+   src/lib/fonts.ts AFTER first paint, not by @import here. A CSS @import at
+   the top of the bundle blocks every rule below it until Google Fonts answers,
+   which on a phone connection (and inside the native shell) left the whole app
+   unstyled for seconds. System fonts render immediately and swap in. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design System: Teal primary (#289da3), Orange accent (#fa9314), Inter font, 8pt grid, flat UI */
+
+@layer base {
+  :root {
+    --background: 220 14% 98%;
+    --foreground: 220 39% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 39% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 39% 11%;
+
+    --primary: 182 60% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 13% 46%;
+    --secondary-foreground: 0 0% 98%;
+
+    --accent: 33 96% 53%;
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 182 60% 40%;
+
+    --radius: 0.75rem;
+    --radius-card: 1.25rem;
+
+    /* Status colors */
+    --status-open: 220 14% 46%;
+    --status-in-progress: 217 91% 60%;
+    --status-pending: 33 96% 53%;
+    --status-completed: 160 60% 45%;
+    --status-rejected: 0 72% 50%;
+
+    /* Priority colors */
+    --priority-high: 0 72% 50%;
+    --priority-medium: 33 96% 53%;
+    --priority-low: 160 60% 45%;
+
+    /* Brand colors */
+    --salci-primary: 182 60% 40%;
+    --salci-secondary: 160 60% 45%;
+    --salci-accent: 33 96% 53%;
+
+    /* Sidebar — dark slate with teal accents.
+       Active-tab + ring colors track the brand teal (#249ca2) so the
+       sidebar stays in line with buttons / pills used elsewhere. */
+    --sidebar-background: 220 25% 12%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 183 64% 39%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    /* Hover / active-row fill. Kept ~14% lighter than --sidebar-background
+       (was 18%, only 6% up, which read as no hover at all on most screens). */
+    --sidebar-accent: 220 20% 26%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 18% 20%;
+    --sidebar-ring: 183 64% 39%;
+    --sidebar: 220 25% 12%;
+
+    /* Chart palette */
+    --chart-1: 182 60% 40%;
+    --chart-2: 33 96% 53%;
+    --chart-3: 160 60% 45%;
+    --chart-4: 217 91% 60%;
+    --chart-5: 0 72% 50%;
+
+    /* Analytics charts.
+       --chart-series is the one hue every bar and line wears: sort order and a
+       reference line carry the story, never hue. --chart-band-1..5 is an ORDINAL
+       ramp (single hue, monotone lightness) for the five score bands. It runs
+       light to dark here and dark to light under .dark, so "further along the
+       scale" reads the same way against either surface. Both were validated for
+       monotone lightness, adjacent lightness gap and light-end contrast against
+       their own surface. */
+    --chart-series: 183 64% 39%;
+    --chart-grid: 220 15% 91%;
+    --chart-axis: 220 12% 82%;
+    --chart-band-1: 183 48% 59%;
+    --chart-band-2: 183 58% 45%;
+    --chart-band-3: 183 64% 37%;
+    --chart-band-4: 183 70% 29%;
+    --chart-band-5: 183 75% 21%;
+
+    /* Signal colours for the two states this surface calls out: a queue that
+       needs work, and a session flagged for review. Raw amber-600 measures
+       3.19:1 on the light card and raw rose-600 measures 3.32:1 on the dark
+       one, so neither Tailwind step clears 4.5:1 in both modes. These do.
+       Always paired with an icon and a word, never colour alone. */
+    --signal-warn: 26 90% 37%;   /* 5.02:1 on the light card */
+    --signal-alert: 345 83% 41%; /* 6.29:1 on the light card */
+
+    /* Typography */
+    --font-sans: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Gurmukhi', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Shadows — neutral gray, no purple tint */
+    --shadow-2xs: 0 1px 2px 0px hsl(220 13% 46% / 0.04);
+    --shadow-xs: 0 1px 3px 0px hsl(220 13% 46% / 0.06);
+    --shadow-sm: 0 2px 4px -1px hsl(220 13% 46% / 0.08), 0 1px 2px -1px hsl(220 13% 46% / 0.04);
+    --shadow: 0 2px 6px -1px hsl(220 13% 46% / 0.1), 0 1px 4px -2px hsl(220 13% 46% / 0.06);
+    --shadow-md: 0 4px 8px -2px hsl(220 13% 46% / 0.1), 0 2px 4px -2px hsl(220 13% 46% / 0.06);
+    --shadow-lg: 0 8px 16px -4px hsl(220 13% 46% / 0.12), 0 4px 8px -4px hsl(220 13% 46% / 0.06);
+    --shadow-xl: 0 16px 32px -8px hsl(220 13% 46% / 0.14), 0 8px 16px -8px hsl(220 13% 46% / 0.06);
+    --shadow-2xl: 0 24px 48px -12px hsl(220 13% 46% / 0.2);
+
+    /* Phase 9 — card lift shadows (visible float, deeper-blue cast) */
+    --shadow-card-sm: 0 1px 2px hsl(220 25% 30% / 0.04), 0 4px 12px hsl(220 25% 30% / 0.05);
+    --shadow-card:    0 1px 2px hsl(220 25% 30% / 0.04), 0 8px 24px hsl(220 25% 30% / 0.08);
+    --shadow-card-lg: 0 1px 2px hsl(220 25% 30% / 0.04), 0 16px 40px hsl(220 25% 30% / 0.10);
+    --shadow-hero:    0 1px 2px hsl(220 25% 30% / 0.04), 0 24px 48px hsl(183 60% 30% / 0.18);
+    --tracking-normal: 0em;
+    --spacing: 0.25rem;
+
+    /* === Mobile UI Redesign tokens (2026-04-27, retuned 2026-04-29 Phase 9) === */
+    /* Brand — exact values per design spec */
+    --brand-primary: 183 64% 39%;        /* #249ca2 teal */
+    --brand-secondary: 257 35% 62%;      /* lifted lilac (was 257 28% 50%) — softer warmth in gradient */
+    --brand-accent: 34 96% 52%;          /* #fa920e warm orange */
+    --brand-warm: 18 90% 70%;            /* soft peach for backdrop (Phase 9) */
+
+    /* Layout */
+    /* AppLayout's header: 61px of bar plus the device's top safe area (the
+       notch / status bar inside the native shell, 0 in a browser). Sticky
+       strips and PageShell's floor read this token, so they move with it. */
+    --app-bar-height: calc(61px + env(safe-area-inset-top, 0px));
+
+    /* Surfaces */
+    --surface-base: 30 30% 98%;          /* warm cream-white page floor (Phase 9) */
+    --surface-card: 0 0% 100%;           /* card body — pure white, no alpha needed on pastel backdrop */
+    --surface-stroke: 220 15% 94%;       /* near-invisible hairline */
+
+    /* Neutral text scale (slate range, used across primitives) */
+    --ink-900: 222 47% 11%;
+    --ink-700: 220 15% 25%;
+    --ink-600: 220 9% 46%;
+    --ink-500: 220 9% 56%;
+    --ink-400: 220 9% 66%;
+
+    /* Dashboard banner sky (DAY): the .scene-banner gradient behind the 3D scene, and
+       the banner's whole fallback until the canvas is up. */
+    --ssi-sky-top: 24 90% 92%;
+    --ssi-sky-mid: 35 75% 95%;
+    --ssi-sky-bottom: 36 33% 95%;
+
+    /* Clay tiles (DAY): FeatureTile, the dashboard hub tiles. Pebble colours come from
+       the Clay School banner (teal roofs, lawn green, marigold, jacaranda, gulmohar),
+       vivid on purpose; each has an -ink partner for text on a light card. */
+    --clay-teal: 183 79% 37%;
+    --clay-teal-ink: 183 84% 27%;
+    --clay-mint: 145 58% 44%;
+    --clay-mint-ink: 145 64% 29%;
+    --clay-peach: 33 92% 51%;
+    --clay-peach-ink: 30 100% 35%;
+    --clay-violet: 257 55% 62%;
+    --clay-violet-ink: 257 45% 45%;
+    --clay-sky: 202 78% 48%;
+    --clay-sky-ink: 204 80% 34%;
+    --clay-rose: 10 83% 60%;
+    --clay-rose-ink: 8 70% 42%;
+    --clay-glyph: 0 0% 100%;         /* the icon on the pebble */
+    --clay-light: 0 0% 100%;         /* highlight overlay */
+    --clay-dark: 20 45% 10%;         /* warm shade overlay */
+    --clay-card-top: 0 0% 100%;
+    --clay-card-bot: 36 50% 98.5%;
+    --clay-tile-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.7), inset 0 -2px 0 hsl(25 35% 20% / 0.035),
+      0 1px 2px hsl(25 35% 20% / 0.06), 0 14px 28px -16px hsl(25 35% 20% / 0.28);
+    --clay-tile-shadow-hover: inset 0 1px 0 hsl(0 0% 100% / 0.7), 0 2px 4px hsl(25 35% 20% / 0.06),
+      0 22px 36px -18px hsl(25 35% 20% / 0.36);
+    /* Dashboard action cards (2026-10-06): the deep stop of each clay tone, the ground white
+       text sits on (every one clears 6.4:1 for white). */
+    --clay-teal-deep: 186 80% 24%;
+    --clay-mint-deep: 152 62% 24%;
+    --clay-peach-deep: 22 92% 33%;
+    --clay-violet-deep: 257 44% 40%;
+    --clay-sky-deep: 205 78% 30%;
+    --clay-rose-deep: 354 64% 38%;
+
+    /* === Achievements — badge tier ramps (2026-08-13) ===
+       One 4-stop ramp per tier so BadgeShield can be drawn entirely from
+       tokens (light = top gradient stop, base = mid + rim + rays,
+       deep = bottom stop, ink = the glyph sitting on the shield).
+       `legendary` is the new rarest tier and carries an extra glow stop. */
+    --tier-bronze-light: 32 78% 62%;
+    --tier-bronze-base: 27 68% 47%;
+    --tier-bronze-deep: 22 62% 33%;
+    --tier-bronze-ink: 36 90% 96%;
+
+    --tier-silver-light: 214 24% 84%;
+    --tier-silver-base: 215 16% 62%;
+    --tier-silver-deep: 217 20% 42%;
+    --tier-silver-ink: 210 32% 98%;
+
+    --tier-gold-light: 47 96% 68%;
+    --tier-gold-base: 41 92% 52%;
+    --tier-gold-deep: 33 82% 36%;
+    --tier-gold-ink: 45 100% 97%;
+
+    --tier-platinum-light: 187 64% 78%;
+    --tier-platinum-base: 190 58% 50%;
+    --tier-platinum-deep: 196 62% 30%;
+    --tier-platinum-ink: 185 80% 97%;
+
+    --tier-diamond-light: 268 80% 78%;
+    --tier-diamond-base: 272 62% 55%;
+    --tier-diamond-deep: 266 60% 34%;
+    --tier-diamond-ink: 280 100% 98%;
+
+    --tier-legendary-light: 45 100% 66%;
+    --tier-legendary-base: 330 74% 52%;
+    --tier-legendary-deep: 266 66% 22%;
+    --tier-legendary-ink: 45 100% 92%;
+    --tier-legendary-glow: 330 85% 60%;
+
+    /* Tier name / chip text ON a card surface. Separate from `-base` (which is
+       a fill): the metal colours are far too light to read as 11px type on
+       white, so these are darkened here and lightened again in .dark. */
+    --tier-bronze-text: 24 72% 36%;
+    --tier-silver-text: 217 20% 40%;
+    --tier-gold-text: 33 84% 33%;
+    --tier-platinum-text: 196 64% 29%;
+    --tier-diamond-text: 268 56% 45%;
+    --tier-legendary-text: 330 68% 42%;
+
+    /* Unearned shields — flat, muted, still shield-shaped. */
+    --tier-locked: 220 16% 92%;
+    --tier-locked-deep: 220 14% 84%;
+    --tier-locked-line: 220 12% 76%;
+
+    /* Legendary tile lift — the only tier that gets a coloured card shadow. */
+    --shadow-legendary: 0 1px 2px hsl(220 25% 30% / 0.05), 0 14px 34px -10px hsl(330 85% 60% / 0.42);
+
+    /* === Achievements hero surfaces — the tri-colour system (2026-08-14) ===
+       Three saturated gradient cards, the treatment used by the Olympiad school
+       console. The colour is SEMANTIC, never decorative, which is what stops
+       this becoming the four-pastel-boxes problem again:
+         teal   = who you are and where you stand (rank, points) — the MAIN one
+         orange = momentum, the live streak
+         violet = the goal ahead, the next badge
+       Teal leads: it is the widest card and the only one in the first row. */
+    --hero-teal-from: 183 58% 32%;
+    --hero-teal-to: 191 68% 20%;
+    --hero-orange-from: 33 94% 55%;
+    --hero-orange-to: 22 88% 46%;
+    --hero-violet-from: 271 62% 56%;
+    --hero-violet-to: 278 64% 43%;
+    /* Type on any hero surface. Kept as one token so a future tone cannot
+       accidentally ship unreadable text. */
+    --hero-ink: 0 0% 100%;
+
+    /* === Admin dashboard accents ===
+       The /school/command-center page follows the blueprint's STRUCTURE but the
+       portal's palette, so it sits beside every other page instead of looking
+       like a different product. Only the banding colours live here — surfaces,
+       ink and hairlines all use the Phase 9 tokens directly.
+
+       These are semantic, not brand: they encode <50 / 50-65 / 65-85 / >=85 on
+       charts, so they are pinned to the status scale rather than re-themed. */
+    --dash-teal: var(--brand-primary);
+    --dash-violet: var(--brand-secondary);
+    --dash-critical: var(--priority-high);
+    --dash-warning: var(--priority-medium);
+    --dash-good: var(--priority-low);
+    --dash-exc: 142 84% 26%;
+  }
+
+  .dark {
+    --background: 220 20% 8%;
+    --foreground: 0 0% 96%;
+
+    /* Status colors, lifted a step so the dots read on the dark ground.
+       Light values live in :root above; a token must exist in both. */
+    --status-open: 220 14% 62%;
+    --status-in-progress: 217 91% 68%;
+    --status-pending: 33 96% 62%;
+    --status-completed: 160 55% 55%;
+    --status-rejected: 0 72% 62%;
+
+    --card: 220 15% 13%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 220 15% 16%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 182 55% 50%;
+    --primary-foreground: 182 100% 8%;
+
+    --secondary: 220 10% 45%;
+    --secondary-foreground: 0 0% 96%;
+
+    --accent: 33 90% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 220 10% 22%;
+    --muted-foreground: 220 10% 65%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 10% 22%;
+    --input: 220 10% 22%;
+    --ring: 182 55% 50%;
+
+    --sidebar-background: 220 28% 8%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 183 64% 39%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    /* Same ~14% lift over this mode's darker --sidebar-background (was 14%). */
+    --sidebar-accent: 220 22% 22%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 20% 16%;
+    --sidebar-ring: 183 64% 39%;
+    --sidebar: 220 28% 8%;
+
+    --chart-1: 182 55% 50%;
+    --chart-2: 33 90% 55%;
+    --chart-3: 160 55% 50%;
+    --chart-4: 217 85% 62%;
+    --chart-5: 0 72% 55%;
+
+    /* Analytics charts, night. Re-stepped for the dark card, not flipped:
+       the band ramp reverses to dark-to-light so the far end of the scale keeps
+       the most presence against a dark surface. */
+    --chart-series: 183 55% 55%;
+    --chart-grid: 230 16% 26%;
+    --chart-axis: 230 14% 34%;
+    --chart-band-1: 183 40% 28%;
+    --chart-band-2: 183 45% 38%;
+    --chart-band-3: 183 50% 49%;
+    --chart-band-4: 183 55% 61%;
+    --chart-band-5: 183 60% 74%;
+
+    --signal-warn: 43 96% 56%;   /* 9.33:1 on the dark card */
+    --signal-alert: 351 95% 71%; /* 5.79:1 on the dark card */
+
+    --shadow-2xs: 0 1px 2px 0px hsl(0 0% 0% / 0.1);
+    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.12);
+    --shadow-sm: 0 2px 4px -1px hsl(0 0% 0% / 0.15), 0 1px 2px -1px hsl(0 0% 0% / 0.08);
+    --shadow: 0 2px 6px -1px hsl(0 0% 0% / 0.15), 0 1px 4px -2px hsl(0 0% 0% / 0.1);
+    --shadow-md: 0 4px 8px -2px hsl(0 0% 0% / 0.2), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 8px 16px -4px hsl(0 0% 0% / 0.22), 0 4px 8px -4px hsl(0 0% 0% / 0.12);
+    --shadow-xl: 0 16px 32px -8px hsl(0 0% 0% / 0.25), 0 8px 16px -8px hsl(0 0% 0% / 0.15);
+    --shadow-2xl: 0 24px 48px -12px hsl(0 0% 0% / 0.35);
+
+    /* === Phase 9 dark mode overrides === */
+    /* Surfaces — page floor is deep navy, cards are dark slate, hairlines
+       are a subtle light line. Mirrors the structure of the light values. */
+    --surface-base: 232 28% 10%;
+    --surface-card: 230 22% 16%;
+    --surface-stroke: 230 18% 24%;
+
+    /* Brand stops keep their hues but soften alpha-wise via the radial
+       gradient stops; explicit token overrides not required. The .dark
+       theme's surface-gradient inherits the same radial overlay positions
+       and the dark surface-base swallows the warm tints into a cool night. */
+
+    /* Card lift shadows — heavier, blue-cast for the deeper backdrop. */
+    --shadow-card-sm: 0 1px 2px hsl(0 0% 0% / 0.30), 0 4px 12px hsl(0 0% 0% / 0.30);
+    --shadow-card:    0 1px 2px hsl(0 0% 0% / 0.30), 0 8px 24px hsl(0 0% 0% / 0.42);
+    --shadow-card-lg: 0 1px 2px hsl(0 0% 0% / 0.30), 0 16px 40px hsl(0 0% 0% / 0.50);
+    --shadow-hero:    0 1px 2px hsl(0 0% 0% / 0.30), 0 24px 48px hsl(183 60% 25% / 0.55);
+
+    /* Ink scale — invert: light text on the dark surface. The numbers stay
+       (--ink-900 is the strongest text, --ink-400 the dimmest) so call-sites
+       don't need to change. */
+    --ink-900: 0 0% 96%;
+    --ink-700: 220 12% 80%;
+    --ink-600: 220 10% 68%;
+    --ink-500: 220 10% 58%;
+    --ink-400: 220 10% 48%;
+
+    /* Dashboard banner sky (NIGHT). */
+    --ssi-sky-top: 232 55% 11%;
+    --ssi-sky-mid: 245 45% 18%;
+    --ssi-sky-bottom: 235 35% 24%;
+
+    /* Clay tiles (NIGHT): same pebble hues (the banner keeps its hues at night too);
+       the -ink partners lighten so text reads on the dark card. */
+    --clay-teal: 183 79% 37%;
+    --clay-teal-ink: 183 70% 58%;
+    --clay-mint: 145 58% 44%;
+    --clay-mint-ink: 145 55% 60%;
+    --clay-peach: 33 92% 51%;
+    --clay-peach-ink: 33 95% 62%;
+    --clay-violet: 257 55% 62%;
+    --clay-violet-ink: 257 70% 76%;
+    --clay-sky: 202 78% 48%;
+    --clay-sky-ink: 202 85% 66%;
+    --clay-rose: 10 83% 60%;
+    --clay-rose-ink: 10 90% 70%;
+    --clay-glyph: 0 0% 100%;
+    --clay-light: 0 0% 100%;
+    --clay-dark: 20 45% 10%;
+    --clay-card-top: 229 22% 18%;
+    --clay-card-bot: 230 22% 15%;
+    --clay-tile-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.06), 0 1px 2px hsl(0 0% 0% / 0.30),
+      0 16px 30px -18px hsl(0 0% 0% / 0.70);
+    --clay-tile-shadow-hover: inset 0 1px 0 hsl(0 0% 100% / 0.06), 0 2px 4px hsl(0 0% 0% / 0.30),
+      0 24px 38px -18px hsl(0 0% 0% / 0.80);
+    /* Action cards, night: the same hues pulled down so a card never glares on the navy floor. */
+    --clay-teal-deep: 188 72% 15%;
+    --clay-mint-deep: 152 55% 14%;
+    --clay-peach-deep: 22 76% 22%;
+    --clay-violet-deep: 258 38% 24%;
+    --clay-sky-deep: 205 66% 18%;
+    --clay-rose-deep: 354 52% 22%;
+
+    /* === Achievements — badge tier ramps (NIGHT) ===
+       Same ramp structure; the light stop stays bright enough to read as
+       metal against the navy floor while the deep stop sinks further. */
+    --tier-bronze-light: 33 74% 58%;
+    --tier-bronze-base: 27 62% 42%;
+    --tier-bronze-deep: 22 55% 20%;
+    --tier-bronze-ink: 36 70% 94%;
+
+    --tier-silver-light: 214 20% 76%;
+    --tier-silver-base: 215 14% 52%;
+    --tier-silver-deep: 220 20% 26%;
+    --tier-silver-ink: 210 24% 96%;
+
+    --tier-gold-light: 46 92% 62%;
+    --tier-gold-base: 40 86% 46%;
+    --tier-gold-deep: 32 78% 22%;
+    --tier-gold-ink: 45 96% 95%;
+
+    --tier-platinum-light: 187 60% 70%;
+    --tier-platinum-base: 190 56% 44%;
+    --tier-platinum-deep: 198 64% 18%;
+    --tier-platinum-ink: 185 70% 96%;
+
+    --tier-diamond-light: 268 76% 72%;
+    --tier-diamond-base: 272 60% 50%;
+    --tier-diamond-deep: 266 62% 22%;
+    --tier-diamond-ink: 280 90% 97%;
+
+    --tier-legendary-light: 45 100% 64%;
+    --tier-legendary-base: 330 76% 50%;
+    --tier-legendary-deep: 266 70% 14%;
+    --tier-legendary-ink: 45 100% 90%;
+    --tier-legendary-glow: 330 90% 62%;
+
+    --tier-bronze-text: 32 72% 64%;
+    --tier-silver-text: 214 20% 76%;
+    --tier-gold-text: 45 88% 62%;
+    --tier-platinum-text: 187 60% 66%;
+    --tier-diamond-text: 268 76% 76%;
+    --tier-legendary-text: 336 92% 72%;
+
+    --tier-locked: 230 18% 22%;
+    --tier-locked-deep: 230 22% 16%;
+    --tier-locked-line: 230 16% 32%;
+
+    --shadow-legendary: 0 1px 2px hsl(0 0% 0% / 0.35), 0 16px 40px -10px hsl(330 90% 58% / 0.50);
+
+    /* Hero surfaces are already dark, saturated grounds, so night mode only
+       needs them pulled down enough not to glare against the darker page. */
+    --hero-teal-from: 183 56% 26%;
+    --hero-teal-to: 191 66% 15%;
+    --hero-orange-from: 31 84% 47%;
+    --hero-orange-to: 21 80% 38%;
+    --hero-violet-from: 271 54% 47%;
+    --hero-violet-to: 278 58% 35%;
+
+    /* === Admin dashboard accents, night ===
+       Aliases follow whatever the brand tokens do above, so only the status
+       colours need lifting for legibility on a dark ground. */
+    --dash-teal: var(--brand-primary);
+    --dash-violet: var(--brand-secondary);
+    --dash-critical: 0 70% 62%;
+    --dash-warning: 40 85% 58%;
+    --dash-good: 145 55% 50%;
+    --dash-exc: 142 57% 46%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    line-height: 1.5;
+  }
+}
+
+@layer components {
+  /* Transparent, unobtrusive scrollbar inside the sidebar */
+  [data-sidebar="sidebar"] ::-webkit-scrollbar,
+  [data-sidebar="content"]::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background: transparent;
+  }
+  [data-sidebar="sidebar"] ::-webkit-scrollbar-track,
+  [data-sidebar="content"]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  [data-sidebar="sidebar"] ::-webkit-scrollbar-thumb,
+  [data-sidebar="content"]::-webkit-scrollbar-thumb {
+    background-color: hsl(0 0% 100% / 0.18);
+    border-radius: 9999px;
+  }
+  [data-sidebar="sidebar"] ::-webkit-scrollbar-thumb:hover,
+  [data-sidebar="content"]::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(0 0% 100% / 0.28);
+  }
+  [data-sidebar="sidebar"],
+  [data-sidebar="content"] {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(0 0% 100% / 0.18) transparent;
+  }
+
+  .dashboard-card {
+    @apply rounded-lg shadow-sm border border-border;
+  }
+  .dashboard-section {
+    @apply rounded-lg bg-card p-1 shadow-sm border border-border;
+  }
+}
+
+@layer components {
+  /* Phase 9 backdrop: warm-peach top-left → lilac top-right → faint teal at bottom.
+     Saturation bumped so the gradient reads against a near-white surface.
+     In .dark, the same structure is re-tinted to cool night colors (deep navy
+     surface with subtle teal/lilac aurora overlays).
+
+     The glows are anchored to the element (the default attachment), NEVER
+     `background-attachment: fixed`. A fixed-attachment background on anything
+     but the root element makes the whole page scroll on the main thread:
+     Chromium ("has background-attachment: fixed objects") and WebKit ("slow
+     repaint objects") both leave the compositor and repaint the gradient on
+     every frame, so the page moves in steps and every pinned bar (app bar,
+     tab strips) lands a frame behind the content. In the Android shell that
+     read as "the whole app vibrates while scrolling" (2026-09-17). iOS Safari
+     has long treated `fixed` as scroll anyway, so this is the look iPhones
+     already had. A pinned row that has to blend with the app bar uses
+     .app-bar-frost, not this class (the row would otherwise paint the glow
+     relative to its own 40px box and stand out as a tinted band). */
+  .surface-gradient {
+    background-color: hsl(var(--surface-base));
+    background-image:
+      radial-gradient(1200px 800px at 0% 0%, hsl(var(--brand-warm) / 0.18), transparent 55%),
+      radial-gradient(1000px 700px at 100% 0%, hsl(var(--brand-secondary) / 0.16), transparent 60%),
+      radial-gradient(800px 600px at 50% 100%, hsl(var(--brand-primary) / 0.10), transparent 65%);
+  }
+  .dark .surface-gradient {
+    background-image:
+      radial-gradient(1200px 800px at 0% 0%, hsl(var(--brand-secondary) / 0.18), transparent 55%),
+      radial-gradient(1000px 700px at 100% 0%, hsl(var(--brand-primary) / 0.14), transparent 60%),
+      radial-gradient(900px 700px at 50% 100%, hsl(220 60% 30% / 0.30), transparent 65%);
+  }
+
+  /* Pure white card on the pastel backdrop — no alpha, no blur (the alpha+blur
+     combo from Phase 5 read as grey on the previous near-white surface and
+     killed the float effect). */
+  .surface-card {
+    background-color: hsl(var(--surface-card));
+    border: 1px solid hsl(var(--surface-stroke));
+    border-radius: var(--radius-card);
+  }
+
+  .frosted-shadow { box-shadow: var(--shadow-card); }
+  .frosted-shadow-lg { box-shadow: var(--shadow-card-lg); }
+
+  /* === Subject accents (student timetable) ===
+     Eight hues, spaced far enough apart that no two subjects in one class read
+     as the same colour. A subject is assigned one deterministically by NAME, so
+     Monday's Maths matches Thursday's, on every reload.
+
+     The student grid colours by SUBJECT rather than by slot_type. Tinting by
+     slot_type meant every academic period was the same wash of teal, so a
+     six-period day looked like one block of colour and nothing was tellable
+     apart. Colour here carries "which subject", the only distinction a student
+     actually needs from a glance. */
+  .subj-1 { --subj: 186 62% 38%; }
+  .subj-2 { --subj: 262 52% 55%; }
+  .subj-3 { --subj: 24 78% 47%; }
+  .subj-4 { --subj: 152 52% 34%; }
+  .subj-5 { --subj: 340 62% 50%; }
+  .subj-6 { --subj: 212 66% 47%; }
+  .subj-7 { --subj: 96 46% 36%; }
+  .subj-8 { --subj: 292 46% 48%; }
+
+  .dark .subj-1 { --subj: 186 58% 55%; }
+  .dark .subj-2 { --subj: 262 60% 72%; }
+  .dark .subj-3 { --subj: 26 82% 62%; }
+  .dark .subj-4 { --subj: 152 46% 52%; }
+  .dark .subj-5 { --subj: 340 66% 66%; }
+  .dark .subj-6 { --subj: 212 70% 66%; }
+  .dark .subj-7 { --subj: 96 40% 55%; }
+  .dark .subj-8 { --subj: 292 50% 68%; }
+
+  /* Cell treatment: a saturated left rail plus a soft wash of the same hue.
+     The rail is what stays legible when the wash is this light. */
+  .subj-cell {
+    background-color: hsl(var(--subj) / 0.10);
+    border-color: hsl(var(--subj) / 0.28);
+    border-left-color: hsl(var(--subj));
+  }
+  .subj-text { color: hsl(var(--subj)); }
+
+  /* === Achievements tri-colour hero surfaces ===
+     Tone modifiers swap only the two gradient stops; everything structural
+     lives on the base class, so the three cards physically cannot drift apart
+     the way four independently-styled pastel boxes did. */
+  .hero-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    color: hsl(var(--hero-ink));
+    background-image: linear-gradient(135deg, hsl(var(--hero-from)) 0%, hsl(var(--hero-to)) 100%);
+    box-shadow: 0 1px 2px hsl(220 25% 30% / 0.06), 0 16px 34px -14px hsl(var(--hero-to) / 0.6);
+  }
+  .hero-card--teal { --hero-from: var(--hero-teal-from); --hero-to: var(--hero-teal-to); }
+  .hero-card--orange { --hero-from: var(--hero-orange-from); --hero-to: var(--hero-orange-to); }
+  .hero-card--violet { --hero-from: var(--hero-violet-from); --hero-to: var(--hero-violet-to); }
+  /* Teal into violet, for the teacher dashboard banner. Reuses the existing tone
+     stops rather than introducing a colour, so it inherits both :root and .dark
+     definitions for free and cannot ship a light-only value. */
+  .hero-card--brand { --hero-from: var(--hero-teal-from); --hero-to: var(--hero-violet-to); }
+
+  /* Dot field, faded out toward the bottom-left so it reads as texture in one
+     corner rather than as wallpaper across the whole card. */
+  .hero-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(hsl(0 0% 100% / 0.17) 1px, transparent 1px);
+    background-size: 13px 13px;
+    -webkit-mask-image: linear-gradient(215deg, #000 0%, transparent 60%);
+    mask-image: linear-gradient(215deg, #000 0%, transparent 60%);
+  }
+
+  /* Small uppercase label on a hero surface. Deliberately not .eyebrow: that
+     one is inked for a light card and vanishes on these grounds. */
+  .hero-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: hsl(var(--hero-ink) / 0.72);
+  }
+
+  /* White pill action sitting on a hero surface. */
+  .hero-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    background-color: hsl(var(--hero-ink));
+    color: hsl(var(--hero-to));
+    font-weight: 600;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+  .hero-action:hover { box-shadow: 0 6px 16px -6px hsl(0 0% 0% / 0.4); }
+  .hero-action:active { transform: scale(0.98); }
+
+  /* App bar: glassy blend over the gradient, no hard border-bottom seam.
+     Opacity raised from 0.65 (2026-09-15): once PageShell ran edge to edge
+     the page title scrolled straight under the bar and showed through it,
+     so on a phone the bar read as a smear over the heading. 0.88 keeps the
+     blur alive but the bar now reads as a bar; a soft shadow instead of a
+     border separates it from the page without the old white seam. */
+  .app-bar-frost {
+    background-color: hsl(var(--surface-card) / 0.88);
+    backdrop-filter: saturate(160%) blur(16px);
+    -webkit-backdrop-filter: saturate(160%) blur(16px);
+    box-shadow: 0 8px 24px -16px hsl(220 25% 30% / 0.18);
+  }
+  .dark .app-bar-frost {
+    box-shadow: 0 8px 24px -16px hsl(0 0% 0% / 0.6);
+  }
+
+  /* Pinned tab strips and filter rows (the dashboard's section tabs, the
+     Tasks / Support / Issues status rows). On the web this is the app bar's
+     frost, so a strip pinned under the bar reads as one piece of chrome with
+     it. It is a SEPARATE class on purpose: the native block at the end of this
+     file restyles .app-bar-frost as the brand-teal app bar, and a strip that
+     shared the class turned teal with it (2026-09-17 phone test). Inside the
+     app a pinned strip is plain opaque card colour: no backdrop-filter, which
+     the WebViews re-composite on every scroll frame. */
+  .tab-strip-frost {
+    background-color: hsl(var(--surface-card) / 0.88);
+    backdrop-filter: saturate(160%) blur(16px);
+    -webkit-backdrop-filter: saturate(160%) blur(16px);
+    box-shadow: 0 8px 24px -16px hsl(220 25% 30% / 0.18);
+  }
+  .dark .tab-strip-frost {
+    box-shadow: 0 8px 24px -16px hsl(0 0% 0% / 0.6);
+  }
+  /* App: glassy, with ZERO per-frame work.
+     ------------------------------------------------------------------------
+     NOTHING PINNED INSIDE .native-shell MAY CARRY backdrop-filter, on either
+     platform. This rule has now been written three times; read the history
+     before changing it.
+
+     2026-09-17: the strip and the app bar both vibrated while scrolling. Both
+     were made opaque and both stopped. See .native-shell .app-bar-frost at the
+     end of this file, which still carries that fix and has never vibrated
+     since.
+     2026-09-18: a blur was put back HERE, on the reasoning that the shimmer had
+     come from the app bar sliding in and out rather than from the filter. That
+     reasoning was wrong: the 09-17 note names this strip itself, and the bar
+     had already been position:relative on native before 09-18.
+     2026-09-23: it vibrated again on iPhone, and only on iOS.
+
+     WebKit scrolls asynchronously. A sticky element's constraints are resolved
+     once at layout and the scrolling thread applies the offset every frame,
+     while a backdrop-filter's sample geometry is committed by the web process.
+     The two land in different CA transactions, so the blurred backdrop and the
+     strip's own box disagree by one frame of scroll delta, forever, which at
+     120Hz reads as vibration. Chromium resolves sticky in its property trees
+     and draws the backdrop in the same compositor pass, so Android never
+     showed it and never will. This is not tunable; a lighter blur is the same
+     bug, smaller.
+
+     The 09-18 complaint was that the band was WHITE against the teal native
+     floor, not that it was opaque. So: opaque, but in the app bar's own hue,
+     with a static gradient standing in for the falloff a blur would give and
+     an inset hairline for the glass edge. Nothing is sampled. */
+  .native-shell .tab-strip-frost {
+    background-color: hsl(var(--tab-strip-bottom));
+    background-image: linear-gradient(
+      180deg,
+      hsl(var(--tab-strip-top)) 0%,
+      hsl(var(--tab-strip-bottom)) 100%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.5),
+      0 10px 20px -18px hsl(183 40% 25% / 0.45);
+  }
+  /* The tinted strip is darker than the white it replaced, so the labels take
+     the same deepened teal ink the app bar already sets on itself. The active
+     pill stays brand-teal with white text and still lifts off this. */
+  .native-shell:not(.dark) .tab-strip-frost {
+    --ink-900: 183 64% 22%;
+    --ink-700: 183 45% 28%;
+    --ink-600: 183 30% 34%;
+    --ink-500: 183 26% 40%;
+  }
+  .native-shell.dark .tab-strip-frost {
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.06),
+      0 10px 20px -18px hsl(0 0% 0% / 0.65);
+  }
+  /* The app is edge to edge: the status bar is drawn over the top of the page,
+     so a strip pinned at the top edge sat under the clock (2026-09-17 phone
+     test). AppLayout pins strips below the inset instead (--app-bar-offset),
+     and a strip that is flush under the app bar at rest can also carry this
+     scrim: it extends the strip's own surface up behind the status bar once
+     pinned, so the clock never sits on scrolling content. At rest it hides
+     under the app bar (z-20 over the strip's z-10). Not for strips that sit
+     mid-page: there the band would paint over the content above them.
+
+     OPAQUE, not `inherit`. The strip went translucent on 2026-09-18
+     (0.72 alpha, asked for), and the band inherited that alpha while the
+     blur did not reach it: a blur only covers the element's own box, and
+     this band sits outside it. So 28% of the page scrolled past the clock
+     unblurred and perfectly legible (2026-09-22 phone screenshot: a section
+     heading reading through the status bar). A status bar needs a surface
+     under it, which is what this was for.
+
+     The colour is the STRIP'S OWN TOP STOP, not --surface-card: this band is
+     the continuation of the strip's gradient up into the safe area, and any
+     other colour draws a visible seam straight across the top of the screen.
+     On iOS this pseudo-element is the only thing painting behind the clock at
+     all, because StatusBar.setBackgroundColor is guarded to Android
+     (src/lib/native/shell.ts). */
+  .native-shell .native-status-scrim::before {
+    content: "";
+    position: absolute;
+    inset: auto 0 100% 0;
+    height: env(safe-area-inset-top, 0px);
+    background-color: hsl(var(--tab-strip-top));
+  }
+
+  /* The band behind the status bar, owned by AppLayout so every app page gets
+     it. Height is the inset itself, so it is exactly 0 on the web and this
+     renders nothing there. --native-chrome is the app bar's own colour, so at
+     the top of a page, where the bar is flush beneath, there is no seam. */
+  .native-shell .native-status-scrim-fixed {
+    height: env(safe-area-inset-top, 0px);
+    background-color: hsl(var(--native-chrome));
+  }
+
+  /* A pinned strip moved to the BOTTOM edge of the app, 2026-09-23.
+     ------------------------------------------------------------------------
+     The dashboard's tab strip trembled while the page scrolled, on iOS only.
+     Three things were ruled out by testing rather than argument: the backdrop
+     blur (removed, still trembled), every compositing property on the strip
+     itself (will-change, the fade mask, the shadow, the pill's transform, the
+     top transition, all neutralised together, still trembled), and stickiness
+     (position: static, still trembled).
+
+     What it is NOT is now better established than what it is: a static element
+     trembled too, so the strip was never the problem, and something about the
+     page's own scrolling is. A fixed element is the one arrangement immune to
+     that, because it is taken out of the flow and held still by the compositor
+     while content scrolls beneath it, which is exactly how a native bottom tab
+     bar behaves. Confirmed on the device before this shipped.
+
+     It is also the better place for it on a phone: thumb-reachable, and clear
+     of the status bar, so the strip no longer needs the scrim that kept the
+     clock legible. */
+  .native-shell .native-bottom-bar {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    margin: 0;
+    border-bottom: 0;
+    border-top: 1px solid hsl(var(--surface-stroke));
+    padding-left: calc(1rem + env(safe-area-inset-left, 0px));
+    padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+    /* Clear of the home indicator, which draws over the page edge to edge. */
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    /* The gradient ran light-at-top for a strip under the app bar. At the
+       bottom the lit edge belongs at the top of the bar, where the content
+       meets it, so the stops stay as they are and only the shadow flips. */
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.5),
+      0 -10px 20px -18px hsl(183 40% 25% / 0.45);
+  }
+  .native-shell.dark .native-bottom-bar {
+    box-shadow:
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.06),
+      0 -10px 20px -18px hsl(0 0% 0% / 0.65);
+  }
+
+  /* Tiny caption above StatTile / HeroCard values. */
+  .eyebrow {
+    font-size: 11px;
+    line-height: 14px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: hsl(var(--ink-500));
+  }
+
+  /* Phase 9 dashboard banner: theme-aware sky gradient. Day reads as warm
+     pastel dawn; night re-skins to a deep navy/midnight sky with no other
+     code change. Distinct from .surface-gradient (page) and .surface-card. */
+  .scene-banner {
+    background-image:
+      linear-gradient(180deg,
+        hsl(var(--ssi-sky-top)) 0%,
+        hsl(var(--ssi-sky-mid)) 55%,
+        hsl(var(--ssi-sky-bottom)) 100%);
+  }
+
+  /* Clay tiles (FeatureTile, 2026-09-29): the dashboard hub tiles in the Clay School
+     banner's language. A soft clay slab lit from the top left, washed with its group's
+     colour in one corner; the icon sits in a puffy clay pebble. Pure CSS, no images.
+     No color-mix(): every mix is an alpha overlay on hsl(var(--clay-g)), so an older
+     WebView never loses the pebble. Hover motion is for real pointers only, so a tap on
+     a phone does not leave a tile stuck in its lifted state. */
+  .clay-tile {
+    position: relative;
+    display: block;
+    border-radius: 22px;
+    border: 1px solid hsl(var(--surface-stroke));
+    background:
+      radial-gradient(120% 95% at 100% 0%, hsl(var(--clay-g) / 0.16) 0%, transparent 58%),
+      linear-gradient(180deg, hsl(var(--clay-card-top)), hsl(var(--clay-card-bot)));
+    box-shadow: var(--clay-tile-shadow);
+    transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.25), box-shadow 0.35s ease;
+  }
+  .clay-tile:active { transform: translateY(-1px) scale(0.975); transition-duration: 0.12s; }
+
+  .clay-pebble {
+    display: inline-grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    color: hsl(var(--clay-glyph));
+    background:
+      radial-gradient(120% 120% at 28% 20%, hsl(var(--clay-light) / 0.3) 0%, transparent 42%),
+      radial-gradient(120% 120% at 75% 95%, hsl(var(--clay-dark) / 0.22) 0%, transparent 60%),
+      hsl(var(--clay-g));
+    box-shadow:
+      inset 0 2px 1px hsl(var(--clay-light) / 0.45),
+      inset 0 -4px 6px hsl(var(--clay-dark) / 0.18),
+      inset 2px 0 3px hsl(var(--clay-light) / 0.12),
+      0 7px 12px -6px hsl(var(--clay-g) / 0.75),
+      0 2px 3px hsl(var(--clay-dark) / 0.12);
+    transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.35);
+  }
+  .clay-pebble svg {
+    width: 25px;
+    height: 25px;
+    stroke-width: 2.4;
+    filter: drop-shadow(0 1.5px 0 hsl(var(--clay-dark) / 0.28)) drop-shadow(0 -0.5px 0 hsl(var(--clay-light) / 0.35));
+  }
+  .clay-tile:active .clay-pebble { transform: scale(0.92, 0.86); transition-duration: 0.1s; }
+  /* the small pebble beside a section title (ClayPebble size="sm") */
+  .clay-pebble.clay-pebble-sm { width: 40px; height: 40px; border-radius: 14px; flex-shrink: 0; }
+  .clay-pebble.clay-pebble-sm svg { width: 20px; height: 20px; }
+
+  /* the "go" arrow, in the group colour, slides in on hover */
+  .clay-go {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: hsl(var(--clay-g) / 0.2);
+    color: hsl(var(--clay-g-ink));
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+  }
+  .clay-go svg { width: 14px; height: 14px; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .clay-tile:hover { transform: translateY(-4px); box-shadow: var(--clay-tile-shadow-hover); }
+    .clay-tile:hover .clay-pebble { transform: translateY(-3px) rotate(-6deg) scale(1.06); }
+    .clay-tile:hover .clay-go { opacity: 1; transform: none; }
+  }
+  .clay-tile:focus-visible .clay-go { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .clay-tile, .clay-pebble, .clay-go { transition: none; }
+    .clay-tile:hover, .clay-tile:active, .clay-tile:hover .clay-pebble, .clay-tile:active .clay-pebble { transform: none; }
+  }
+
+  .clay-tone-teal   { --clay-g: var(--clay-teal);   --clay-g-ink: var(--clay-teal-ink);   --clay-g-deep: var(--clay-teal-deep); }
+  .clay-tone-mint   { --clay-g: var(--clay-mint);   --clay-g-ink: var(--clay-mint-ink);   --clay-g-deep: var(--clay-mint-deep); }
+  .clay-tone-peach  { --clay-g: var(--clay-peach);  --clay-g-ink: var(--clay-peach-ink);  --clay-g-deep: var(--clay-peach-deep); }
+  .clay-tone-violet { --clay-g: var(--clay-violet); --clay-g-ink: var(--clay-violet-ink); --clay-g-deep: var(--clay-violet-deep); }
+  .clay-tone-sky    { --clay-g: var(--clay-sky);    --clay-g-ink: var(--clay-sky-ink);    --clay-g-deep: var(--clay-sky-deep); }
+  .clay-tone-rose   { --clay-g: var(--clay-rose);   --clay-g-ink: var(--clay-rose-ink);   --clay-g-deep: var(--clay-rose-deep); }
+
+  /* Dashboard action cards (2026-10-06, ActionCardDeck): one bold card at a time in the
+     banner's box. A card is its clay tone's DEEP stop rising to the vivid tone on the right,
+     with a bloom behind a glass pebble; type is white (--hero-ink). Buttons are shadcn
+     Buttons, so the rules for them are scoped under .action-slide / .action-deck: the extra
+     class outranks the variant's own background and hover utilities. */
+  .action-deck {
+    border-radius: 22px;
+    box-shadow: 0 1px 2px hsl(var(--clay-g-deep) / 0.2), 0 18px 32px -20px hsl(var(--clay-g-deep) / 0.75);
+    transition: box-shadow 0.35s ease;
+  }
+  .dark .action-deck { box-shadow: 0 1px 2px hsl(var(--clay-dark) / 0.5), 0 18px 36px -22px hsl(var(--clay-g) / 0.45); }
+  .action-deck:focus-visible { outline: 2px solid hsl(var(--brand-primary)); outline-offset: 3px; }
+
+  .action-slide {
+    --action-lift: 0.6;
+    --action-lift-from: 55%;
+    --action-bloom: 0.9;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 22px;
+    color: hsl(var(--hero-ink));
+    background:
+      linear-gradient(105deg, transparent var(--action-lift-from), hsl(var(--clay-g) / var(--action-lift)) 100%),
+      hsl(var(--clay-g-deep));
+    box-shadow: inset 0 1px 0 hsl(var(--clay-light) / 0.22), inset 0 -18px 30px -24px hsl(var(--clay-dark) / 0.5);
+  }
+  .dark .action-slide { --action-lift: 0.32; --action-bloom: 0.5; }
+  /* From 768px the words keep to the left half, so the colour can start rising sooner. */
+  @media (min-width: 768px) { .action-slide { --action-lift-from: 36%; } }
+
+  .action-art { pointer-events: none; }
+  .action-art > * { position: absolute; left: 50%; top: 50%; border-radius: 9999px; transform: translate(-50%, -50%); }
+  .action-bloom {
+    width: 360%;
+    height: 360%;
+    background: radial-gradient(closest-side,
+      hsl(var(--clay-g) / var(--action-bloom)) 0%,
+      hsl(var(--clay-g) / calc(var(--action-bloom) * 0.72)) 25%,
+      hsl(var(--clay-g) / calc(var(--action-bloom) * 0.4)) 50%,
+      hsl(var(--clay-g) / calc(var(--action-bloom) * 0.14)) 75%,
+      hsl(var(--clay-g) / 0) 100%);
+  }
+  @media (min-width: 768px) { .action-bloom { width: 440%; height: 440%; } }
+  .action-ring { border: 1px solid hsl(var(--clay-light) / 0.16); }
+  .action-ring-1 { width: 190%; height: 190%; }
+  .action-ring-2 { width: 300%; height: 300%; border-color: hsl(var(--clay-light) / 0.10); }
+  .action-ring-3 { width: 430%; height: 430%; border-color: hsl(var(--clay-light) / 0.06); }
+  .action-art > .action-glass {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    border-radius: 30%;
+    transform: translate(-50%, -50%) rotate(-8deg);
+    color: hsl(var(--hero-ink));
+    background: linear-gradient(150deg, hsl(var(--clay-light) / 0.42) 0%, hsl(var(--clay-light) / 0.14) 55%, hsl(var(--clay-light) / 0.06) 100%);
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--clay-light) / 0.32),
+      inset 0 2px 1px hsl(var(--clay-light) / 0.45),
+      inset 0 -6px 12px hsl(var(--clay-dark) / 0.14),
+      0 14px 26px -14px hsl(var(--clay-dark) / 0.6);
+  }
+  .action-glass svg { width: 46%; height: 46%; stroke-width: 2.2; filter: drop-shadow(0 2px 1px hsl(var(--clay-dark) / 0.25)); }
+
+  .action-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: hsl(var(--hero-ink) / 0.8);
+  }
+  .action-eyebrow::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: hsl(var(--hero-ink));
+    box-shadow: 0 0 0 3px hsl(var(--clay-g) / 0.55);
+  }
+  .action-detail { color: hsl(var(--hero-ink) / 0.9); }
+
+  /* The two button looks on a card: a white pill (text in the card's deep tone) and a glass one. */
+  .action-slide .action-primary,
+  .action-slide .action-primary:hover {
+    border-radius: 9999px;
+    font-weight: 600;
+    background-color: hsl(var(--hero-ink));
+    color: hsl(var(--clay-g-deep));
+  }
+  .action-slide .action-primary:hover { box-shadow: 0 6px 16px -6px hsl(0 0% 0% / 0.4); }
+  .action-slide .action-ghost {
+    border-radius: 9999px;
+    font-weight: 600;
+    color: hsl(var(--hero-ink));
+    background-color: hsl(var(--clay-light) / 0.16);
+    box-shadow: inset 0 0 0 1px hsl(var(--clay-light) / 0.3);
+  }
+  .action-slide .action-ghost:hover { color: hsl(var(--hero-ink)); background-color: hsl(var(--clay-light) / 0.26); }
+
+  /* Pager: dots always, arrows only for a mouse from 640px (a phone swipes). */
+  .action-pager { background: hsl(var(--clay-dark) / 0.16); box-shadow: inset 0 0 0 1px hsl(var(--clay-light) / 0.1); }
+  .action-deck .action-dot { width: 24px; height: 24px; border-radius: 9999px; padding: 0; background: transparent; }
+  .action-dot::before {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: hsl(var(--hero-ink) / 0.5);
+    transition: width 0.25s ease, background-color 0.25s ease;
+  }
+  .action-deck .action-dot:hover { background: transparent; }
+  .action-dot:hover::before { background: hsl(var(--hero-ink) / 0.85); }
+  .action-dot[aria-current="true"]::before { width: 18px; background: hsl(var(--hero-ink)); }
+  .action-deck .action-arrow {
+    display: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px;
+    padding: 0;
+    color: hsl(var(--hero-ink));
+    background: hsl(var(--clay-light) / 0.14);
+  }
+  .action-deck .action-arrow:hover:not(:disabled) { color: hsl(var(--hero-ink)); background: hsl(var(--clay-light) / 0.28); }
+  .action-deck .action-arrow:disabled { opacity: 0.35; }
+  @media (min-width: 640px) and (hover: hover) and (pointer: fine) {
+    .action-deck .action-arrow { display: inline-flex; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .action-deck, .action-dot::before { transition: none; }
+  }
+
+}
+
+/* Dashboard banner: the wrapper eases in once on mount (SchoolSceneIllustration). */
+@keyframes scene-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.scene-banner-anim     { animation: scene-fade-in 0.7s cubic-bezier(0.19, 1, 0.22, 1) both; }
+
+/* Hindi text support */
+.hindi-text {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+}
+
+/* Punjabi text support */
+.punjabi-text {
+  font-family: 'Noto Sans Gurmukhi', sans-serif;
+}
+
+/* Print/PDF styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-break-before {
+    page-break-before: always;
+  }
+  .print-break-after {
+    page-break-after: always;
+  }
+  .print-avoid-break {
+    page-break-inside: avoid;
+  }
+}
+
+/* View Transitions API — smooth cross-page animations */
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* === Form field overrides (Mobile UI Redesign) === */
+/* iOS Safari renders <input type="time"> typed values in the system "datetime
+   text" color which is invisible on white card surfaces. Force the value to
+   ink-900 across all webkit datetime sub-controls. */
+input[type="time"],
+input[type="date"],
+input[type="datetime-local"] {
+  color: hsl(var(--ink-900));
+}
+input[type="time"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit,
+input[type="datetime-local"]::-webkit-datetime-edit {
+  color: hsl(var(--ink-900));
+}
+input[type="time"]::-webkit-datetime-edit-fields-wrapper,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="datetime-local"]::-webkit-datetime-edit-fields-wrapper {
+  color: hsl(var(--ink-900));
+}
+
+/* Hide scrollbars on horizontal scroll-snap rows (used by MobileTabs, FilterRow). */
+/* Safe-area gutters for screens that sit outside AppLayout (login, reset
+   password, the exam attempt). 0 in a browser, the notch inset in the app. */
+.pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide the document scrollbar globally for every authenticated surface. The
+   page still scrolls (mouse wheel, trackpad, touch, keyboard, programmatic
+   scrollTo all work) — the visual chrome is just gone, matching the YouTube /
+   Chrome auto-hide-bar treatment. Per-component scrollers (the sidebar's
+   custom 6px scrollbar, shadcn ScrollArea, dialog content) keep their own
+   styling because those rules target specific selectors, not html/body. */
+html,
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  /* App-shell manners that also suit the web: no rubber-band bounce of the
+     whole document (columns and sheets keep their own scroll), no grey flash
+     on tap, and no iOS font inflation when the phone rotates. */
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* ── WYSIWYG math editor (MathInput) ─────────────────────────────────────
+   Prose is edited inline; equations render as KaTeX "chips". */
+.math-input[data-empty]::before {
+  content: attr(data-placeholder);
+  color: hsl(var(--muted-foreground));
+  pointer-events: none;
+}
+.math-input .math-chip {
+  display: inline-block;
+  margin: 0 1px;
+  padding: 0 3px;
+  border-radius: 4px;
+  background: hsl(var(--brand-primary) / 0.08);
+  cursor: pointer;
+  user-select: none;
+  vertical-align: baseline;
+  transition: background-color 0.15s ease;
+}
+.math-input .math-chip:hover {
+  background: hsl(var(--brand-primary) / 0.16);
+}
+/* KaTeX inside a chip shouldn't force a larger line box. */
+.math-input .math-chip .katex {
+  font-size: 1em;
+}
+
+/* ── MathLive editable equation field (equation builder) ──────────────────
+   Host the <math-field> with the app's input styling. */
+.math-field-host math-field {
+  display: block;
+  width: 100%;
+  min-height: 60px;
+  padding: 10px 12px;
+  border: 1.5px solid hsl(var(--brand-primary) / 0.4);
+  border-radius: 10px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 1.3rem;
+}
+.math-field-host math-field:focus-within {
+  outline: none;
+  border-color: hsl(var(--brand-primary));
+  box-shadow: 0 0 0 3px hsl(var(--brand-primary) / 0.15);
+}
+
+/* ── Achievements: badge shield decoration ────────────────────────────────
+   BadgeShield draws 8 radiating rays (gold and above) plus 1 or 2 orbital
+   rings (diamond / legendary). The rotation + glow below are the ONLY
+   animations on the surface and are gated behind prefers-reduced-motion,
+   so a reduced-motion user gets the same static artwork. */
+.badge-rays {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes salci-badge-rays {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes salci-badge-glow {
+  0%,
+  100% {
+    opacity: 0.26;
+  }
+  50% {
+    opacity: 0.62;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Legendary only. Diamond and below stay static so the hierarchy reads:
+     movement itself is a tier signal. */
+  .badge-rays-rotate {
+    animation: salci-badge-rays 48s linear infinite;
+  }
+  .badge-glow-pulse {
+    animation: salci-badge-glow 3.4s ease-in-out infinite;
+  }
+}
+
+/* Viewport-unit fallbacks. Tailwind's dvh utilities emit only `100dvh`; an
+   older Android System WebView (pre-Chrome 108) ignores the declaration and a
+   min-height collapses to 0, which is how a phone build rendered the login and
+   attempt pages squashed together (2026-09-17). Where dvh is unknown, vh is
+   the right answer anyway. */
+@supports not (height: 100dvh) {
+  .min-h-dvh { min-height: 100vh; }
+  .h-dvh { height: 100vh; }
+  .max-h-dvh { max-height: 100vh; }
+}
+
+/* Native shell: the off-canvas sidebar is a full-height sheet, so inside the
+   app it slid under the status bar and notch (2026-09-17 phone test). Pad it
+   by the device insets; both resolve to 0 in a browser. The bottom inset keeps
+   the last nav items above the home indicator. */
+[data-sidebar="sidebar"][data-mobile="true"] {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Inside the native shell (html.native-shell, set by src/main.tsx). WKWebView
+   re-composites a pinned element with backdrop-filter on every scroll frame
+   and it shimmers; the dashboard's tab strip and the app bar "vibrated" while
+   the page scrolled (2026-09-17). Pinned chrome is opaque in the app; the web
+   keeps its frosted glass. Mandatory scroll-snap rows re-snap while the page
+   moves under them for the same reason, so they snap on proximity instead. */
+.native-shell .app-bar-frost {
+  background-color: hsl(var(--surface-card));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Native shell: a compact app bar. The bar sits under a status bar it does
+   not draw, so the web's 61px bar plus a 59px notch inset read as a 120px
+   blank band at the top of every screen on an iPhone (2026-09-17 phone
+   test). Native nav bars are 44pt, so 44px, which still clears the 36px icon
+   hit boxes with 4px each side (was 48px; trimmed with the page-title block
+   below after the second phone test asked for less empty space). Sticky
+   strips, PageShell's floor and the offline banner all read the token, so
+   they follow. Unlayered, so it outranks the :root value inside @layer base.
+   In landscape the top inset is 0 and the notch moves to a side, so the bar
+   and the page gutter (.native-safe-x on PageShell) also pad by the side
+   insets; all of these are 0 in a browser. */
+.native-shell {
+  --app-bar-height: calc(44px + env(safe-area-inset-top, 0px));
+  /* env() is not readable from JS, and a bottom-bar page needs the status-bar
+     inset to work out where the top of the readable area is. Published as a
+     plain custom property so getComputedStyle can resolve it. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* The page-title block sat 32px under the bar (PageShell's pt-4 plus
+   PageHeader's py-4), which on top of the status-bar inset read as a blank
+   band. Both hooks are inert on the web. */
+.native-shell .native-page-content {
+  padding-top: 8px;
+}
+.native-shell .native-page-header {
+  padding-top: 4px;
+  padding-bottom: 12px;
+}
+.native-shell .app-bar-frost {
+  padding-left: calc(0.5rem + env(safe-area-inset-left, 0px));
+  padding-right: calc(0.5rem + env(safe-area-inset-right, 0px));
+}
+.native-shell .native-safe-x {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.native-shell [data-sidebar="sidebar"][data-mobile="true"] {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.native-shell .snap-mandatory {
+  scroll-snap-type: x proximity;
+}
+/* Opt-in only: a strip that carries `native-unpin` scrolls with the page in
+   the app. Asked for the Tasks page (2026-09-18: its strip plus filter row
+   held a third of the screen while cards slid under the clock). Every other
+   strip, the dashboard's above all, stays pinned: a first cut unpinned them
+   all and Naman asked for the dashboard strip back the same afternoon.
+   Unlayered so it outranks the `sticky` utility. */
+.native-shell .native-unpin {
+  position: static;
+  background-color: transparent;
+  box-shadow: none;
+}
+/* Stat tiles as compact rows in the app. The web tile is a 145px card with
+   the icon above the number; two per row, that was two screens of tiles
+   before the first list item on nine routes (2026-09-18 audit). Icon beside a
+   caption and a 20px number reads the same and is 64px tall. */
+.native-shell .stat-tile {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+.native-shell .stat-tile-icon {
+  height: 36px;
+  width: 36px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.native-shell .stat-tile-value {
+  font-size: 20px;
+  line-height: 26px;
+}
+/* Three tiles in two columns left an orphan cell on four routes; the odd
+   last tile takes the whole row instead. Portrait only: from md the grid has
+   three or more columns and the rule would misfire. */
+@media (max-width: 767px) {
+  .native-shell .stat-tile-grid > .stat-tile:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Native shell: type scale ───────────────────────────────────────────────
+   The web's type was sized for a laptop and for a phone browser the user can
+   pinch. Inside the app the same sizes read as oversized ("very large text",
+   2026-09-17 phone test). Every Tailwind size utility is re-mapped here: body
+   sizes one step down, headings two, so the whole app tightens without one
+   page changing on the web. Root font-size stays 16px, so rem spacing, hit
+   boxes and layout are untouched; only the glyphs shrink.
+
+   Named utilities keep an explicit `leading-*` where a call site set one (the
+   :not guard). Arbitrary pixel sizes are headings and stat values, so they
+   get a matched line-height regardless of any leading class. Responsive
+   variants (sm:, md:) only apply in landscape and lose to these two-class
+   selectors, which is the intent on a phone.
+
+   Android: the System WebView also multiplies every size by the phone's
+   font-size setting (textZoom = 100 x fontScale). The shell pins textZoom to
+   100 in MainActivity (~/salci-app-shell), so this scale is what the user
+   actually sees. iOS: the viewport is locked to scale 1 on native (shell.ts),
+   so a 15px input no longer makes WebKit zoom in on focus. */
+.native-shell .text-xs { font-size: 11px; }
+.native-shell .text-sm { font-size: 13px; }
+.native-shell .text-base { font-size: 15px; }
+.native-shell .text-lg { font-size: 16px; }
+.native-shell .text-xl { font-size: 18px; }
+.native-shell .text-2xl { font-size: 20px; }
+.native-shell .text-3xl { font-size: 24px; }
+.native-shell .text-4xl { font-size: 28px; }
+.native-shell .text-5xl { font-size: 34px; }
+.native-shell .text-6xl { font-size: 40px; }
+.native-shell .text-xs:not([class*="leading-"]) { line-height: 15px; }
+.native-shell .text-sm:not([class*="leading-"]) { line-height: 18px; }
+.native-shell .text-base:not([class*="leading-"]) { line-height: 22px; }
+.native-shell .text-lg:not([class*="leading-"]) { line-height: 24px; }
+.native-shell .text-xl:not([class*="leading-"]) { line-height: 26px; }
+.native-shell .text-2xl:not([class*="leading-"]) { line-height: 28px; }
+.native-shell .text-3xl:not([class*="leading-"]) { line-height: 30px; }
+.native-shell .text-4xl:not([class*="leading-"]) { line-height: 34px; }
+.native-shell .text-5xl:not([class*="leading-"]) { line-height: 40px; }
+.native-shell .text-6xl:not([class*="leading-"]) { line-height: 44px; }
+
+/* Arbitrary pixel sizes in use (census 2026-09-17). Sizes of 13px and below
+   are captions already and stay as they are. */
+.native-shell .text-\[14px\] { font-size: 13px; line-height: 18px; }
+.native-shell .text-\[15px\] { font-size: 14px; line-height: 20px; }
+.native-shell .text-\[16px\] { font-size: 15px; line-height: 22px; }
+.native-shell .text-\[17px\] { font-size: 16px; line-height: 22px; }
+.native-shell .text-\[18px\] { font-size: 16px; line-height: 22px; }
+.native-shell .text-\[19px\] { font-size: 17px; line-height: 24px; }
+.native-shell .text-\[20px\] { font-size: 18px; line-height: 24px; }
+.native-shell .text-\[21px\] { font-size: 18px; line-height: 24px; }
+.native-shell .text-\[22px\] { font-size: 19px; line-height: 24px; }
+.native-shell .text-\[24px\] { font-size: 20px; line-height: 26px; }
+.native-shell .text-\[26px\] { font-size: 22px; line-height: 28px; }
+.native-shell .text-\[28px\] { font-size: 23px; line-height: 28px; }
+.native-shell .text-\[30px\] { font-size: 24px; line-height: 30px; }
+.native-shell .text-\[32px\] { font-size: 26px; line-height: 32px; }
+.native-shell .text-\[34px\] { font-size: 27px; line-height: 32px; }
+.native-shell .text-\[38px\] { font-size: 30px; line-height: 36px; }
+.native-shell .text-\[40px\] { font-size: 31px; line-height: 36px; }
+.native-shell .text-\[42px\] { font-size: 32px; line-height: 38px; }
+.native-shell .text-\[44px\] { font-size: 34px; line-height: 40px; }
+.native-shell .text-\[46px\] { font-size: 35px; line-height: 40px; }
+
+/* ── Native shell: colour ───────────────────────────────────────────────────
+   On the web the page floor is a near-white cream and the backdrop tints run
+   at 10 to 18% alpha, which inside the app read as "the whole app is white"
+   (2026-09-17). The app gets a brand-teal app bar with white controls, a
+   visibly tinted floor and teal-tinted hairlines; cards stay white so content
+   keeps its contrast. Light theme only: the dark theme already has colour and
+   its bar stays the dark surface. The web keeps its frosted white bar. */
+.native-shell:not(.dark) {
+  --background: 188 40% 96%;
+  --surface-base: 188 40% 96%;
+  --surface-stroke: 188 28% 88%;
+  --border: 190 22% 87%;
+  --input: 190 22% 85%;
+  /* The app bar's colour, named once so the bar, the pinned strips and the
+     status-bar scrim cannot drift apart. STATUS_BAR_BG.light in
+     src/lib/native/shell.ts is --native-chrome in hex (#d7eff0); if this hue
+     ever changes, that file is load-bearing, so it needs a NEEDS CORE line.
+     The strip sits BETWEEN the bar and the floor: two steps lighter than the
+     bar at 89%, still clearly teal against the floor's 96%, so it reads as
+     the lower step of one piece of chrome instead of a card that wandered in
+     (the 2026-09-18 complaint about the white band). */
+  --native-chrome: 184 45% 89%;
+  --tab-strip-top: 185 45% 92%;
+  --tab-strip-bottom: 187 44% 95%;
+  --muted: 188 30% 93%;
+}
+/* Dark app: the chrome IS the card surface, so the tokens above have no teal
+   counterpart here. The strip still needs to be one step off the floor, or a
+   pinned band over dark content has no edge at all. Two steps up from
+   --surface-card (230 22% 16%), with the gradient running the other way so the
+   lit edge is at the top exactly as it is in light. */
+.native-shell.dark {
+  --native-chrome: 230 22% 16%;
+  --tab-strip-top: 230 22% 19%;
+  --tab-strip-bottom: 230 22% 16%;
+}
+.native-shell:not(.dark) .surface-gradient {
+  background-image:
+    radial-gradient(900px 620px at 0% 0%, hsl(var(--brand-primary) / 0.26), transparent 60%),
+    radial-gradient(800px 600px at 100% 12%, hsl(var(--brand-secondary) / 0.22), transparent 60%),
+    radial-gradient(760px 520px at 50% 100%, hsl(var(--brand-warm) / 0.24), transparent 65%);
+}
+/* background-attachment: fixed is ignored by WebKit on iOS and repaints the
+   whole page per frame in the Android WebView; scroll is what the phone shows
+   anyway, so ask for it and skip the work. */
+.native-shell .surface-gradient {
+  background-attachment: scroll;
+}
+
+/* The app bar is a pale teal, one clear step darker than the page floor, with
+   deep-teal controls. A first pass painted it full brand teal (#249ca2); on
+   the phone that plus the status-bar inset read as a heavy 110pt block that
+   did not sit with the pale page below it (2026-09-17, second test), so it
+   was lightened to this. Every control inside reads its colour through a
+   token, so re-pointing the tokens on the bar itself recolours the menu and
+   search glyphs, the bell and the role badge without touching their
+   components; the avatar fallback keeps its teal disc. Menus and popovers
+   portal to <body> and are not affected. STATUS_BAR_BG.light in
+   src/lib/native/shell.ts is this colour in hex; keep them in step. */
+.native-shell:not(.dark) .app-bar-frost {
+  background-color: hsl(var(--native-chrome));
+  color: hsl(183 64% 22%);
+  box-shadow: 0 8px 24px -16px hsl(183 40% 30% / 0.35);
+  --foreground: 183 64% 22%;
+  --muted-foreground: 183 30% 34%;
+  --ink-900: 183 64% 22%;
+  --ink-700: 183 45% 28%;
+  --ink-600: 183 30% 34%;
+  --ink-500: 183 24% 42%;
+  --muted: 183 45% 80%;
+  --border: 183 35% 72%;
+}
+
+/* ── Launch intro (src/components/native/LaunchIntro.tsx) ──────────────────────
+   The phone app's launch screen: the magnifier rises, the SALCI tiles pop in, the
+   tagline and six school-activity icons follow, a loading line fills, then the layer
+   fades into the app that loaded underneath. About 2 s, once per cold start.
+
+   The first frame (data-phase="hold") is a copy of Android's system splash: the mark
+   alone, 136px tall, centred on --launch-bg. The shell's scripts/launch-assets.mjs
+   draws the system splash from the same image at 136dp on the same colour (a CSS px
+   is a dp in the WebView), so the hand-over cannot be seen. Change them together.
+
+   Colours follow the PHONE's dark setting, not the app's .dark class, on purpose:
+   the system splash can only know the phone's setting, and the app has not read its
+   own theme yet when the intro starts. So the dark values live under
+   prefers-color-scheme instead of .dark, the one deliberate exception to "every
+   token in :root and .dark". The fade at the end covers a theme change.
+
+   Timing is mirrored in launchIntroPlan.ts (exit at 1850ms): tiles end at 960ms,
+   icons at 1470ms, the loading line at 1750ms. Change the two together; the test
+   (npm run test:launch-intro) pins the plan's side. */
+.native-shell {
+  --launch-bg: 30 30% 98%;
+  --launch-glow: 0 0% 100%;
+  --launch-tint: 183 45% 92%;
+  --launch-ink: 222 12% 36%;
+  --launch-chip: 0 0% 100%;
+  --launch-chip-edge: 183 30% 91%;
+  --launch-shadow: 200 40% 20% / 0.1;
+  --launch-teal: 183 61% 40%;
+  --launch-orange: 33 96% 53%;
+  --launch-violet: 257 28% 50%;
+}
+@media (prefers-color-scheme: dark) {
+  .native-shell {
+    --launch-bg: 232 28% 10%;
+    --launch-glow: 230 30% 17%;
+    --launch-tint: 250 30% 15%;
+    --launch-ink: 226 20% 76%;
+    --launch-chip: 230 22% 16%;
+    --launch-chip-edge: 230 18% 24%;
+    --launch-shadow: 0 0% 0% / 0.35;
+    --launch-teal: 183 55% 55%;
+    --launch-orange: 33 96% 58%;
+    --launch-violet: 257 45% 72%;
+  }
+}
+
+.native-shell .launch-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  overflow: hidden;
+  background-color: hsl(var(--launch-bg));
+  transition: opacity 280ms ease-out;
+}
+.native-shell .launch-intro[data-mode="still"] {
+  transition-duration: 200ms;
+}
+.native-shell .launch-intro[data-phase="exit"] {
+  opacity: 0;
+}
+.native-shell .launch-backdrop {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-image:
+    radial-gradient(120% 65% at 50% 44%, hsl(var(--launch-glow)) 0%, transparent 62%),
+    radial-gradient(140% 55% at 50% 110%, hsl(var(--launch-tint)) 0%, transparent 70%);
+}
+/* A dotted paper texture, faded out at the top and bottom edges (the mask only reads
+   alpha, so its colour is irrelevant). */
+.native-shell .launch-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(hsl(var(--launch-teal) / 0.16) 1px, transparent 1.3px);
+  background-size: 18px 18px;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 28%, black 72%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, black 28%, black 72%, transparent 100%);
+}
+.native-shell .launch-mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 136px;
+  width: auto;
+  transform: translate(-50%, -50%);
+}
+.native-shell .launch-tiles {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 4px);
+  display: flex;
+  gap: 3px;
+  transform: translateX(-50%);
+}
+.native-shell .launch-tile {
+  display: block;
+  height: 46px;
+  width: auto;
+  opacity: 0;
+}
+.native-shell .launch-tagline {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: calc(50% + 64px);
+  margin: 0;
+  text-align: center;
+  font: 600 9.5px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: hsl(var(--launch-ink));
+  opacity: 0;
+}
+.native-shell .launch-chips {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 104px);
+  display: flex;
+  justify-content: center;
+  gap: min(10px, 2.6vw);
+}
+.native-shell .launch-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(42px, 11vw);
+  height: min(42px, 11vw);
+  border-radius: 13px;
+  border: 1px solid hsl(var(--launch-chip-edge));
+  background-color: hsl(var(--launch-chip));
+  box-shadow: 0 4px 12px hsl(var(--launch-shadow));
+  opacity: 0;
+}
+.native-shell .launch-chip svg {
+  width: 20px;
+  height: 20px;
+}
+.native-shell .launch-chip-teal {
+  color: hsl(var(--launch-teal));
+}
+.native-shell .launch-chip-orange {
+  color: hsl(var(--launch-orange));
+}
+.native-shell .launch-chip-violet {
+  color: hsl(var(--launch-violet));
+}
+.native-shell .launch-track {
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
+  width: 120px;
+  height: 3px;
+  margin-left: -60px;
+  border-radius: 999px;
+  overflow: hidden;
+  background-color: hsl(var(--launch-teal) / 0.15);
+  opacity: 0;
+}
+.native-shell .launch-fill {
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background-image: linear-gradient(90deg, hsl(var(--launch-teal)), hsl(var(--launch-violet)), hsl(var(--launch-orange)));
+}
+/* Landscape or a very short window: the icons and the line would run into the
+   tagline, so the logo plays alone. */
+@media (max-height: 520px) {
+  .native-shell .launch-chips,
+  .native-shell .launch-track {
+    display: none;
+  }
+}
+
+/* data-mode="animate": runs from data-phase="play" and keeps its end state through
+   "exit" (the selector changes, the animation names do not, so nothing restarts). */
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-backdrop {
+  animation: launch-fade 500ms ease-out both;
+}
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-mark {
+  animation: launch-mark 460ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-tile {
+  animation: launch-pop 380ms cubic-bezier(0.3, 1.35, 0.5, 1) both;
+}
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-tile:nth-child(1) { animation-delay: 300ms; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-tile:nth-child(2) { animation-delay: 370ms; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-tile:nth-child(3) { animation-delay: 440ms; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-tile:nth-child(4) { animation-delay: 510ms; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-tile:nth-child(5) { animation-delay: 580ms; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-tagline {
+  animation: launch-rise 350ms ease-out 650ms both;
+}
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip {
+  animation: launch-chip 420ms cubic-bezier(0.3, 1.3, 0.5, 1) both;
+}
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(1) { animation-delay: 750ms; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(2) { animation-delay: 810ms; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(3) { animation-delay: 870ms; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(4) { animation-delay: 930ms; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(5) { animation-delay: 990ms; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(6) { animation-delay: 1050ms; }
+/* The gentle bob runs on the glyph, not the chip, so it never fights the entrance. */
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip svg {
+  animation: launch-bob 2.4s ease-in-out infinite;
+}
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(1) svg { animation-delay: 1.2s; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(2) svg { animation-delay: 1.35s; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(3) svg { animation-delay: 1.5s; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(4) svg { animation-delay: 1.65s; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(5) svg { animation-delay: 1.8s; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-chip:nth-child(6) svg { animation-delay: 1.95s; }
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-track {
+  animation: launch-fade 250ms ease-out 250ms both;
+}
+.native-shell .launch-intro[data-mode="animate"]:not([data-phase="hold"]) .launch-fill {
+  animation: launch-fill 1500ms cubic-bezier(0.45, 0, 0.2, 1) 250ms both;
+}
+
+/* data-mode="still" (the phone asks for reduced motion): the finished frame, no motion. */
+.native-shell .launch-intro[data-mode="still"]:not([data-phase="hold"]) .launch-backdrop,
+.native-shell .launch-intro[data-mode="still"]:not([data-phase="hold"]) .launch-tile,
+.native-shell .launch-intro[data-mode="still"]:not([data-phase="hold"]) .launch-tagline,
+.native-shell .launch-intro[data-mode="still"]:not([data-phase="hold"]) .launch-chip,
+.native-shell .launch-intro[data-mode="still"]:not([data-phase="hold"]) .launch-track {
+  opacity: 1;
+}
+.native-shell .launch-intro[data-mode="still"]:not([data-phase="hold"]) .launch-mark {
+  transform: translate(-50%, calc(-50% - 60px)) scale(0.65);
+}
+.native-shell .launch-intro[data-mode="still"]:not([data-phase="hold"]) .launch-fill {
+  transform: scaleX(1);
+}
+
+@keyframes launch-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes launch-mark {
+  from { transform: translate(-50%, -50%) scale(1); }
+  to { transform: translate(-50%, calc(-50% - 60px)) scale(0.65); }
+}
+@keyframes launch-pop {
+  0% { opacity: 0; transform: translateY(10px) scale(0.6); }
+  70% { opacity: 1; transform: translateY(-2px) scale(1.06); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes launch-rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes launch-chip {
+  0% { opacity: 0; transform: translateY(16px) scale(0.7); }
+  70% { opacity: 1; transform: translateY(-2px) scale(1.04); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes launch-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes launch-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Phone bottom tab bar (MobileBottomNav), 2026-10-13.
+   ------------------------------------------------------------------------
+   The surface is .tab-strip-frost, so it inherits both treatments for free:
+   the frost on the web and the opaque, blur-free fill inside the app (see the
+   .native-shell .tab-strip-frost note: nothing pinned in the app may carry a
+   backdrop-filter). Only the edge is redone here, because a bar at the BOTTOM
+   meets the content along its top: hairline and shadow move up. */
+.bottom-nav {
+  border-top: 1px solid hsl(var(--surface-stroke));
+  box-shadow: 0 -8px 24px -16px hsl(220 25% 30% / 0.22);
+}
+.dark .bottom-nav {
+  box-shadow: 0 -8px 24px -16px hsl(0 0% 0% / 0.6);
+}
+.native-shell .bottom-nav {
+  box-shadow:
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.5),
+    0 -10px 20px -18px hsl(183 40% 25% / 0.45);
+}
+.native-shell.dark .bottom-nav {
+  box-shadow:
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.06),
+    0 -10px 20px -18px hsl(0 0% 0% / 0.65);
+}
+
+/* The icon of the tab you just moved to gives one springy bounce. */
+@keyframes bottom-nav-pop {
+  0% { transform: scale(0.8); }
+  55% { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+.bottom-nav-pop {
+  animation: bottom-nav-pop 340ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav-pop { animation: none; }
+}
